@@ -2,6 +2,9 @@
   "name": "line-charts",
   "compatibility_date": "2026-09-04",
   "assets": {
-    "directory": "."
+    "directory": ".",
+    // static multi-page site: unknown paths must 404, not silently
+    // serve index.html (soft-404s read as duplicate content to crawlers)
+    "not_found_handling": "404-page"
   }
 }

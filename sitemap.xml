@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://linecharts.datahub.io/</loc><priority>1.0</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/d3</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/observable-plot</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/vega-lite</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/plotly</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/chartjs</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/echarts</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/demos/uplot</loc><priority>0.8</priority></url>
+</urlset>

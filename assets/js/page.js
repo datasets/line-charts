@@ -10,19 +10,32 @@ restoreTheme();
 
 const KEYS = ["co2", "energy", "life", "btc"];
 
+/* `?chart=<key>` renders one dataset instead of all four; `&bare=1` also
+ * drops the page header and source panel. Together they give an embeddable
+ * single chart — used by compare.html's iframes and by the OG screenshots. */
+function viewOptions() {
+  const p = new URLSearchParams(location.search);
+  const only = p.get("chart");
+  return {
+    keys: KEYS.includes(only) ? [only] : KEYS,
+    bare: p.get("bare") === "1",
+  };
+}
+
 export async function mountDemo({ meta, charts }) {
   document.title = `${meta.name} — line-charts`;
+  const { keys, bare } = viewOptions();
   const root = document.getElementById("app");
-  root.innerHTML = shell(meta);
-  installThemeToggle(root.querySelector(".toggle"));
+  root.innerHTML = shell(meta, keys, bare);
+  if (!bare) installThemeToggle(root.querySelector(".toggle"));
 
   const data = await loadAll();
   const hosts = {};
   const cleanups = {};
 
-  for (const key of KEYS) {
+  for (const key of keys) {
     const card = root.querySelector(`[data-card="${key}"]`);
-    card.querySelector(".src pre").textContent = sourceOf(charts[key]);
+    card.querySelector(".src pre")?.replaceChildren(sourceOf(charts[key]));
     hosts[key] = card.querySelector(".chart-host");
   }
 
@@ -49,7 +62,7 @@ export async function mountDemo({ meta, charts }) {
 
   function renderAll() {
     const ctx = { theme: theme(), datasets: DATASETS };
-    KEYS.forEach((key) => renderOne(key, ctx));
+    keys.forEach((key) => renderOne(key, ctx));
   }
 
   renderAll();
@@ -63,7 +76,12 @@ export async function mountDemo({ meta, charts }) {
 
 /* ---------------------------------------------------------------- */
 
-function shell(meta) {
+function shell(meta, keys, bare) {
+  if (bare) {
+    return `<main class="wrap" style="padding:12px 14px">
+      ${keys.map((k) => cardHTML(k, true)).join("")}
+    </main>`;
+  }
   return `
   <header class="wrap" style="padding-top:22px;padding-bottom:10px">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
@@ -84,12 +102,12 @@ function shell(meta) {
   </header>
   <main class="wrap" style="padding-bottom:60px">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:20px;margin-top:18px">
-      ${KEYS.map(cardHTML).join("")}
+      ${keys.map((k) => cardHTML(k)).join("")}
     </div>
   </main>`;
 }
 
-function cardHTML(key) {
+function cardHTML(key, bare = false) {
   const d = DATASETS[key];
   return `
   <section class="card" data-card="${key}">
@@ -102,7 +120,7 @@ function cardHTML(key) {
       <p class="card__desc" style="color:var(--text-muted)"><b style="font-weight:600">Stresses:</b> ${d.stress}</p>
     </div>
     <div class="chart-host"></div>
-    <details class="src"><summary>source</summary><pre></pre></details>
+    ${bare ? "" : `<details class="src"><summary>source</summary><pre></pre></details>`}
   </section>`;
 }
 
