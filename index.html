@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>line-charts — a modern bake-off of line-charting libraries</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+<style>
+  h1 { font-size: 32px; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .lede { font-size: 15px; color: var(--text-secondary); max-width: 74ch; }
+  h2 { font-size: 19px; letter-spacing: -0.01em; margin: 44px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 14px; }
+  .lib {
+    display: block; padding: 15px 16px; border: 1px solid var(--border);
+    border-radius: 12px; background: var(--surface); color: inherit;
+  }
+  .lib:hover { border-color: var(--accent); text-decoration: none; }
+  .lib h3 { margin: 0 0 3px; font-size: 15px; }
+  .lib p { margin: 0; font-size: 12.5px; color: var(--text-secondary); }
+  .lib .meta { margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+  .scroll { overflow-x: auto; }
+  ul.tight { margin: 8px 0; padding-left: 20px; font-size: 13.5px; color: var(--text-secondary); }
+  ul.tight li { margin: 3px 0; }
+  code { font-family: var(--font-mono); font-size: 0.92em; background: color-mix(in srgb, var(--text-primary) 6%, transparent); padding: 1px 4px; border-radius: 4px; }
+  .foot { margin: 60px 0 40px; font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="wrap" style="padding-top:30px">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+    <div>
+      <h1>line-charts</h1>
+      <p class="lede">
+        A 2026 bake-off of leading open-source line-charting libraries. Every library draws
+        the <strong>same four datasets</strong> with the <strong>same palette</strong>, so what you are
+        comparing is the library — its default quality, its API, how it handles real-world
+        messiness — and not someone's styling effort. View the source of each chart inline.
+      </p>
+    </div>
+    <button class="toggle"></button>
+  </div>
+
+  <p class="lede" style="margin-top:10px">
+    A modern rebuild of <a href="https://github.com/datopian/line-charts" target="_blank" rel="noopener">datopian/line-charts</a> (2016).
+    Zero build step — plain HTML + ES modules. Read <a href="./ANALYSIS.md">ANALYSIS.md</a> for method
+    and <a href="./EVALUATION.md">EVALUATION.md</a> for the verdict.
+  </p>
+
+  <h2>The libraries</h2>
+  <div class="grid">
+    <a class="lib" href="./demos/d3.html">
+      <h3>D3</h3><p>Low-level toolkit. The quality ceiling — you build every pixel.</p>
+      <div class="meta">~90 KB · ISC/BSD</div>
+    </a>
+    <a class="lib" href="./demos/observable-plot.html">
+      <h3>Observable Plot</h3><p>Concise grammar of graphics from D3's author. Great defaults.</p>
+      <div class="meta">~65 KB · ISC</div>
+    </a>
+    <a class="lib" href="./demos/vega-lite.html">
+      <h3>Vega-Lite</h3><p>Charts as declarative JSON specs you can lint and diff.</p>
+      <div class="meta">~320 KB · BSD-3</div>
+    </a>
+    <a class="lib" href="./demos/plotly.html">
+      <h3>Plotly.js</h3><p>Batteries-included. Zoom, pan, export, log toggle — all free.</p>
+      <div class="meta">~1.1 MB · MIT</div>
+    </a>
+    <a class="lib" href="./demos/chartjs.html">
+      <h3>Chart.js</h3><p>The popular default. Small, friendly, canvas, big plugin scene.</p>
+      <div class="meta">~70 KB · MIT</div>
+    </a>
+    <a class="lib" href="./demos/echarts.html">
+      <h3>Apache ECharts</h3><p>Production-hardened. Built-in dataZoom, SSR, huge-series modes.</p>
+      <div class="meta">~330 KB · Apache-2.0</div>
+    </a>
+    <a class="lib" href="./demos/uplot.html">
+      <h3>µPlot</h3><p>The performance option. ~18 KB, 100k+ points in milliseconds.</p>
+      <div class="meta">~18 KB · MIT</div>
+    </a>
+  </div>
+
+  <h2>Scorecard</h2>
+  <p style="font-size:13px;color:var(--text-secondary);margin:0 0 6px">
+    Subjective, 1–5, from building the four charts on this site. <span class="s5">5</span> = excellent,
+    <span class="s1">1–2</span> = weak. Full reasoning in <a href="./EVALUATION.md">EVALUATION.md</a>.
+  </p>
+  <div class="scroll">
+  <table class="scores">
+    <thead><tr>
+      <th>Library</th>
+      <th>Default<br>look</th>
+      <th>API<br>ergonomics</th>
+      <th>Custom<br>ceiling</th>
+      <th>Interactivity<br>(built-in)</th>
+      <th>Perf<br>(4k pts)</th>
+      <th>Bundle</th>
+      <th>A11y /<br>SSR</th>
+      <th>Docs /<br>ecosystem</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>D3</td><td class="s5">5</td><td class="s1">2</td><td class="s5">5</td><td>2*</td><td class="s5">5</td><td>4</td><td>4</td><td class="s5">5</td></tr>
+      <tr><td>Observable Plot</td><td class="s5">5</td><td class="s5">5</td><td>3</td><td>3</td><td>4</td><td>4</td><td>3</td><td>3</td></tr>
+      <tr><td>Vega-Lite</td><td>4</td><td class="s5">5</td><td>4</td><td>3</td><td>4</td><td class="s1">2</td><td>3</td><td>4</td></tr>
+      <tr><td>Plotly.js</td><td>3</td><td>4</td><td>3</td><td class="s5">5</td><td>4</td><td class="s1">1</td><td>3</td><td>4</td></tr>
+      <tr><td>Chart.js</td><td>3</td><td>4</td><td>3</td><td>4</td><td>3</td><td class="s5">5</td><td>3</td><td class="s5">5</td></tr>
+      <tr><td>Apache ECharts</td><td>4</td><td>3</td><td>4</td><td class="s5">5</td><td class="s5">5</td><td>3</td><td class="s5">5</td><td>4</td></tr>
+      <tr><td>µPlot</td><td>3</td><td>3</td><td class="s1">2</td><td>4</td><td class="s5">5</td><td class="s5">5</td><td class="s1">2</td><td>3</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted);margin-top:6px">
+    * D3 interactivity is 2 <em>out of the box</em> because there is no box — the crosshair on the D3 page is ~25 lines of hand-written code. Its ceiling is 5.
+  </p>
+
+  <h2>The four test charts</h2>
+  <ul class="tight">
+    <li><strong>CO₂ at Mauna Loa, monthly</strong> — one series with trend + seasonality, plus a deseasonalised overlay. ~800 points, non-zero y-axis. Real NOAA data.</li>
+    <li><strong>Electricity generation by source</strong> — five series, crossing lines, five-colour categorical legend.</li>
+    <li><strong>Life expectancy, five countries</strong> — deliberate missing years: does the line break or bridge? Wide value range, COVID dip.</li>
+    <li><strong>BTC-USD daily</strong> — ~4,000 noisy points. Render speed, zoom/pan, optional log scale.</li>
+  </ul>
+
+  <h2>Considered, not included (yet)</h2>
+  <ul class="tight">
+    <li><strong>Highcharts</strong> — excellent, but not free for commercial use (paid licence). Deliberately excluded; everything here is permissive OSS.</li>
+    <li><strong>Recharts / visx / Nivo / VisX</strong> — React-only; this site is framework-free. Worth a separate React-flavoured page.</li>
+    <li><strong>Vega (full)</strong> — the layer below Vega-Lite; more power, much more verbosity. Vega-Lite represents the family here.</li>
+    <li><strong>ApexCharts, Chartist, Frappe Charts, billboard.js</strong> — reasonable, but don't beat the seven above on any axis we care about.</li>
+    <li><strong>LightningChart JS, Plotly + WebGL, deck.gl</strong> — for &gt;1M points / GPU territory. Out of scope for "line charts for data stories and dashboards".</li>
+  </ul>
+
+  <p class="foot">
+    Palette is the validated categorical reference palette (colour-blind-safe, light + dark).
+    Add a library: copy <code>demos/uplot.html</code> + <code>demos/uplot.js</code>, swap the CDN and the four render functions, add a card here.
+  </p>
+
+</div>
+<script type="module">
+  import { installThemeToggle, restoreTheme } from "./assets/js/theme.js";
+  restoreTheme();
+  installThemeToggle(document.querySelector(".toggle"));
+</script>
+</body>
+</html>
