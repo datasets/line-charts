@@ -1,6 +1,8 @@
-/* Shared sample data for every demo. Four datasets, each chosen to
- * stress a different part of a line-charting library. Loaded once,
- * cached, and handed to every library in the same shape. */
+/* Shared sample data for every demo. Two datasets: the annotated hero
+ * chart (energy mix) and the gap-handling test (life expectancy). Loaded
+ * once, cached, and handed to every library in the same shape.
+ * co2-mauna-loa-monthly.csv and btc-usd-daily.csv are still in
+ * assets/data/ — their loaders are below, unused by the pages. */
 
 const asURL = (f) => new URL(`../data/${f}`, import.meta.url);
 
@@ -45,9 +47,7 @@ let _cache;
 
 export function loadAll() {
   if (_cache) return _cache;
-  _cache = Promise.all([loadCO2(), loadEnergy(), loadLife(), loadBTC()]).then(
-    ([co2, energy, life, btc]) => ({ co2, energy, life, btc })
-  );
+  _cache = Promise.all([loadEnergy(), loadLife()]).then(([energy, life]) => ({ energy, life }));
   return _cache;
 }
 
@@ -100,18 +100,27 @@ export async function loadBTC() {
   return rows.map((r) => ({ date: new Date(r.date + "T00:00:00Z"), close: num(r.close) }));
 }
 
-/* Metadata used to label the four cards identically on every page. */
+/* The hero chart's editorial furniture, identical in all seven libraries so
+ * the only variable is what each one costs to build. Every demo reads these
+ * numbers rather than hard-coding its own. */
+export const HERO = {
+  emphasis: ["wind", "solar"],          // full colour + weight
+  context: ["coal", "gas", "nuclear"],  // muted to one grey, told apart by their labels
+  yMax: 190,                            // fixed, so all seven share a frame
+  band: { x0: 2008, x1: 2009, label: "financial crisis", labelY: 181 },
+  ref: { y: 100, label: "100 TWh", labelX: 1997.3, labelY: 105 },
+  /* The annotation: text centred over a vertical leader that drops into the
+   * empty wedge above the crossover, so it never lands on a line and never
+   * runs off the right edge however narrow the chart gets. */
+  note: { text: "gas overtakes coal", x: 2011, textY: 158, from: 150, to: 106 },
+};
+
+/* Metadata used to label the cards identically on every page. */
 export const DATASETS = {
-  co2: {
-    title: "CO₂ at Mauna Loa — monthly",
-    desc: "Single series with a strong trend + seasonal wiggle, plus a deseasonalised overlay. ~800 points. Real NOAA data.",
-    stress: "Smooth curves, a second overlaid line, date axis, y-axis not starting at zero.",
-    x: "Year", y: "Parts per million",
-  },
-  energy: {
-    title: "Electricity generation by source",
-    desc: "Five series, 1997–2023, TWh. Synthetic but transition-shaped.",
-    stress: "Multi-series legend, five-colour categorical palette, series that cross.",
+  hero: {
+    title: "Wind and solar overtook coal — electricity generation by source",
+    desc: "The editorial test: direct end-of-line labels, an annotation with a leader line, a shaded event band, a dashed reference line, and two series emphasised against three muted ones.",
+    stress: "Annotation layer, text placement and collision, drawing behind the data, per-series emphasis, responsive labels.",
     x: "Year", y: "TWh",
   },
   life: {
@@ -119,11 +128,5 @@ export const DATASETS = {
     desc: "Five countries, 1960–2022, with deliberate missing years.",
     stress: "Gap handling (does the line break or bridge?), wide value range, COVID dip.",
     x: "Year", y: "Years",
-  },
-  btc: {
-    title: "BTC-USD daily close",
-    desc: "~4,000 daily points, synthetic geometric random walk with bubble/crash regimes.",
-    stress: "Performance at 4k points, noisy data, zoom/pan, optional log scale.",
-    x: "Date", y: "USD",
   },
 };
