@@ -127,6 +127,15 @@ a:hover { text-decoration: underline; }
 .src > summary::-webkit-details-marker { display: none; }
 .src > summary::before { content: "› "; color: var(--text-muted); }
 .src[open] > summary::before { content: "⌄ "; }
+
+/* the hero chart's source is always open, with its measured line count */
+.src--open > .src__head {
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.src--open > .src__head b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
 .src pre {
   margin: 0;
   padding: 14px 18px 18px;

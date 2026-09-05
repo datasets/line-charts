@@ -1,38 +1,63 @@
 # Evaluation
 
-The verdict from building 28 charts (7 libraries × 4 datasets) with identical data and an identical palette. Method is in [ANALYSIS.md](./ANALYSIS.md); the scorecard also lives on the [front page](./index.html). Scores are 1–5, subjective, from doing the actual building — not from documentation or reputation.
+The verdict from building one annotated, editorial-quality line chart in seven libraries, from identical data, identical geometry and an identical palette — plus a gap-handling test. Method is in [ANALYSIS.md](./ANALYSIS.md); what happened during the build, library by library, is in [docs/BUILD-NOTES.md](./docs/BUILD-NOTES.md). Scores are 1–5, subjective, and come from doing the building, not from documentation or reputation.
+
+## What was actually asked of each library
+
+Six things, all of them ordinary for a chart in a data story, none of them the thing library demos show off:
+
+1. Direct end-of-line labels, colour-matched, no legend.
+2. An annotation with a leader line pointing at the 2011 coal/gas crossover.
+3. A shaded 2008–09 band behind the lines, labelled.
+4. Wind and solar at full weight; coal, gas and nuclear muted to one grey.
+5. A dashed, labelled reference line at 100 TWh.
+6. None of it colliding or overflowing as the chart narrows.
+
+The previous version of this site drew four datasets that asked for none of that, and all seven libraries looked about equally good. They do not look equally good now.
 
 ## Scorecard
 
-| Library | Default look | API ergonomics | Custom ceiling | Interactivity (built-in) | Perf (4k pts) | Bundle | A11y / SSR | Docs / ecosystem |
+| Library | Hero lines | Annotation API | Direct labels | Got it right first try | Editorial result | Escape hatch | Bundle | Docs / ecosystem |
 |---|---|---|---|---|---|---|---|---|
-| D3 | 5 | 2 | 5 | 2* | 5 | 4 | 4 | 5 |
-| Observable Plot | 5 | 5 | 3 | 3 | 4 | 4 | 3 | 3 |
-| Vega-Lite | 4 | 5 | 4 | 3 | 4 | 2 | 3 | 4 |
-| Plotly.js | 3 | 4 | 3 | 5 | 4 | 1 | 3 | 4 |
-| Chart.js | 3 | 4 | 3 | 4 | 3 | 5 | 3 | 5 |
-| Apache ECharts | 4 | 3 | 4 | 5 | 5 | 3 | 5 | 4 |
-| µPlot | 3 | 3 | 2 | 4 | 5 | 5 | 2 | 3 |
+| D3 | 78 | 1 | 3 | 5 | 5 | 5 | 4 | 5 |
+| Observable Plot | **46** | 4 | 2 | 5 | 5 | 4 | 4 | 3 |
+| Vega-Lite | 66 | 3 | 2 | 2 | 4 | 3 | 2 | 4 |
+| Plotly.js | 60 | 5 | 2 | 3 | 4 | 2 | 1 | 4 |
+| Chart.js | 80 | 4\* | 1 | 3 | 4 | 3 | 4 | 5 |
+| Apache ECharts | 54 | 5 | **5** | 4 | 4 | 3 | 3 | 4 |
+| µPlot | 104 | 1 | 1 | 2 | 3 | 4 | 5 | 3 |
 
-\* D3 interactivity is 2 *out of the box* because there is no box — the crosshair tooltip on the D3 page is ~25 lines of hand-written code you'd write once and reuse. Its ceiling is 5: nothing is off-limits, you just pay for it in code.
+**Hero lines** is measured, not estimated: it is the `hero()` render function as the site displays it, via `Function.prototype.toString()`, and it is printed live under every hero chart and on the front page. It excludes the 17-line shared `spreadLabels()` helper (five of the seven need it), the shared geometry constants, and the chart title, which is card HTML for all seven equally.
+
+**Annotation API** — is a band, a reference line, a leader line with an arrowhead and a free-floating text label part of the library? \* Chart.js scores 4 only with `chartjs-plugin-annotation`, a separate ~30 KB dependency; without it, 1.
+
+**Direct labels** — end-of-line labels, and whether the library keeps them from overlapping. Only ECharts does both.
+
+**Got it right first try** — how much the library fought back between "the code looks right" and "the chart is right".
+
+**Escape hatch** — when the API runs out, how far down can you go and how much of the chart do you keep?
 
 ## Recommendation
 
-**Default choice: Observable Plot.** For a data story or a one-off analytical chart, it produced the best-looking chart per line of code of anything tested. The grammar (`Plot.lineY`, channels, `Plot.tip`) reads close to how you'd describe the chart out loud, gap handling and axis formatting are sane defaults, and at ~65 KB it's cheap to ship. The ceiling is lower than D3's — this is the deliberate trade Plot makes — but for line/area/dot charts on tabular data it rarely bites.
+**For a data story or a one-off editorial chart: Observable Plot.** 46 lines, the fewest of the seven, and it rendered correctly the first time. Annotation is not a subsystem you have to hope is supported — the band is a `rect` mark, the reference line a `ruleY`, the labels `text`, and the leader line a real `Plot.arrow` with a head on it, so all of it composes with the data marks and mark order is z-order. It is ~65 KB, and it is a genuinely small amount of code for a chart that looks published. The catch is requirement 1: Plot has no label layout, so end labels need de-collision you write yourself.
 
-**When you need a published, diffable spec: Vega-Lite.** If charts are going to live in a CMS, a notebook, or anywhere non-developers author or review them, being able to say "the chart *is* this JSON" is worth the extra ~250 KB over Plot. It was the highest-rated option in the original 2016 shortlist and still holds up — the API ergonomics here are excellent (`energy` and `life` are each under 15 lines), though anything beyond a tooltip (linked brushing, custom interactions) gets verbose fast.
+**If the chart has to work without you watching it: Apache ECharts.** 54 lines, and the only library in the set that treats direct labels as a real feature: `series.endLabel` puts a colour-matched label at the end of every line, and `labelLayout: { moveOverlap: "shiftY" }` pulls them apart when the data changes and two of them land on the same pixel. Everything else — `markArea`, `markLine`, `markPoint` — is first-class too. Where Plot needs you to notice a collision, ECharts survives data you haven't seen. That, plus SSR, dataZoom and progressive rendering, is why it is the pick for a dashboard rather than a story.
 
-**When the chart needs to *do* things: Plotly.js or Apache ECharts.** Plotly wins on interaction density with zero configuration — zoom, pan, box-select, spike lines, PNG export, a log-scale toggle, all free, all four charts. Pay for it in weight (~1.1 MB) and a more "analysis tool" than "publication" default look. ECharts is the more production-grade sibling: `dataZoom` (drag-slider + inside-scroll) took one array entry, SSR and progressive rendering exist for genuinely huge series, and it's the only library here that scored 5 on both interactivity *and* performance. Choose Plotly for exploratory/scientific tooling, ECharts for a dashboard that has to survive production traffic and non-trivial data volumes.
+**If you need the annotation to be exact: Plotly.js.** The only library where the leader line, its arrowhead, its length and its attachment to the text are all handled for you: one `layout.annotations` entry pointed at a data coordinate with the text offset in pixels. `shapes` with `layer: "below"` cover the band and the reference line. It is 60 lines and the annotation model is the best-designed here — you just pay ~1.1 MB for it, and its idea of a default look is "analysis tool", so you will spend some of those lines undoing it.
 
-**When bundle size or a tight deadline dominates: Chart.js.** It is still the right default for "a line chart, quickly, that a junior dev can maintain." The API is the friendliest of the seven, docs and Stack Overflow coverage are unmatched, and 70 KB with a huge plugin ecosystem (zoom, annotations, financial charts) covers most real needs. It won't produce the most striking chart on this page, but it will produce a correct one fastest.
+**If the chart is a document: Vega-Lite.** The spec is still the strongest argument in this set — a chart you can lint, diff, store in a CMS and hand to someone who does not write JavaScript — and emphasis is more elegant here than anywhere else (three encoding scales over one line layer, rather than five copies of a mark). But an annotated chart is a stack of layers, each repeating the same scale domains, and it fought harder than anything except µPlot: layers do not share a scale unless every layer says so, and the axis is merged from the first layer that asks for one, so `axis: null` in the wrong place silently deletes both axes. It is also the only library that could not draw a real arrowhead; the leader's head is a triangle mark placed at the tip, which reads correctly but does not rotate.
 
-**When the point count is the whole problem: µPlot.** At ~18 KB and rendering ~4,000 points with room to spare, µPlot is what you reach for once another library's overhead becomes the bottleneck — a live-updating dashboard, a 100k-point sensor trace. Everything about it is spartan: no curve smoothing to speak of, minimal styling hooks, plugins for anything beyond a line + cursor + legend. Don't reach for it unless perf is actually the constraint.
+**If you already have Chart.js: keep it, and add the plugin.** `chartjs-plugin-annotation` covers five of the six requirements cleanly, including a proper arrowhead. The sixth is a cliff: there is no end-of-line label in Chart.js or in the plugin, so 18 of its 80 lines are a hand-written canvas plugin calling `ctx.fillText` at scale pixels — text that cannot be inspected, selected or restyled afterwards. That is the honest shape of Chart.js: the friendliest config object of the seven right up to the point where an editorial chart begins, and then a canvas.
 
-**When nothing else will do: D3.** The quality ceiling and the pain are the same fact. Every chart on the D3 page was built from scratch — scales, axes, gridlines, a hand-rolled crosshair — and every pixel is legible in the source panel because there's no library default hiding behind it. Right choice for a bespoke, branded, one-of-a-kind visualization; wrong choice for "we need eight line charts in a dashboard by Friday."
+**If the point count is the whole problem: µPlot, and budget for it.** 104 lines, 2.3× Observable Plot, because µPlot has no annotation model at all — no band, no reference line, no label, no arrow, not even a text primitive. All of it is canvas code in two draw hooks, in device pixels, re-run on every redraw, with nothing left behind that you can hit-test or restyle. It also drew this chart in ~4 ms against ECharts' ~80, in 18 KB against ECharts' 330. Both of those facts are true and the second one is why you would still choose it — for a live-updating trace, not for a chart with things written on it.
+
+**When the chart is the product: D3.** 78 lines, and every one of them visible: scales, axes, gridlines, band, reference line, leader, a three-point arrowhead path, six labels. That is 1.7× Observable Plot for the same picture, and it worked the first time, because nothing was negotiating with a default. The result is the sharpest of the seven at full size. It is also the only library where "draw the band behind the lines" required no thought at all — you append it first. Right answer for a bespoke, branded, one-of-a-kind chart; wrong answer for eight dashboard charts by Friday.
 
 ## What surprised us
 
-- **Gap handling is not free almost anywhere.** Only Observable Plot breaks a line at a `null` y-value with zero configuration. Every other library needs an explicit flag (D3's `.defined()`, Chart.js's `spanGaps: false`, Plotly's `connectgaps: false`, ECharts's `connectNulls: false`, µPlot's `spanGaps: false`) — miss it and a real missing-data gap silently becomes a straight line bridging two known points, which is a genuinely misleading default to ship.
-- **Categorical legends, not end-of-line labels, for 5+ series.** End labels looked elegant in early drafts but collided whenever two series converged (life expectancy: US and China both land near 78 years by 2022) — a legend is the only version that doesn't quietly break depending on what the data does that year.
-- **"Batteries included" and "small" are opposites here**, almost exactly in proportion: Plotly (1.1 MB) and ECharts (330 KB) do the most for free; µPlot (18 KB) and Chart.js (70 KB) do the least. There is no library in this set that is both small and fully-loaded — that trade-off looks structural, not a gap someone forgot to fill.
-- **Bundle size dwarfs render time at these scales.** Every library here draws ~4,000 points in under 30 ms; the real cost difference between a 18 KB and a 1.1 MB library is entirely load time, not paint time, until you're well past what's tested here.
+- **Almost nobody lays out end-of-line labels.** ECharts is the only library of the seven that will place a label at the end of a line *and* keep it from colliding with the next one. Five of the others needed the same hand-written de-collision pass; Chart.js needed a bespoke canvas plugin to get a label there at all. This is requirement 1 of the most common editorial line chart there is, and six out of seven libraries treat it as your problem.
+- **An arrowhead is a surprisingly good proxy for how seriously a library takes annotation.** Free and correct in Plotly and ECharts, free via the plugin in Chart.js, a first-class mark in Observable Plot, twelve characters of SVG path in D3, hand-drawn on canvas in µPlot — and simply unavailable in Vega-Lite, where the best honest answer is a triangle mark that does not rotate with the line it terminates.
+- **Silent failures cost more than missing features.** The single longest bug in the build was µPlot's: `u.pxRatio` does not exist in 1.6.32, so every scaled value was `NaN`, and `NaN` in canvas does not throw — `moveTo` quietly draws nothing and an invalid `font` string quietly keeps the previous font. The chart came out with labels at the wrong size and no leader line, and no error anywhere. A missing feature is a decision; a silent `NaN` is an afternoon.
+- **Compact to write is not the same as quick to get right.** Vega-Lite's hero spec is 66 lines — fewer than D3's 78 — and took nearly twice as long, all of it spent on two layering rules that produce a wrong chart rather than an error. D3, with no annotation API at all and the most code, was right the first time.
+- **Render time is not a differentiator and never looked like one.** The identical chart: µPlot ~4 ms, D3 ~7 ms, Observable Plot ~20 ms, Chart.js ~50 ms, Plotly ~70 ms, Vega-Lite ~75 ms, ECharts ~80 ms. All of it is imperceptible at this size. What actually differs by two orders of magnitude is bundle size, from 18 KB to 1.1 MB — a load-time cost, not a paint-time one.
+- **Gap handling is still not free.** From the second chart, kept from v1 because it produced the sharpest finding there: only Observable Plot breaks a line at a `null` with zero configuration. D3 needs `.defined()`, Chart.js `spanGaps: false`, Plotly `connectgaps: false`, ECharts `connectNulls: false`, µPlot `spanGaps: false`, and Vega-Lite bridges the gap even when the null rows are handed to it intact, because its default invalid-data handling filters them out of the path. Miss the flag and missing data silently becomes a straight line between two real points.
