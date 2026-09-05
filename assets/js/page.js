@@ -78,6 +78,13 @@ export async function mountDemo({ meta, charts }) {
 
   renderAll();
   onThemeChange(renderAll);
+  // an embedded page reports its own height so the grid can size the iframe
+  if (bare && parent !== window) {
+    const post = () =>
+      parent.postMessage({ type: "lc:size", height: Math.ceil(root.getBoundingClientRect().height) }, "*");
+    new ResizeObserver(post).observe(root);
+    post();
+  }
   let t;
   addEventListener("resize", () => {
     clearTimeout(t);
@@ -89,7 +96,7 @@ export async function mountDemo({ meta, charts }) {
 
 function shell(meta, keys, bare) {
   if (bare) {
-    return `<main class="wrap" style="padding:12px 14px">
+    return `<main style="padding:0">
       ${keys.map((k) => cardHTML(k, true)).join("")}
     </main>`;
   }
@@ -121,6 +128,16 @@ function shell(meta, keys, bare) {
 function cardHTML(key, bare = false) {
   const d = DATASETS[key];
   const hero = key === "hero";
+  /* Embedded in the front-page grid the card is only the chart: the grid
+   * already says which library and which dataset this is. The timing badge
+   * stays, because seeing it per cell is half the point of a live grid. */
+  if (bare) {
+    return `
+    <section class="card" data-card="${key}" style="border:0;background:transparent">
+      <div class="chart-host" style="min-height:0;padding:4px 10px 0"></div>
+      <p style="margin:2px 10px 6px;text-align:right"><span class="metric">rendered <b>—</b></span></p>
+    </section>`;
+  }
   // the hero chart's source is the point of the site, so it is open by
   // default with its measured line count in the header; the rest disclose.
   const source = hero

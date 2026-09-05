@@ -43,17 +43,20 @@ function mkFrame(host, { xDomain, yDomain, xScale = "time", xFormat, yNice = tru
   return { svg, x, y, width, height, m };
 }
 
-/* Simple top-left swatch legend — reused by the multi-series cards. */
-function drawLegend(svg, names, palette) {
-  const g = svg.append("g").attr("transform", "translate(46,8)");
-  let x = 0;
+/* Simple top-left swatch legend, wrapping onto a second row when the card
+ * is too narrow to hold it — reused by the multi-series cards. */
+function drawLegend(svg, names, palette, width) {
+  const g = svg.append("g").attr("transform", "translate(46,6)");
+  let x = 0, row = 0;
   names.forEach((name, i) => {
-    const item = g.append("g").attr("transform", `translate(${x},0)`);
+    const w = 18 + name.length * 6.6 + 14;
+    if (x && x + w > width - 60) { x = 0; row++; }
+    const item = g.append("g").attr("transform", `translate(${x},${row * 14})`);
     item.append("line").attr("x1", 0).attr("x2", 14).attr("y1", 0).attr("y2", 0)
       .attr("stroke", palette[i % palette.length]).attr("stroke-width", 2.5);
     item.append("text").attr("x", 18).attr("dy", "0.32em")
       .attr("fill", window.__lcTheme.textSecondary).attr("font-size", 11).text(name);
-    x += 18 + name.length * 6.6 + 14;
+    x += w;
   });
 }
 
@@ -156,12 +159,13 @@ mountDemo({
         name,
         values: life.wide.map((r) => ({ year: r.year, v: r[name] })),
       }));
-      const { svg, x, y } = mkFrame(host, {
+      const { svg, x, y, width } = mkFrame(host, {
         xScale: "linear",
         xFormat: d3.format("d"),
         xDomain: d3.extent(life.years),
         yDomain: [35, 88],
         yNice: false,
+        pad: { top: 34 },
       });
       // .defined() is how D3 breaks the line across missing years
       const line = d3
@@ -178,7 +182,7 @@ mountDemo({
           .attr("stroke", theme.palette[i]).attr("stroke-width", 1).attr("stroke-dasharray", "2 3")
           .attr("stroke-opacity", 0.4).attr("d", d3.line().x((d) => x(d.year)).y((d) => y(d.v)));
       });
-      drawLegend(svg, life.countries, theme.palette);
+      drawLegend(svg, life.countries, theme.palette, width);
     },
   },
 });
