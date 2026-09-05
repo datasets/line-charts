@@ -90,6 +90,7 @@ mountDemo({
         base(theme, {
           year: true,
           legend: true,
+          width: host.clientWidth || 440,
           y: { label: null, grid: true, domain: [35, 88] },
           marks: [
             Plot.lineY(life.long, { x: "year", y: "value", stroke: "country", strokeWidth: 2, curve: "monotone-x" }),

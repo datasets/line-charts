@@ -20,7 +20,7 @@ const embed = (host, spec, theme) =>
     },
   });
 
-const W = 420, H = 290;
+const H = 290;
 
 // hero charts size to the card and stay in a readable band of heights
 const heroBox = (host) => {
@@ -112,7 +112,8 @@ mountDemo({
     life(host, { life }, { theme }) {
       return embed(host, {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        width: W, height: H, data: { values: life.long.filter((d) => d.value != null) },
+        width: Math.max((host.clientWidth || 480) - 90, 300), height: H,
+        data: { values: life.long },
         mark: { type: "line", strokeWidth: 2, interpolate: "monotone", tooltip: true },
         encoding: {
           x: { field: "year", type: "quantitative", title: null, axis: { format: "d" } },
@@ -120,7 +121,8 @@ mountDemo({
           color: { field: "country", type: "nominal", title: null, legend: { orient: "bottom-right" } },
         },
       }, theme);
-      // note: rows for missing years are dropped, so the line bridges the gap.
+      // the null rows are handed to Vega-Lite intact, and it bridges the gaps
+      // anyway: its default invalid-data handling filters them out of the path.
     },
   },
 });
