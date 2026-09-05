@@ -85,7 +85,10 @@ function shell(meta, keys, bare) {
   return `
   <header class="wrap" style="padding-top:22px;padding-bottom:10px">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-      <a href="../index.html" style="font-size:13px;color:var(--text-secondary)">← all libraries</a>
+      <div style="display:flex;gap:14px;align-items:center">
+        <a href="../index.html" style="font-size:13px;color:var(--text-secondary)">← all libraries</a>
+        <a href="../changelog.html" style="font-size:13px;color:var(--text-secondary)">Changelog</a>
+      </div>
       <button class="toggle"></button>
     </div>
     <h1 style="margin:14px 0 4px;font-size:26px;letter-spacing:-0.02em">${meta.name}

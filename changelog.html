@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="What shipped in the line-charts bake-off, newest first — one entry per work session.">
+<link rel="canonical" href="https://linecharts.datahub.io/changelog">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="line-charts">
+<meta property="og:url" content="https://linecharts.datahub.io/changelog">
+<meta property="og:title" content="Changelog — line-charts">
+<meta property="og:description" content="What shipped in the line-charts bake-off, newest first.">
+<meta property="og:image" content="https://linecharts.datahub.io/assets/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Changelog — line-charts">
+<meta name="twitter:description" content="What shipped in the line-charts bake-off, newest first.">
+<meta name="twitter:image" content="https://linecharts.datahub.io/assets/og/home.png">
+<title>Changelog — line-charts</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+<style>
+  h1 { font-size: 32px; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .lede { font-size: 15px; color: var(--text-secondary); max-width: 74ch; }
+  .entry { border-top: 1px solid var(--border); padding: 26px 0; max-width: 78ch; }
+  .entry:first-of-type { border-top: none; }
+  .entry time { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .entry h2 { font-size: 19px; letter-spacing: -0.01em; margin: 4px 0 10px; }
+  .entry h2 a { color: var(--text-primary); }
+  .entry h2 a:hover { color: var(--accent); }
+  .entry h3 { font-size: 15px; margin: 18px 0 6px; }
+  .entry p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 8px 0; }
+  .entry ul { font-size: 14px; color: var(--text-secondary); line-height: 1.6; padding-left: 20px; margin: 8px 0; }
+  .entry li { margin: 4px 0; }
+  .entry code { font-family: var(--font-mono); font-size: 0.92em; background: color-mix(in srgb, var(--text-primary) 6%, transparent); padding: 1px 4px; border-radius: 4px; }
+  .entry img { border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; max-width: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap" style="padding-top:30px">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+    <div>
+      <a href="./index.html" style="font-size:13px;color:var(--text-secondary)">← all libraries</a>
+      <h1 style="margin-top:12px">Changelog</h1>
+      <p class="lede">What shipped in the line-charts bake-off, newest first — one entry per work session. Source: the <a href="https://github.com/datasets/line-charts/tree/main/changelog" target="_blank" rel="noopener">changelog/</a> folder.</p>
+    </div>
+    <button class="toggle"></button>
+  </div>
+
+  <div id="entries" style="margin-top:30px"></div>
+
+</div>
+
+<script type="module" src="./assets/js/changelog.js"></script>
+</body>
+</html>
