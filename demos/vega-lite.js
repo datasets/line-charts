@@ -47,8 +47,8 @@ mountDemo({
       "Loaded as three UMD scripts (~320 KB together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file, apart from the inline data. Custom tick formats from the shared specs are registered once as Vega expression functions and named by <code>formatType</code>.",
     cardNotes: {
       hero: "A stack of layers, one per kind of annotation, each with its own inline data. Bands, zero rule, leaders (a <code>rule</code> with <code>x2</code>/<code>y2</code>), dots and multi-line text (an array of lines) are all native; per-callout alignment is not a channel, so it is an <code>expr</code> on the mark. No label layout: end labels are de-collided by hand (<code>spreadLabels</code>).",
-      grid: "GRID_NOTE",
-      npm: "NPM_NOTE",
+      grid: "Zoom and pan are one param (<code>bind: \"scales\"</code>: wheel, drag, double-click resets) and the crosshair tooltip another (<code>nearest: true</code>), but there is no minimum span, so you can zoom past one week. No built-in decimation, and Vega re-runs and redraws everything per frame: full resolution painted in 17.8 s (twice), hourly 7.1–8.8 s, so this draws the daily means (0.35–0.44 s), which flatten the solar peak to 5,444 MW of a true 16,289.",
+      npm: "Hover-highlighting a whole line is declarative: a nearest-point param that selects by <code>package</code>, used as a condition on opacity and width. The index is three transforms (<code>filter</code>, <code>window</code> <code>first_value</code>, <code>calculate</code>); small multiples are <code>facet</code> + <code>columns</code> with a shared log y. End labels still need de-collision by hand, outside the spec.",
     },
   },
   charts: {
@@ -130,7 +130,7 @@ mountDemo({
             transform: [{ fold: labels, as: ["series", "mw"] }],
             mark: { type: "line", strokeWidth: 1, clip: true },
             encoding: {
-              x: { ...x, axis: { grid: false, tickCount: 10 } },
+              x: { ...x, axis: { grid: false } },
               y: { field: "mw", type: "quantitative", title: null, scale: { domain: GRID.y.domain },
                 axis: { values: GRID.y.ticks, formatType: fmt("gridY", GRID.y.format) } },
               color: { field: "series", type: "nominal", title: null, legend: { orient: "top", offset: 6 },
@@ -156,6 +156,88 @@ mountDemo({
             encoding: { x: { field: "date", type: "temporal" }, y: { field: "y", type: "quantitative" }, text: { field: "label" } } },
         ],
       }, theme, { renderer: "canvas" });
+    },
+
+    npm(host, { npm }, { theme, report }) {
+      const w = host.clientWidth || 640;
+      const seven = new Map(NPM.seven.map((s) => [s.key, s]));
+      // greys first in the colour domain, so the seven draw on top
+      const order = [...npm.keys.filter((k) => !seven.has(k)), ...seven.keys()];
+      const color = { field: "package", type: "nominal", legend: null, scale: { domain: order,
+        range: order.map((k) => ink(theme, seven.get(k)?.color ?? NPM.others.color)) } };
+      // per-row style (scale: null = use the value as is) and display name
+      const rows = npm.rows.map((d) => ({ ...d, name: seven.get(d.package)?.label ?? d.package,
+        op: seven.has(d.package) ? 1 : NPM.others.opacity, sw: seven.has(d.package) ? 1.75 : NPM.others.width }));
+      const x = { field: "week", type: "temporal", title: null, scale: { type: "utc" }, axis: { grid: false } };
+
+      const lines = (out, indexed) => {
+        const Y = indexed ? NPM.index : NPM.y, yField = indexed ? "index" : "downloads";
+        const h = NPM.height(w), pad = { top: 8, right: 96, bottom: 24, left: 44 };
+        const base = npm.weeks.findIndex((d) => +d === Date.parse(NPM.index.date));
+        const last = (k) => (indexed ? (100 * npm.cols[k].at(-1)) / npm.cols[k][base] : npm.cols[k].at(-1));
+        const [lo, hi] = Y.domain.map(Math.log10);
+        const ends = spreadLabels([...seven.keys(), ...NPM.alsoLabel].map((k) => ({ k, value: last(k), v: Math.log10(last(k)) })),
+          (12 * (hi - lo)) / (h - pad.top - pad.bottom), [lo, hi])
+          .map((d) => ({ package: d.k, week: npm.weeks.at(-1), [yField]: 10 ** d.v,
+            text: (indexed ? NPM.index : NPM).endLabel(seven.get(d.k) ?? { label: d.k }, d.value) }));
+        const y = { field: yField, type: "quantitative", title: null, scale: { type: "log", domain: Y.domain },
+          axis: { values: Y.ticks, formatType: fmt(indexed ? "npmIndex" : "npmY", Y.format) } };
+        return embed(out, {
+          width: w - pad.left - pad.right, height: h - pad.top - pad.bottom, padding: pad, autosize: { type: "none" },
+          layer: [
+            ...(indexed ? [{ data: { values: [{ v: 100 }] }, mark: { type: "rule", stroke: theme.muted },
+              encoding: { y: { field: "v", type: "quantitative" } } }] : []),
+            {
+              data: { values: rows },
+              // the index: from the base week on, each package ÷ its first value × 100
+              transform: indexed ? [
+                { filter: `datum.week >= toDate('${NPM.index.date}')` },
+                { window: [{ op: "first_value", field: "downloads", as: "base" }], groupby: ["package"], sort: [{ field: "week" }] },
+                { calculate: "100 * datum.downloads / datum.base", as: "index" },
+              ] : [],
+              layer: [
+                { mark: { type: "line", clip: true },
+                  encoding: { x, y, color,
+                    // hover dims every line but the selected package
+                    opacity: { condition: { param: "hl", field: "op", type: "quantitative", scale: null }, value: 0.12 },
+                    strokeWidth: { condition: { param: "hl", empty: false, value: 2.5 }, field: "sw", type: "quantitative", scale: null } } },
+                { mark: { type: "point", opacity: 0, clip: true },   // invisible: carries the nearest-point hover
+                  params: [{ name: "hl", select: { type: "point", fields: ["package"], nearest: true, on: "pointerover", clear: "pointerout" } }],
+                  encoding: { x, y, tooltip: [{ field: "name", title: "Package" }, { field: "week", type: "temporal", title: "Week of", format: "%d %b %Y" },
+                    { field: yField, type: "quantitative", title: indexed ? "Index" : "Downloads", format: ",.0f" }] } },
+              ],
+            },
+            { data: { values: ends }, mark: { type: "text", align: "left", dx: 6, fontWeight: 600 },
+              encoding: { x, y: { field: yField, type: "quantitative" }, text: { field: "text" }, color } },
+          ],
+        }, theme);
+      };
+
+      const multiples = (out) => {
+        const cols = NPM.multiples.columns(w), gap = 12, axisW = 40;
+        return embed(out, {
+          data: { values: rows.filter((d) => seven.has(d.package)) },
+          facet: { field: "name", type: "nominal", sort: NPM.seven.map((s) => s.label), title: null,
+            header: { labelAnchor: "start", labelFontWeight: 600, labelColor: theme.text, labelFontSize: 11, labelPadding: 2 } },
+          columns: cols, spacing: { column: gap, row: 10 },
+          spec: {
+            width: Math.floor((w - axisW - 8 - gap * (cols - 1)) / cols), height: NPM.multiples.height - 22,
+            mark: { type: "line", strokeWidth: 1.25, clip: true },
+            encoding: { x: { ...x, axis: { tickCount: 3, grid: false } }, color,
+              y: { field: "downloads", type: "quantitative", title: null, scale: { type: "log", domain: NPM.y.domain },
+                axis: { values: NPM.y.ticks.filter((_, i) => i % 2 === 0), formatType: fmt("npmY", NPM.y.format) } } },
+          },
+        }, theme);
+      };
+
+      report({ points: npm.rows.filter((d) => d.downloads != null).length, step: "full" });
+      let first;   // embed is async: resolve once the first view has drawn, so the badge is honest
+      const cleanup = viewSwitch(host, { all: "All 22", indexed: "Indexed", multiples: "Small multiples" }, (v, out) => {
+        const shown = v === "multiples" ? multiples(out) : lines(out, v === "indexed");
+        first ??= shown;
+        return () => shown.then((finalize) => finalize());
+      });
+      return first.then(() => cleanup);
     },
 
     life(host, { life }, { theme }) {
