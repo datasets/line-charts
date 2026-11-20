@@ -35,13 +35,13 @@ const baseOption = (theme, extra) => ({
 mountDemo({
   meta: {
     name: "Apache ECharts",
-    version: "5.6.0",
+    version: "6.1.0",
     bundleKB: 330,
     license: "Apache-2.0",
     tagline:
       "Production-hardened, Apache-governed, used at very large scale. Canvas or SVG renderer, built-in dataZoom, rich tooltips, progressive rendering for huge series, and SSR. The option object gets deep and imperative for elaborate charts, and the house style needs taming, but the annotation layer — markArea, markLine, markPoint, endLabel — is the most complete here, and it is the safest pick for a heavy-duty dashboard.",
     docs: "https://echarts.apache.org/en/option.html",
-    cdn: "https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js",
+    cdn: "https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js",
     notes:
       "Full build via UMD, SVG renderer for parity with the others (Canvas is the default and is faster on very large series). Every piece of the hero chart's furniture is a first-class option: <code>series.endLabel</code> for the direct labels, <code>markArea</code> for the band, <code>markLine</code> for the reference line and the leader, <code>markPoint</code> for the annotation text.",
   },

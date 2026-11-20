@@ -26,7 +26,7 @@ const heroBox = (host) => {
 mountDemo({
   meta: {
     name: "Observable Plot",
-    version: "0.6.17",
+    version: "0.6.19",
     bundleKB: 65,
     license: "ISC",
     tagline:

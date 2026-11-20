@@ -39,13 +39,13 @@ const common = (theme, scales) => ({
 mountDemo({
   meta: {
     name: "Chart.js",
-    version: "4.5.1",
+    version: "4.6.1",
     bundleKB: 70,
     license: "MIT",
     tagline:
       "The popular default. Canvas-rendered, small, friendly config object, good docs, huge plugin ecosystem. The editorial furniture is all there — but only via chartjs-plugin-annotation, a separate 30 KB dependency, and with one gap: there is no end-of-line label, so the direct labels are one plugin label per series, which the plugin places but does not keep apart.",
     docs: "https://www.chartjs.org/docs/latest/",
-    cdn: "https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js",
+    cdn: "https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.js",
     notes:
       "Core build + <code>chartjs-plugin-annotation@3.1.0</code> (~30 KB) for the band, the reference line, the leader line with its arrowhead, the annotation text and the end-of-line labels. The end labels are <code>type: \"label\"</code> annotations at the last x value, with the plugin's <code>clip</code> turned off so they can sit in the right-hand padding, de-collided by the shared <code>spreadLabels()</code> helper like the other libraries.",
   },

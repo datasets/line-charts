@@ -30,13 +30,13 @@ const heroBox = (host) => {
 mountDemo({
   meta: {
     name: "Plotly.js",
-    version: "3.7.0",
+    version: "4.3.0",
     bundleKB: 1100,
     license: "MIT",
     tagline:
       "Batteries-included scientific charting. Zoom, pan, box-select, hover, spike lines and PNG export work with zero configuration, and the annotation model — shapes for furniture, annotations for text with real arrows — is the closest thing here to a drawing layer that understands data coordinates. The trade-off is weight (~1 MB gzipped) and defaults that look more 'analysis tool' than 'publication'.",
     docs: "https://plotly.com/javascript/",
-    cdn: "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@3.7.0/plotly.min.js",
+    cdn: "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@4.3.0/plotly.min.js",
     notes:
       "Using the full <code>plotly.js-dist-min</code> for convenience. In the hero chart the band and the reference line are <code>layout.shapes</code>, the annotation is a single <code>layout.annotations</code> entry with <code>showarrow</code> (Plotly draws the leader and the arrowhead), and the end-of-line labels are arrowless annotations — Plotly does not lay those out for you, so they go through the shared <code>spreadLabels()</code> helper.",
   },

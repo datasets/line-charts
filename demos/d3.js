@@ -63,7 +63,7 @@ function drawLegend(svg, names, palette, width) {
 mountDemo({
   meta: {
     name: "D3",
-    version: "7.9.0",
+    version: "7.9.2",
     bundleKB: 90,
     license: "ISC / BSD",
     tagline:

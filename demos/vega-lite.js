@@ -32,13 +32,13 @@ const heroBox = (host) => {
 mountDemo({
   meta: {
     name: "Vega-Lite",
-    version: "5.23.0",
+    version: "6.5.0",
     bundleKB: 320,
     license: "BSD-3",
     tagline:
       "A high-level declarative grammar: charts are JSON specs, compiled to full Vega then to SVG/Canvas. Extremely little code for standard charts, and a real published spec you can lint and diff. An annotated editorial chart is entirely possible but turns into a tall stack of layers, each with its own inline datum — and there is no arrow mark, so the leader line's head is a triangle point mark, rotated with its <code>angle</code> property.",
     docs: "https://vega.github.io/vega-lite/",
-    cdn: "https://cdn.jsdelivr.net/npm/vega-lite@5.23.0/build/vega-lite.min.js",
+    cdn: "https://cdn.jsdelivr.net/npm/vega-lite@6.5.0/build/vega-lite.min.js",
     notes:
       "Loaded as three UMD scripts (~320 KB together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file. In the hero spec, emphasis is done with three encoding scales (colour, size, opacity) over the same line layer rather than five separate layers.",
   },
