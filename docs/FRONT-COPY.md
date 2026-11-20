@@ -18,7 +18,7 @@ Ranked for someone choosing one library in 2026 for a website or an app, with no
 
 1. **Apache ECharts**: use it when you want one library for everything, from an annotated story chart to a 1.25M-point dashboard. Chips: `all three tests met, mostly as options` · `1.25M pts in 163 ms, zoom + slider built in` · `end labels laid out for you` · `368 KB gzipped`
 2. **Observable Plot**: use it when the chart is going into an article, a report or a static page. Chips: `44 lines, the fewest` · `renders to static SVG at build time` · `no zoom or pan` · `drew 26k of 1.25M points`
-3. **D3**: use it when the chart is the product, or the team already writes D3. Chips: `1.25M pts on canvas in 173 ms` · `everything met, everything by hand` · `60/100/100 lines, 1.4 to 3× Plot`
+3. **D3**: use it when the chart is the product, or the team already writes D3. Chips: `1.25M pts on canvas in 173 ms` · `everything met, everything by hand` · `60/100/100 lines, 1.3 to 3× Plot`
 4. **Plotly.js**: use it when you want callouts as single objects and zoom in config, and can pay 1.5 MB. Chips: `best callout model: one object each` · `1.25M pts in 1.7 s via scattergl` · `hover 1 to 1.8 s per move until tuned` · `1.48 MB gzipped`
 5. **µPlot**: use it when speed and size are the whole problem. Chips: `1.25M pts in 44 ms` · `22 KB` · `no annotation model` · `wheel zoom and pan are hooks you write`
 6. **Chart.js**: use it when you already use it. Chips: `all met, 1.25M pts in 236 ms` · `five extra scripts to get there` · `70 lines on the oil chart, the most` · `draw order is upside down`

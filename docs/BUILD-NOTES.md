@@ -110,7 +110,7 @@ The subtle part is the tooltip. After decimation the four datasets no longer sha
 
 ## Apache ECharts (6.1.0)
 
-Canvas renderer, the default, for all three tests. A 25-line `houseStyle()` theme object, passed to `echarts.init()`, sets axis, tooltip, legend and dataZoom colours and is not counted. Without it each chart would need roughly 8–15 more lines.
+Canvas renderer, the default, for all three tests. A 24-line `houseStyle()` theme object, passed to `echarts.init()`, sets axis, tooltip, legend and dataZoom colours and is not counted. Without it each chart would need roughly 8–15 more lines.
 
 **Oil, 51 lines, 123–130 ms.** Every piece of furniture is a first-class option. End labels are `series.endLabel` with `labelLayout: { moveOverlap: "shiftY" }`: ECharts is the only one of the seven that de-collides labels itself, so it does not use `spreadLabels`. Callouts are `markPoint` items for dots and text and `markLine` coordinate pairs for leaders; bands are `markArea`. Explicit ticks need `customValues` on both `axisLabel` and `axisTick`, and it is the second that moves the grid lines, which is not obvious. Annotation z-order is per series, so bands ride on WTI and callouts on Brent.
 

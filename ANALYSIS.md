@@ -49,7 +49,7 @@ Life expectancy for five countries, 1960–2022, with deliberate missing years. 
 
 ## Data
 
-All four datasets are snapshots committed to the repo, so every library reads byte-identical input. Full provenance, row counts and trimming steps are in [assets/data/README.md](./assets/data/README.md).
+All the datasets are snapshots committed to the repo, so every library reads byte-identical input. Full provenance, row counts and trimming steps are in [assets/data/README.md](./assets/data/README.md).
 
 | Test | Source | Licence |
 |---|---|---|
@@ -89,7 +89,7 @@ Excluded for everyone:
 
 Library-specific theme helpers sit outside the render functions and are not counted either. They do the job Plot's one-line `style` option does, so they are disclosed here rather than added:
 
-- ECharts: a 25-line `houseStyle()` theme object passed to `echarts.init()`. Without it each chart would need roughly 8–15 more lines of axis colour options.
+- ECharts: a 24-line `houseStyle()` theme object passed to `echarts.init()`. Without it each chart would need roughly 8–15 more lines of axis colour options.
 - Plotly: a ~15-line layout `template()`, applied to every axis including the small multiples.
 - Chart.js: a `themed()` function of eight `Chart.defaults` settings (10 lines with its braces), called by every chart.
 - Vega-Lite: a ~24-line `embed()` wrapper (the vega-embed call plus the theme as Vega-Lite `config`) and a 1-line `fmt()` that registers a spec formatter as a Vega expression function.
@@ -115,7 +115,7 @@ The "rendered in N ms" badge starts when the render function is called and stops
 
 The numbers quoted on this site are single runs, at 900 px wide unless stated, on one machine and one browser. They vary from run to run, often by 30% or more, and are slower when the machine is busy. They are there to show orders of magnitude (50 ms against 2 s against 13 s), not to rank libraries that are within a factor of two of each other. This is not a benchmark. Libraries also differ in renderer: SVG (D3 for oil and npm, Plot, Vega-Lite except its grid), Canvas (D3 and Vega-Lite for the grid, Chart.js, ECharts, µPlot) and WebGL (Plotly's grid). That choice is part of what is being compared.
 
-Bundle sizes on the demo pages are approximate. Plotly's (1.48 MB gzipped, full bundle) was measured from the pinned file; the others are published figures, not re-measured for these versions. None of them is the size of a tree-shaken production build.
+Bundle sizes on the demo pages were measured on 21 November 2026: gzip of the pinned CDN files each page loads, in KB of 1,000 bytes (D3 109 KB as its 30 ES modules, Observable Plot 181 KB with the D3 it imports, Vega-Lite 283 KB with Vega and vega-embed, Plotly.js 1,483 KB, Chart.js 122 KB with its plugins, ECharts 368 KB, µPlot 22 KB). The breakdown is in EVALUATION.md. None of them is the size of a tree-shaken production build.
 
 ## The decimation ladder
 
