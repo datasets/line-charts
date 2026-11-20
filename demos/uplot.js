@@ -32,7 +32,7 @@ mountDemo({
     docs: "https://github.com/leeoniya/uPlot/tree/master/docs",
     cdn: "https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js",
     notes:
-      "The hero chart uses two hooks: <code>drawClear</code> (fires before the series are drawn) for the band and the reference line, and <code>draw</code> (after) for the leader, the arrowhead and every label. Everything is multiplied by <code>u.pxRatio</code> because hooks work in device pixels, not CSS pixels. Drag horizontally on the life-expectancy chart to zoom; double-click to reset.",
+      "The hero chart uses three hooks: <code>drawClear</code> (before anything) for the band, <code>drawAxes</code> (after the gridlines, before the series) for the reference line, and <code>draw</code> (after the series) for the leader, the arrowhead and every label. Every size is multiplied by the static <code>uPlot.pxRatio</code> because hooks work in device pixels, not CSS pixels. Drag horizontally on the life-expectancy chart to zoom; double-click to reset.",
   },
   charts: {
     hero(host, { energy }, { theme }) {
@@ -45,15 +45,14 @@ mountDemo({
       const last = energy.wide[energy.wide.length - 1];
       /* Hooks hand you a raw 2D context in device pixels: every coordinate
        * comes back from valToPos(…, true) and every size — line width, font,
-       * gap — has to be scaled by the device pixel ratio by hand. There is no
-       * u.pxRatio in 1.6.32, so it comes from the canvas itself. */
+       * gap — has to be scaled by the device pixel ratio by hand. The ratio
+       * is a static, uPlot.pxRatio, not a property of the instance. */
       const px = (u, v, axis) => u.valToPos(v, axis, true);
-      const dpr = (u) => u.ctx.canvas.width / u.width;
       const text = (u, str, x, y, fill, size = 11, weight = 400, align = "center") => {
         u.ctx.fillStyle = fill;
         u.ctx.textAlign = align;
         u.ctx.textBaseline = "middle";
-        u.ctx.font = `${weight} ${size * dpr(u)}px ${theme.fontSans}`;
+        u.ctx.font = `${weight} ${size * uPlot.pxRatio}px ${theme.fontSans}`;
         u.ctx.fillText(str, x, y);
       };
       const u = new uPlot({
@@ -66,7 +65,7 @@ mountDemo({
           ...order.map((s) => ({
             label: s, stroke: ink(s), width: lead(s) ? 2.6 : 1.5,
             alpha: s === "nuclear" ? 0.65 : 1,
-            paths: uPlot.paths.spline(), points: { show: false },
+            paths: uPlot.paths.spline(), points: { show: false },   // monotone cubic
           })),
         ],
         axes: [
@@ -78,10 +77,10 @@ mountDemo({
             grid: { stroke: theme.grid, width: 1 }, ticks: { show: false } },
         ],
         hooks: {
-          // behind the series
+          // behind everything, gridlines included
           drawClear: [
             (u) => {
-              const ctx = u.ctx, r = dpr(u);
+              const ctx = u.ctx;
               const x0 = px(u, band.x0, "x"), x1 = px(u, band.x1, "x");
               ctx.save();
               ctx.fillStyle = theme.grid;
@@ -90,24 +89,27 @@ mountDemo({
               ctx.restore();
             },
           ],
-          // on top of the series
-          draw: [
+          // after the gridlines, before the series: the dashed reference line
+          drawAxes: [
             (u) => {
-              const ctx = u.ctx, r = dpr(u);
-              const nx = px(u, note.x, "x"), tip = px(u, note.to, "y");
+              const ctx = u.ctx, r = uPlot.pxRatio, ry = px(u, ref.y, "y");
               ctx.save();
-              /* The reference line belongs behind the data, but "behind" in a
-               * hook also means behind the gridlines, where a dashed line at a
-               * round number vanishes under the 100 TWh gridline. So it goes
-               * on top instead — the one place the z-order had to give. */
               ctx.strokeStyle = theme.baseline;
               ctx.lineWidth = r;
               ctx.setLineDash([4 * r, 3 * r]);
               ctx.beginPath();
-              ctx.moveTo(u.bbox.left, px(u, ref.y, "y"));
-              ctx.lineTo(u.bbox.left + u.bbox.width, px(u, ref.y, "y"));
+              ctx.moveTo(u.bbox.left, ry);
+              ctx.lineTo(u.bbox.left + u.bbox.width, ry);
               ctx.stroke();
-              ctx.setLineDash([]);
+              ctx.restore();
+            },
+          ],
+          // on top of the series
+          draw: [
+            (u) => {
+              const ctx = u.ctx, r = uPlot.pxRatio;
+              const nx = px(u, note.x, "x"), tip = px(u, note.to, "y");
+              ctx.save();
               ctx.strokeStyle = theme.textSecondary;
               ctx.fillStyle = theme.textSecondary;
               ctx.lineWidth = r;
