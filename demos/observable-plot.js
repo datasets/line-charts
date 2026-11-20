@@ -1,4 +1,4 @@
-import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/+esm";
+import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.19/+esm";
 import { mountDemo, spreadLabels } from "../assets/js/page.js";
 import { HERO } from "../assets/js/data.js";
 
@@ -32,7 +32,7 @@ mountDemo({
     tagline:
       "A concise grammar of graphics from D3's author. You describe marks (line, text, rect, arrow…) and channels (x, y, stroke) and Plot works out scales and axes. Annotation is not a separate subsystem — a leader line is just an arrow mark and a label is just a text mark — which makes an editorial chart unusually cheap, right up until you need two labels not to overlap, which Plot will not do for you.",
     docs: "https://observablehq.com/plot/",
-    cdn: "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/+esm",
+    cdn: "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.19/+esm",
     notes:
       "<code>Plot.plot()</code> returns a detached SVG/figure node — you append it yourself. The hero chart's furniture is all marks: <code>Plot.rect</code> for the band, <code>Plot.ruleY</code> for the reference line, <code>Plot.arrow</code> for the leader, <code>Plot.text</code> for every label. Mark order is z-order, so the band simply goes first.",
   },

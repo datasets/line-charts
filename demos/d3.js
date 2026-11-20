@@ -1,4 +1,4 @@
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.2/+esm";
 import { mountDemo, spreadLabels } from "../assets/js/page.js";
 import { HERO } from "../assets/js/data.js";
 
@@ -69,7 +69,7 @@ mountDemo({
     tagline:
       "Not a chart library — a low-level toolkit of scales, shape generators, axes and selections. You build the chart. The quality ceiling is the highest here and nothing is off-limits: the annotation, the band and the labels are the same kind of object as the lines, so none of them is a special case you have to hope the library supports. Every pixel is your code, and the hero chart is roughly three times the code of the declarative options.",
     docs: "https://d3js.org/",
-    cdn: "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm",
+    cdn: "https://cdn.jsdelivr.net/npm/d3@7.9.2/+esm",
     notes:
       "The hero chart below is standalone — scales, axes, gridlines, band, reference line, leader line, arrowhead and labels are all in the snippet, nothing hidden in a helper. The life-expectancy card uses a shared ~35-line <code>mkFrame()</code> helper shown at the top of the module instead.",
   },
