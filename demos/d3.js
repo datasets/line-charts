@@ -171,8 +171,8 @@ mountDemo({
         .attr("transform", (s, i) => `translate(${m.left + i * 62},10)`);
       legend.append("rect").attr("width", 12).attr("height", 12).attr("rx", 2).attr("fill", (s) => s.ink);
       legend.append("text").attr("x", 17).attr("y", 6).attr("dy", "0.35em").attr("fill", theme.text).text((s) => s.label);
-      if (w >= 640) svg.append("text").attr("x", w - m.right).attr("y", 16).attr("text-anchor", "end")
-        .attr("fill", theme.muted).attr("font-size", 10).text("scroll to zoom · drag to pan · double-click to reset");
+      if (w >= 760) svg.append("text").attr("x", w - m.right).attr("y", 16).attr("text-anchor", "end")
+        .attr("fill", theme.muted).attr("font-size", 10).text("Ctrl/⌘ + scroll to zoom · drag to pan · double-click to reset");
 
       // events: they move with the zoom, so draw() positions them
       const [coal, note] = GRID.events;
