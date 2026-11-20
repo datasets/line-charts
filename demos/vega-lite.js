@@ -37,14 +37,15 @@ mountDemo({
   meta: {
     name: "Vega-Lite",
     version: "6.5.0",
-    bundleKB: 320,
+    bundleKB: 283,
+    bundleNote: "Vega 180 KB, Vega-Lite 82 KB, vega-embed 21 KB",
     license: "BSD-3",
     tagline:
       "A high-level declarative grammar: charts are JSON specs, compiled to full Vega then to SVG/Canvas. Extremely little code for standard charts, and zoom, pan, crosshairs and hover highlighting are one-line <em>params</em> rather than event code. An annotated editorial chart is entirely possible but turns into a tall stack of layers, each with its own inline data, and anything per-datum that is not a channel (text alignment, offsets) goes through an expression.",
     docs: "https://vega.github.io/vega-lite/",
     cdn: "https://cdn.jsdelivr.net/npm/vega-lite@6.5.0/build/vega-lite.min.js",
     notes:
-      "Loaded as three UMD scripts (~320 KB together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file, apart from the inline data. Custom tick formats from the shared specs are registered once as Vega expression functions and named by <code>formatType</code>.",
+      "Loaded as three UMD scripts (283 KB gzipped together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file, apart from the inline data. Custom tick formats from the shared specs are registered once as Vega expression functions and named by <code>formatType</code>.",
     cardNotes: {
       hero: "A stack of layers, one per kind of annotation, each with its own inline data. Bands, zero rule, leaders (a <code>rule</code> with <code>x2</code>/<code>y2</code>), dots and multi-line text (an array of lines) are all native; per-callout alignment is not a channel, so it is an <code>expr</code> on the mark. No label layout: end labels are de-collided by hand (<code>spreadLabels</code>).",
       grid: "Zoom and pan are one param (<code>bind: \"scales\"</code>: wheel, drag, double-click resets) and the crosshair tooltip another (<code>nearest: true</code>), but there is no minimum span, so you can zoom past one week. No built-in decimation, and Vega re-runs and redraws everything per frame: full resolution painted in 17.8 s (twice), hourly 7.1–8.8 s, so this draws the daily means (0.35–0.44 s), which flatten the solar peak to 5,444 MW of a true 16,289.",

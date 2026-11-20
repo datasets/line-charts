@@ -44,10 +44,10 @@ mountDemo({
   meta: {
     name: "Plotly.js",
     version: "4.3.0",
-    bundleKB: 1450,
+    bundleKB: 1483,
     license: "MIT",
     tagline:
-      "Batteries-included scientific charting. Zoom, pan, box-select, hover, spike lines and PNG export work with zero configuration, and the annotation model — shapes for furniture, annotations for text with real arrows — is the closest thing here to a drawing layer that understands data coordinates. The trade-off is weight (~1.5 MB gzipped for the full bundle) and defaults that look more 'analysis tool' than 'publication'.",
+      "Batteries-included scientific charting. Zoom, pan, box-select, hover, spike lines and PNG export work with zero configuration, and the annotation model — shapes for furniture, annotations for text with real arrows — is the closest thing here to a drawing layer that understands data coordinates. The trade-off is weight (1.48 MB gzipped for the full bundle) and defaults that look more 'analysis tool' than 'publication'.",
     docs: "https://plotly.com/javascript/",
     cdn: "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@4.3.0/plotly.min.js",
     notes:
@@ -109,7 +109,7 @@ mountDemo({
         });
     },
 
-    grid(host, { grid: g }, { theme, report }) {
+    grid(host, { grid: g }, { theme, report, range }) {
       // WebGL lines (scattergl) take all 1.25M points as typed arrays
       const w = host.clientWidth || 640, h = GRID.height(w);
       const [rule, note] = GRID.events;
@@ -128,7 +128,7 @@ mountDemo({
           showlegend: true, legend: { orientation: "h", x: 0, y: 1, yanchor: "bottom", traceorder: "normal" },
           // unified hover searches every point within hoverdistance px: keep it one sample wide
           hovermode: "x unified", hoverdistance: 1, dragmode: "zoom",
-          xaxis: { type: "date", hoverformat: "%a %-d %b %Y, %H:%M UTC" },
+          xaxis: { type: "date", hoverformat: "%a %-d %b %Y, %H:%M UTC", range },
           yaxis: { range: GRID.y.domain, fixedrange: true, tickvals: GRID.y.ticks,
             ticktext: GRID.y.ticks.map(GRID.y.format) },   // zoom x only
           shapes: [{ type: "line", xref: "x", yref: "paper", x0: rule.date, x1: rule.date, y0: 0, y1: 1,
@@ -228,12 +228,13 @@ mountDemo({
       };
 
       report({ points: npm.rows.filter((d) => d.downloads != null).length, step: "full" });
-      return viewSwitch(host, { all: "All 22", indexed: "Indexed", multiples: "Small multiples" },
+      let drawn;                                // the first view's newPlot promise: the badge waits for it
+      const cleanup = viewSwitch(host, { all: "All 22", indexed: "Indexed", multiples: "Small multiples" },
         (v, out) => {
-          if (v === "multiples") multiples(out);
-          else lines(out, v === "indexed");
+          drawn ??= v === "multiples" ? multiples(out) : lines(out, v === "indexed");
           return () => Plotly.purge(out);
         });
+      return drawn.then(() => cleanup);
     },
 
     life(host, { life }, { theme }) {

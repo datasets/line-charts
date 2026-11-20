@@ -32,7 +32,8 @@ mountDemo({
   meta: {
     name: "Chart.js",
     version: "4.6.1",
-    bundleKB: 70,
+    bundleKB: 122,
+    bundleNote: "Chart.js 71 KB plus Luxon and its adapter, hammer.js, and the annotation and zoom plugins",
     license: "MIT",
     tagline:
       "The popular default. Canvas-rendered, small, friendly config object, good docs, huge plugin ecosystem. Editorial furniture comes from chartjs-plugin-annotation and zoom/pan from chartjs-plugin-zoom; the built-in decimation plugin makes 1.25 million points interactive. What it lacks is any label layout and any data transform: end labels are de-collided by hand, the index is computed by hand, small multiples are seven charts.",
@@ -118,7 +119,7 @@ mountDemo({
       return () => chart.destroy();
     },
 
-    grid(host, { grid }, { theme, report }) {
+    grid(host, { grid }, { theme, report, range }) {
       themed(theme);
       // full resolution: decimation (below) keeps it to ~4 points per pixel column
       const g = aggregate(grid, "full");
@@ -150,7 +151,7 @@ mountDemo({
           parsing: false, normalized: true, spanGaps: true,
           interaction: { mode: "nearest", axis: "x", intersect: false },
           scales: {
-            x: { type: "time", min: g.t[0], max: g.t.at(-1), grid: { display: false },
+            x: { type: "time", min: range?.[0] ?? g.t[0], max: range?.[1] ?? g.t.at(-1), grid: { display: false },
               ticks: { maxRotation: 0, autoSkipPadding: 16, major: { enabled: true } } },
             y: { min: GRID.y.domain[0], max: GRID.y.domain[1], border: { display: false },
               afterBuildTicks: (s) => { s.ticks = GRID.y.ticks.map((value) => ({ value })); },
@@ -165,7 +166,7 @@ mountDemo({
             zoom: {
               zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" },
               pan: { enabled: true, mode: "x" },
-              limits: { x: { min: "original", max: "original", minRange: GRID.zoom.minSpanMs } },
+              limits: { x: { min: g.t[0], max: g.t.at(-1), minRange: GRID.zoom.minSpanMs } },
             },
             annotation: { annotations: {
               rule: { type: "line", xMin: Date.parse(rule.date), xMax: Date.parse(rule.date),

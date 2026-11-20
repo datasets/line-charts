@@ -27,7 +27,8 @@ mountDemo({
   meta: {
     name: "Observable Plot",
     version: "0.6.19",
-    bundleKB: 65,
+    bundleKB: 181,
+    bundleNote: "72 KB of Plot plus the 109 KB of D3 modules it imports",
     license: "ISC",
     tagline:
       "A concise grammar of graphics from D3's author. You describe marks (line, text, rect, arrow…) and channels (x, y, stroke) and Plot works out scales and axes. Annotation is not a separate subsystem — a leader line is just an arrow mark and a label is just a text mark — which makes an editorial chart unusually cheap, right up until you need two labels not to overlap, which Plot will not do for you.",

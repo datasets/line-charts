@@ -64,7 +64,8 @@ mountDemo({
   meta: {
     name: "D3",
     version: "7.9.2",
-    bundleKB: 90,
+    bundleKB: 109,
+    bundleNote: "the 30 ESM modules of <code>d3@7.9.2/+esm</code>; the single-file <code>d3.min.js</code> is 93 KB",
     license: "ISC / BSD",
     tagline:
       "Not a chart library — a low-level toolkit of scales, shape generators, axes, selections and zoom behaviour. You build the chart. The quality ceiling is the highest here and nothing is off-limits: the annotation, the band and the labels are the same kind of object as the lines, so none of them is a special case you have to hope the library supports. Every pixel is your code, so every chart is longer than in a charting library, and the one that matters most, 1.25M points with zoom, is also the one D3 does best: point <code>d3.line()</code> at a canvas and it draws them all.",
@@ -140,7 +141,7 @@ mountDemo({
       report({ points: oil.rows.length, step: "full" });
     },
 
-    grid(host, { grid: g }, { theme, report }) {
+    grid(host, { grid: g }, { theme, report, range }) {
       // every half-hour, all 1.25M points: lines on a canvas (SVG paths this
       // long are too slow), axes, events, crosshair and legend in an SVG on top
       const w = host.clientWidth || 640, h = GRID.height(w), dpr = devicePixelRatio || 1;
@@ -215,6 +216,8 @@ mountDemo({
           frame ||= requestAnimationFrame(() => { frame = 0; draw(); });
         });
       svg.call(zoom).on("dblclick.zoom", () => svg.call(zoom.transform, d3.zoomIdentity));
+      const k = range && (x0.range()[1] - x0.range()[0]) / (x0(range[1]) - x0(range[0]));   // open on a window
+      if (range) svg.call(zoom.transform, d3.zoomIdentity.translate(m.left - k * x0(range[0]), 0).scale(k));
 
       // crosshair + one tooltip with all four series at the nearest half-hour
       const cross = svg.append("line").attr("y1", m.top).attr("y2", h - m.bottom).attr("stroke", theme.muted).attr("display", "none");

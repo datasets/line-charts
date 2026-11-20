@@ -58,7 +58,7 @@ mountDemo({
   meta: {
     name: "Apache ECharts",
     version: "6.1.0",
-    bundleKB: 330,
+    bundleKB: 368,
     license: "Apache-2.0",
     tagline:
       "Production-hardened, Apache-governed, used at very large scale. Canvas or SVG renderer, built-in dataZoom, rich tooltips, min-max sampling for dense series, and SSR. The option object gets deep and imperative for elaborate charts, and the house style needs taming, but the annotation layer — markArea, markLine, markPoint, endLabel — is the most complete here, and it is the safest pick for a heavy-duty dashboard.",
@@ -125,7 +125,7 @@ mountDemo({
       return () => c.dispose();
     },
 
-    grid(host, { grid }, { theme, report }) {
+    grid(host, { grid }, { theme, report, range }) {
       const w = host.clientWidth || 640;
       host.style.height = GRID.height(w) + 66 + "px";             // + legend row and zoom slider
       const c = echarts.init(host, houseStyle(theme));            // Canvas: SVG would choke
@@ -143,8 +143,9 @@ mountDemo({
         xAxis: { type: "time" },
         yAxis: { min: GRID.y.domain[0], max: GRID.y.domain[1], interval: GRID.y.ticks[1] - GRID.y.ticks[0],
           axisLabel: { formatter: GRID.y.format } },
-        dataZoom: [{ type: "inside", minValueSpan: GRID.zoom.minSpanMs },
-          { type: "slider", minValueSpan: GRID.zoom.minSpanMs, bottom: 10, height: 26 }],
+        // Ctrl/⌘ + wheel or pinch zooms, so a plain wheel still scrolls the page
+        dataZoom: [{ type: "inside", zoomOnMouseWheel: "ctrl" }, { type: "slider", bottom: 10, height: 26 }]
+          .map((z) => ({ ...z, minValueSpan: GRID.zoom.minSpanMs, startValue: range?.[0], endValue: range?.[1] })),
         // sampled series keep different timestamps, so the tip reads the whole
         // dataset row of the point it snapped to: all four true half-hour values
         tooltip: { trigger: "axis", confine: true, formatter: ([p]) => {

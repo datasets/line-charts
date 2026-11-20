@@ -26,10 +26,10 @@ mountDemo({
   meta: {
     name: "µPlot",
     version: "1.6.32",
-    bundleKB: 18,
+    bundleKB: 22,
     license: "MIT",
     tagline:
-      "The performance option: ~18 KB, draws a million points on Canvas faster than most libraries draw twenty thousand, with drag-to-zoom, a synced cursor and series focus built in. In return the API is spartan and there is no annotation model at all — no band, no reference line, no label, no arrow. Everything editorial is your own canvas code inside a draw hook, in device pixels.",
+      "The performance option: 22 KB, draws a million points on Canvas faster than most libraries draw twenty thousand, with drag-to-zoom, a synced cursor and series focus built in. In return the API is spartan and there is no annotation model at all — no band, no reference line, no label, no arrow. Everything editorial is your own canvas code inside a draw hook, in device pixels.",
     docs: "https://github.com/leeoniya/uPlot/tree/master/docs",
     cdn: "https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js",
     notes:
@@ -107,7 +107,7 @@ mountDemo({
       return () => u.destroy();
     },
 
-    grid(host, { grid: g }, { theme, report }) {
+    grid(host, { grid: g }, { theme, report, range }) {
       // full resolution: µPlot is handed all 1.25M points and decimates per
       // pixel column itself (min + max), so no shared ladder step is needed
       const w = host.clientWidth || 640, h = GRID.height(w), r = uPlot.pxRatio;
@@ -144,6 +144,7 @@ mountDemo({
           }],
           ready: [(u) => {
             u.over.append(tip);
+            if (range) zoomTo(u, ...range);                    // open on a window if asked
             // pinch / ctrl+wheel zooms around the cursor; horizontal swipe / shift+wheel pans;
             // a plain vertical wheel still scrolls the page
             u.over.addEventListener("wheel", (e) => {
