@@ -1,75 +1,149 @@
-# Analysis & method
+# Method
 
-How this bake-off is scoped, and why. The verdict is in [EVALUATION.md](./EVALUATION.md); the build log the verdict rests on is in [docs/BUILD-NOTES.md](./docs/BUILD-NOTES.md).
+How the bake-off is set up, what is measured, and what is not. The verdict is on [the verdict page](./EVALUATION.md). What building each chart was like is in [the build notes](./docs/BUILD-NOTES.md). The builders' brief, word for word, is [docs/TESTS.md](./docs/TESTS.md).
 
-## Starting point
+## Why three kinds of line chart
 
-This is a 2026 rebuild of [datopian/line-charts](https://github.com/datopian/line-charts) (2016), which compared Vega, Vega-Lite, Plotly, D3, Chart.js and Bokeh with one dataset each and a hand-scored shortlist. Ten years on: Bokeh is Python-first and awkward to embed as a static JS demo, jQuery/Bootstrap/D3v3 are gone, and the field has two strong new entrants (Observable Plot, ECharts) plus a legitimate performance specialist (µPlot) that didn't exist in 2016. Kept from the original: one folder per library, a shared `data/` directory, and a scorecard. New: the same chart repeated across libraries rather than a different one-off chart per library, visible source under every chart (their issue #21, never done), and a validated colour-blind-safe palette applied identically everywhere.
+Line charts are used in roughly three ways. Journalists and report writers make the annotated story chart: few series, decades of data, and the meaning sits in the labels, bands and callouts (the FT's Visual Vocabulary puts the line first under "change over time"; Datawrapper's line-chart guidance is almost all about that furniture). Monitoring and ops tools make the dense interactive chart: hundreds of thousands to millions of points, zoom by drag, a crosshair (Grafana's default time-series panel is built on µPlot). Science and analytics tools make the many-series chart: twenty or more lines, a log scale, a few highlighted against a grey field, an index-to-100 view (Our World in Data's Grapher is the model). Each kind ranks the libraries differently, which is the point of testing all three. Sparklines, step charts and dual axes are variations one of these can carry, so they are not tested separately.
 
-## Why the method changed
+## The three tests
 
-The first version of this site drew four datasets — CO₂ at Mauna Loa, an energy mix, life expectancy, four thousand days of BTC — in all seven libraries, and produced seven charts that looked about equally good. That is a real result, and it is useless: every modern charting library is good at "plot a line and let the defaults do the work", and 4,000 points does not stress anything (every library drew them in under 30 ms). A comparison where everyone scores well is measuring the wrong thing.
+Each test is one real dataset and a fixed list of requirements. The requirements below are the ones shown on every card. The fuller builder's version, with the exact spec constants, is in [docs/TESTS.md](./docs/TESTS.md).
 
-So the question changed from *can it draw this data* to *what does it cost to publish this chart*. The test is now one chart that asks for the things a data story actually needs and that library demos rarely show: labels attached to lines, a sentence pointing at a specific moment in the data, an event marked behind the series, a threshold called out, and two series made to matter more than three. Those are the requirements libraries genuinely differ on, and the differences turn out to be large — 46 lines to 104, and one library that cannot draw an arrowhead at all.
+### Oil: the annotated editorial chart
 
-## The hero chart
+Brent and WTI daily spot prices, 1986–2026, about 20,000 points. Five shocks, four US recessions, and 20 April 2020, when WTI settled at −$36.98. It stresses the annotation layer, an axis that crosses zero, drawing behind the data, emphasis, and callouts that adapt to width.
 
-Electricity generation by source (`assets/data/energy-mix.csv`, 5 series × 27 years, TWh), drawn identically by all seven libraries, with these requirements in roughly increasing order of how much they separate the libraries:
+1. Direct end labels ("Brent $96", "WTI $91"), no legend, not overlapping.
+2. Callouts with leader lines to the true data point; the −$36.98 point marked with a dot.
+3. Four NBER recession bands behind the lines, one label.
+4. y-axis crosses zero: domain includes −37, a distinct zero line, ticks "−$40 … $160".
+5. Brent full ink, WTI muted but readable; decade ticks on x.
+6. Narrow widths: callouts dropped in the declared order (`HERO.calloutBudget`), never piled up.
 
-1. **Direct end-of-line labels**, colour-matched to each line. No legend.
-2. **An annotation with a leader line** pointing at the 2011 coal/gas crossover, reading "gas overtakes coal".
-3. **A shaded x-range band** across 2008–09 labelled "financial crisis", behind the lines.
-4. **Emphasis**: wind and solar at full colour and weight; coal, gas and nuclear muted to one grey and told apart by their labels.
-5. **A dashed, labelled reference line** at 100 TWh.
-6. **Responsive behaviour**: nothing collides or overflows as the chart narrows.
+### Grid: the dense interactive chart
 
-Every library reads the same geometry — band edges, reference value, annotation text and its anchor points — from a single `HERO` constant in `assets/js/data.js`, so no library is drawing a slightly different chart. The chart's title and standfirst are card HTML for all seven equally: no library was asked to lay out running text, because that would measure something else.
+GB electricity generation by fuel, every half hour since 2009: 312,816 half-hours × 4 series = 1,251,264 points. Coal falls from 42% of generation in 2012 to zero, wind rises, solar is a daily hump. It stresses raw point count, time to first paint, zoom and pan, a crosshair tooltip, and honest decimation.
 
-## The second chart
+1. Draw all 1.25M points if you can; otherwise step down the ladder (full → hour → day) and report the step.
+2. Zoom and pan (wheel + drag), down to one week, with a reset.
+3. Crosshair with one tooltip listing all four series at the nearest timestamp.
+4. Decimation honesty: does the solar peak survive at full zoom-out (true peak 16,289 MW)?
+5. Event markers: a rule at "Last coal, 30 Sep 2024" and the "2012: coal 42%" label.
+6. Time to first paint on the card (the badge waits for the frame).
 
-**Life expectancy at birth** (5 countries × 63 years, with deliberate missing years) stays from v1 because it produced the sharpest finding there and still does: only Observable Plot breaks a line at a `null` without being told to. Every other library needs an explicit flag, and the failure mode is silent — a real gap in the data becomes a confident straight line between two known points.
+### npm: the many-series chart
 
-CO₂ at Mauna Loa and BTC-USD were retired. Neither differentiated anything. Their CSVs remain in `assets/data/`.
+Weekly npm downloads of 22 charting packages, March 2015 to November 2026: the seven in colour, fifteen others in grey. The headline is that Recharts out-downloads all seven. It stresses many series, a log scale, highlighting one line of many, end-label collision, a normalise transform and small multiples.
 
-## How the line counts are measured
+1. Log y with ticks 1k … 100M; empty weeks are missing, not zero.
+2. All 22 drawn; hover highlights the nearest line (not point) with its name and value.
+3. The seven in colour with non-colliding end labels; the rest grey.
+4. A toggle to the indexed view (15 Jan 2024 = 100), with the library's own transform if it has one.
+5. Small multiples of the seven on a shared log scale.
+6. Identifiable without a legend at 640 px.
 
-The number under each hero chart and on the front page is the `hero()` render function exactly as it ran, via `Function.prototype.toString()` — so the displayed code and the counted code cannot drift from what drew the chart. The count includes the function's own comments and signature. It excludes three things, identically for every library:
+### Side test: missing data
 
-- `spreadLabels()` in `assets/js/page.js` — 17 lines of shared, library-agnostic end-label de-collision. Five of the seven libraries need it (ECharts has `labelLayout`; D3 and the rest do not). It is shared rather than copied so that five identical blocks of code do not inflate five line counts by the same amount.
-- The `HERO` geometry constants, which are data.
-- The card's title and description, which are HTML.
+Life expectancy for five countries, 1960–2022, with deliberate missing years. One requirement: a null year breaks the line and is not bridged. Every library now receives the same explicit nulls (see "What the September version got wrong").
 
-Where a library's hero function still leans on a module-level helper, the build notes say so. D3's does not: its hero chart is deliberately standalone, axes and gridlines included, which is why it is the only count that includes roughly 20 lines the other six get for free.
+## Data
 
-## What "good" means here
+All four datasets are snapshots committed to the repo, so every library reads byte-identical input. Full provenance, row counts and trimming steps are in [assets/data/README.md](./assets/data/README.md).
 
-Quality of the finished chart above all, and what it cost to get there. Not GitHub stars, not benchmark throughput: which library, given the same data and the same colours, produces the chart a data journalist would actually publish, with the least fighting — and, separately, which one keeps producing it when the data changes and two labels land on the same pixel.
+| Test | Source | Licence |
+|---|---|---|
+| Oil | U.S. Energy Information Administration, spot prices RBRTE and RWTC, via the cleaned DataPressr snapshot of 2026-09-05 (EIA's current files have dropped ~890 Brent and ~740 WTI historical days) | US Government work, public domain (DataPressr copy PDDL-1.0) |
+| Grid | NESO, Historic GB Generation Mix (`df_fuel_ckan.csv`), trimmed to four integer-MW columns; wind is transmission plus embedded | NESO Open Data Licence |
+| npm | npm download counts API, daily counts summed to Monday-start weeks | npm registry terms (factual telemetry) |
+| Missing data | v1 snapshot with deliberate gaps; its original source was not recorded | unknown |
 
-Scoring dimensions, all 1–5 and all filled in after building rather than before: annotation API, direct labels, whether it worked first try, editorial quality of the result, escape hatch when the API runs out, bundle size, and docs/ecosystem. Plus the measured line count, which is not a score at all.
+Every number in an annotation (−$36.98, $143.95, 42%, 16,289 MW, the last coal half-hour) was checked against these files. npm downloads count CI runs and mirrors, not people.
 
 ## Ground rules
 
-1. **Same data, same geometry, same palette.** The validated categorical reference palette (colour-blind-safe in light and dark) is fed into each library's own theming rather than using its defaults, so "quality" is not partly a measure of colour choice. The two emphasised series take palette slots; the three context series share one grey from the same theme.
-2. **Zero build step.** Plain HTML + ES modules, libraries from jsDelivr at pinned versions. This mirrors how these libraries actually get dropped into a static site or a data story, and keeps the repo trivially deployable with no CI.
-3. **Source is always visible**, and for the hero chart it is expanded by default rather than hidden behind a disclosure — "what does it take to build this" is the question the site exists to answer.
-4. **Failures are recorded, not worked around.** Where a library could not do something — Vega-Lite's missing arrowhead, µPlot's reference line that had to move on top of the data — the closest honest approximation is shipped and the loss is written down in the build notes.
+- **Same data, same spec constants.** Every dataset-specific value (domains, ticks, tick formats, colours, callout positions and text, event dates, end-label format, heights) lives in one constant per test (`HERO`, `GRID`, `NPM` in `assets/js/data.js`). No library retypes a number.
+- **Same palette.** One colour-blind-safe palette, light and dark, fed into each library's own theming rather than its defaults.
+- **Pinned versions,** loaded from jsDelivr:
+  - D3 7.9.2
+  - Observable Plot 0.6.19
+  - Vega-Lite 6.5.0, with Vega 6.4.0 and vega-embed 7.4.0
+  - Plotly.js 4.3.0 (`plotly.js-dist-min`, the full bundle)
+  - Chart.js 4.6.1, with chartjs-plugin-annotation 3.1.0, chartjs-plugin-zoom 2.2.0, hammerjs 2.0.8, luxon 3.7.2 and chartjs-adapter-luxon 1.3.1
+  - Apache ECharts 6.1.0
+  - µPlot 1.6.32
+- **Zero build step.** Plain HTML and ES modules. This is how these libraries get dropped into a static page or a data story.
+- **Source shown as it ran.** The code under each chart is the render function itself, via `Function.prototype.toString()`, so the shown code cannot drift from the code that drew the chart.
+- **Idiomatic, not golfed.** Builders were told to write what a competent user of the library would write, and where a requirement would need heroic code, to do the honest minimum and say so in the card note.
+- **Comparable, not identical.** The charts follow one spec, but each library draws with its own text metrics, hit-testing and defaults. Differences in the finished pictures are partly library and partly implementation choice; the build notes say which where it matters.
 
-## Libraries in scope, and why
+## How lines are counted
 
-Picked to cover the real decision space: a low-level toolkit, a modern grammar of graphics, a declarative-spec option, a batteries-included option, the popular default, a production/enterprise option, and a raw-performance option.
+The number on each card is the line count of that chart's render function as displayed: signature, comments and closing brace included, blank lines included. It describes these implementations, not an intrinsic property of the library.
 
-- **D3** — the ceiling. Everything else is measured against what full control costs in code.
-- **Observable Plot** — D3's own answer to "D3 is too much code for a standard chart".
-- **Vega-Lite** — the other declarative-grammar lineage, JSON-spec rather than JS-object.
-- **Plotly.js** — the batteries-included interactive option.
-- **Chart.js** — the incumbent default; smallest API surface, biggest ecosystem.
-- **Apache ECharts** — the enterprise/production option; built for dashboards at scale.
-- **µPlot** — the performance specialist; what you reach for once a chart library's overhead is itself the bottleneck.
+Excluded for everyone:
 
-Deliberately **excluded** (reasoning on the front page under "Considered, not included"): Highcharts (not free for commercial use — this project only compares permissive OSS), React-only libraries (Recharts/visx/Nivo — this site is framework-free by design), full Vega (Vega-Lite represents the family), and several libraries that don't clearly beat the seven above on any axis this brief cares about (ApexCharts, Chartist, Frappe Charts, billboard.js).
+- The spec constants (`HERO`, `GRID`, `NPM`), which are data.
+- Shared, library-agnostic helpers in `assets/js/`, which any library may call without penalty: `spreadLabels` (13 lines of end-label de-collision, used by six of the seven; ECharts lays out its own end labels), `viewSwitch` (the npm view toggle), `aggregate` and `toRows` (the grid ladder), and `ink` (resolves a palette slot or theme token).
+- Card titles and descriptions, which are HTML.
 
-## Extending this later
+Library-specific theme helpers sit outside the render functions and are not counted either. They do the job Plot's one-line `style` option does, so they are disclosed here rather than added:
 
-- **More libraries.** Copy `demos/uplot.html` + `demos/uplot.js` (the smallest pair), swap the CDN script and the two render functions, add a cell to the grid in `index.html`. Data loading, palette, layout, the source panel, the line count and light/dark are all handled by `assets/js/{data,theme,page}.js`.
-- **A harder responsive test.** The annotation text is placed in data coordinates in all seven libraries, which is right at desktop width and starts to graze the coal line below about 400 px. A version that reflows or drops annotations by width would separate the libraries again.
-- **A React-flavoured page**, for Recharts/visx/Nivo, since this site is intentionally framework-free.
+- ECharts: a 25-line `houseStyle()` theme object passed to `echarts.init()`. Without it each chart would need roughly 8–15 more lines of axis colour options.
+- Plotly: a ~15-line layout `template()`, applied to every axis including the small multiples.
+- Chart.js: a `themed()` function of eight `Chart.defaults` settings (10 lines with its braces), called by every chart.
+- Vega-Lite: a ~24-line `embed()` wrapper (the vega-embed call plus the theme as Vega-Lite `config`) and a 1-line `fmt()` that registers a spec formatter as a Vega expression function.
+- µPlot: about 6 lines of tooltip CSS in its HTML page, used by the grid and npm tooltips (Plot's tooltip is built in).
+
+D3's three render functions are standalone: scales, axes, gridlines and interaction are all in the counted code.
+
+| Library | Oil | Grid | npm |
+|---|---|---|---|
+| D3 | 60 | 98 | 100 |
+| Observable Plot | 44 | 32 | 77 |
+| Vega-Lite | 53 | 51 | 81 |
+| Plotly.js | 49 | 44 | 81 |
+| Chart.js | 70 | 67 | 96 |
+| Apache ECharts | 51 | 48 | 85 |
+| µPlot | 65 | 79 | 85 |
+
+Read a line count together with the requirements it meets. Plot's 32-line grid has no zoom or pan and draws daily means; D3's 98 draws every point with zoom, pan and a crosshair.
+
+## How timings are measured
+
+The "rendered in N ms" badge starts when the render function is called and stops when its returned promise (if any) resolves and two animation frames have passed, so it includes the library's first paint. It excludes downloading and evaluating the library, and fetching and parsing the data (the parse time is shown separately, on hover over the points line).
+
+The numbers quoted on this site are single runs, at 900 px wide unless stated, on one machine and one browser. They vary from run to run, often by 30% or more, and are slower when the machine is busy. They are there to show orders of magnitude (50 ms against 2 s against 13 s), not to rank libraries that are within a factor of two of each other. This is not a benchmark. Libraries also differ in renderer: SVG (D3 for oil and npm, Plot, Vega-Lite except its grid), Canvas (D3 and Vega-Lite for the grid, Chart.js, ECharts, µPlot) and WebGL (Plotly's grid). That choice is part of what is being compared.
+
+Bundle sizes on the demo pages are approximate. Plotly's (1.48 MB gzipped, full bundle) was measured from the pinned file; the others are published figures, not re-measured for these versions. None of them is the size of a tree-shaken production build.
+
+## The decimation ladder
+
+The grid test gives every library the same ladder: try all 1,251,264 points; if first paint takes more than about 3 s or the page locks up, step down to hourly means (625,632 points), then daily means (26,068). The shared `aggregate()` builds each step, so every library that steps down draws the same buckets. A library may use its own downsampling at the full step (Chart.js's decimation plugin, ECharts' `sampling`) and must say which.
+
+Which step a library ships is part of the finding, not a footnote, because decimation changes what the reader sees. Daily means flatten the solar peak from 16,289 MW to 5,444 MW: a chart that paints in 0.3 s but tells you solar never passed 5.5 GW. So every library reports the solar peak it actually drew. Per-pixel min/max methods (Chart.js `min-max`, ECharts `minmax`, µPlot's line builder) keep the true peak; averaging does not.
+
+## What the September version got wrong
+
+The first version (September 2026) drew one synthetic electricity chart plus the missing-data test. A pre-launch review found real problems:
+
+- **Synthetic data** with real-sounding units, disclosed only in the README. Now every chart uses real, sourced data.
+- **One kind of chart, a general verdict.** A 135-point annotated chart cannot tell you which library suits a dashboard. Now there are three kinds, and the verdict says which kind each recommendation is for.
+- **The missing-data test fed different data to different libraries.** Two got sparse rows with no nulls; five got explicit nulls. All seven now get the same explicit nulls.
+- **Inconsistent standards.** Chart.js was counted with a hand-written canvas plugin for end labels when its annotation plugin plus the shared label helper would do, and a hand-drawn arrowhead counted as a feature in D3 but a gap in Vega-Lite.
+- **Timings read as a speed ranking** (4 ms against 80 ms, SVG against Canvas, single runs). Now they are framed as above.
+- **"Identical geometry" was overclaimed**: libraries used different curve interpolations and one ignored a spec value. Now the claim is "comparable".
+- **Old major versions** (ECharts 5, Vega-Lite 5, Plotly 3). Now the current majors.
+
+## How it was built
+
+In November 2026, one AI coding agent per library built that library's three charts from the shared brief ([docs/TESTS.md](./docs/TESTS.md)), working only in its own `demos/<library>.js` and `.html`, with the data, spec constants and page framework frozen. Observable Plot was built first as the reference implementation. That is a disclosed bias: the brief was written alongside it. Each implementation was then reviewed against the requirements, with screenshots at 900 and 360 px, light and dark, and no console errors or warnings. The builders' notes are distilled in [the build notes](./docs/BUILD-NOTES.md).
+
+Corrections from people who know these libraries well are welcome. If a requirement can be met more idiomatically or in fewer lines, open an issue or a pull request and the count will change.
+
+## Scope and exclusions
+
+- **Permissive open source only.** Highcharts is excluded because it is not free for commercial use.
+- **Framework-free.** React-only libraries (Recharts, visx, Nivo) are out of scope; Recharts appears in the npm chart as data, not as a contestant.
+- **Not tested:** ApexCharts, Chartist, Frappe Charts, billboard.js, full Vega (Vega-Lite stands for the family), TradingView lightweight-charts and others. Not tested means exactly that; it is not a claim that they would do worse.
+- **Not measured:** accessibility, server-side rendering, live data append, memory use, print output, and the size of a production build.

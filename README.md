@@ -1,69 +1,93 @@
 # line-charts
 
-A 2026 bake-off of leading open-source line-charting libraries. All seven build the **same annotated, editorial-quality chart** — direct end-of-line labels, an annotation with a leader line, a shaded event band, a dashed reference line, two series emphasised against three muted ones — from identical data, identical geometry and the same colour-blind-safe palette. The front page renders all seven live, side by side, with each one's measured line count. Every chart's source is on its page, expanded.
+Seven open-source JavaScript line-chart libraries (D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts, µPlot), each building the same three charts from real data, live, with the source shown and its lines counted:
 
-Not "can it draw a line": every modern library can, which is exactly why the first version of this site failed to tell you anything. The spread on the annotated chart is 46 lines to 104, and one library cannot draw an arrowhead at all.
+- **Oil:** an annotated editorial chart of Brent and WTI daily prices, 1986–2026, including WTI's −$36.98 day.
+- **Grid:** a dense interactive chart of Britain's electricity generation every half hour since 2009: 1.25M points, zoom, pan and a crosshair.
+- **npm:** a many-series chart of weekly downloads for 22 charting packages, on a log scale, with hover highlight, an indexed view and small multiples.
 
-A modern rebuild of [datopian/line-charts](https://github.com/datopian/line-charts) (2016).
+Plus a small missing-data test. A modern rebuild of [datopian/line-charts](https://github.com/datopian/line-charts) (2016).
 
-**[→ open the site](./index.html)** · method in [ANALYSIS.md](./ANALYSIS.md) · verdict in [EVALUATION.md](./EVALUATION.md) · build log in [docs/BUILD-NOTES.md](./docs/BUILD-NOTES.md)
+**Live: https://linecharts.datahub.io/** · [verdict](https://linecharts.datahub.io/verdict) ([EVALUATION.md](./EVALUATION.md)) · [method](https://linecharts.datahub.io/method) ([ANALYSIS.md](./ANALYSIS.md)) · [build notes](https://linecharts.datahub.io/build-notes) ([docs/BUILD-NOTES.md](./docs/BUILD-NOTES.md))
 
-## Libraries
+## Run it locally
 
-D3 · Observable Plot · Vega-Lite · Plotly.js · Chart.js · Apache ECharts · µPlot
+No build step. The demos load their libraries from jsDelivr and read the data with `fetch()`, so you need an `http://` server, not `file://`.
 
-## Run it
+The site uses extensionless URLs (`/demos/d3`, `/method`), which the host maps to `.html` files. Python's server does not, so with it the front page's iframes and the doc-page links 404. Either use a server that maps clean URLs:
 
-Zero build step. Any static file server works — the demos load their libraries from jsDelivr and read the sample data with `fetch()`, which needs `http://`, not `file://`:
+```sh
+npx serve .          # maps /demos/d3 to demos/d3.html; open http://localhost:3000/
+npx wrangler dev     # serves exactly as production does, from wrangler.jsonc
+```
+
+or use Python and open the pages by file name:
 
 ```sh
 python3 -m http.server 8080
-# or: npx serve .
+# http://localhost:8080/demos/d3.html             all four charts, with source
+# http://localhost:8080/demos/d3.html?chart=grid  one chart (add &bare=1 for the embed view)
+# http://localhost:8080/method.html               method page (also verdict.html, build-notes.html)
 ```
 
-then open `http://localhost:8080/`.
+## Deploy
 
-## Deploy it
-
-It's static HTML — any static host works, no build step and no CI. This copy is deployed to Cloudflare Workers from `main` via `wrangler.jsonc` (unknown paths serve `404.html` rather than soft-404ing to the index); non-production branches get preview deploys.
+Static files only, no CI. Deployed to Cloudflare from `main` as static assets (configuration in `wrangler.jsonc`; unknown paths serve `404.html` rather than the front page). Other branches get preview deploys.
 
 ## Layout
 
 ```
-index.html                 the comparison itself: seven live cells + one chart selector
-ANALYSIS.md                method: the hero chart's requirements, how lines are counted
-EVALUATION.md              the verdict: scorecard + recommendation
+index.html               front page: verdict, then the seven libraries live, one test at a time
+verdict.html             renders EVALUATION.md       (/verdict)
+method.html              renders ANALYSIS.md         (/method)
+build-notes.html         renders docs/BUILD-NOTES.md (/build-notes)
+changelog.html           renders changelog/*.md, listed in changelog/manifest.json
+EVALUATION.md            the verdict
+ANALYSIS.md              the method: tests, data, ground rules, line counts, timings, scope
 docs/
-  BUILD-NOTES.md           what building the hero chart was actually like, per library
-  ROADMAP.md               the brief this version was built to
+  TESTS.md               the builders' brief: every requirement, the decimation ladder, what to report
+  BUILD-NOTES.md         what building each test was like, per library
+  ROADMAP.md             the brief the September version was built to (historical)
 assets/
-  css/site.css             shared theme tokens (validated palette, light+dark) + chrome
+  css/site.css           theme tokens (validated palette, light and dark) and page chrome
   js/
-    theme.js               palette + dark-mode helpers
-    data.js                CSV loading, the two shared datasets, and HERO — the hero
-                           chart's geometry, identical for all seven libraries
-    page.js                demo-page framework: layout, source panel, timing, line counts
-  data/                    the CSVs (co2 and btc are retired but kept)
+    data.js              lazy loaders, the spec constants (HERO, GRID, NPM), aggregate(), DATASETS card copy
+    page.js              demo-page framework: cards, render badge, line counts, source panel,
+                         shared helpers spreadLabels() and viewSwitch()
+    theme.js             palette and light/dark helpers
+    doc.js               renders a repo Markdown file into verdict/method/build-notes
+    markdown.js, changelog.js   the changelog page
+  data/                  the CSVs, with provenance in data/README.md
+  og/                    social preview images
 demos/
-  <library>.html           loads the library's CDN build + the page framework
-  <library>.js             two render functions: hero, life
+  <library>.html         loads the library from jsDelivr (pinned) and the framework
+  <library>.js           one render function per test: hero (oil), grid, npm, life
 ```
 
 ## Add a library
 
-1. Copy `demos/uplot.html` + `demos/uplot.js` (the smallest pair) to `demos/<name>.{html,js}`.
-2. Swap the CDN `<script>`/import for the new library.
-3. Rewrite the two render functions (`hero`, `life`) in `mountDemo({ meta, charts })` — each gets `(host, data, { theme })` and returns an optional cleanup function (or a promise of one, for async libraries). Read the hero chart's geometry from `HERO` in `assets/js/data.js` rather than inventing your own, or the comparison stops being one.
-4. Add the slug to `LIBS` in `index.html`, a card to the library grid, and a row to the scorecard in EVALUATION.md.
+1. Read [docs/TESTS.md](./docs/TESTS.md), then `demos/observable-plot.js`, the reference implementation.
+2. Copy a pair such as `demos/uplot.html` + `demos/uplot.js` to `demos/<name>.{html,js}` and swap the pinned CDN `<script>` or import.
+3. Write the render functions in `mountDemo({ meta, charts })`: `hero`, `grid`, `npm`, `life`. Each is `(host, data, { theme, report })` and may return a cleanup function or a promise of one. Read every dataset value from `HERO`, `GRID` and `NPM` in `assets/js/data.js`; don't retype numbers. For grid, follow the decimation ladder and call `report({ points, step, note })` with the solar peak you drew.
+4. Fill in `meta` (name, version, licence, bundle size, notes) and `meta.cardNotes` for each test, including the grid ladder timings.
+5. Check 900 px and 360 px, light and dark, with no console errors.
+6. Add the slug to `LIBS` in `index.html`, a URL to `sitemap.xml`, and the library to EVALUATION.md.
 
-Data loading, the shared palette, dark mode, the source panel, the measured line count and the "rendered in N ms" badge are all handled by `assets/js/page.js` — a new library page only needs the two render functions.
+Data loading, palette, dark mode, the source panel, the line count and the render badge are handled by `assets/js/page.js`.
 
 ## Data
 
-In use: `energy-mix.csv` (the hero chart — 5 series × 27 years) and `life-expectancy.csv` (the gap test — deliberately has missing years). Both synthetic but shape-realistic, generated once and never regenerated, so every library draws byte-identical input.
+Full provenance and trimming steps: [assets/data/README.md](./assets/data/README.md).
 
-Retired but kept: `co2-mauna-loa-monthly.csv` (real NOAA Mauna Loa monthly CO₂, reused from the `co2-ppm` dataset in the neighbouring `datapressr` repo) and `btc-usd-daily.csv`. Neither differentiated the libraries — see ANALYSIS.md, "Why the method changed".
+| File | Test | Source | Licence |
+|---|---|---|---|
+| `oil-brent-daily.csv`, `oil-wti-daily.csv` | oil | U.S. Energy Information Administration spot prices, via the DataPressr snapshot of 2026-09-05 | public domain (DataPressr copy PDDL-1.0) |
+| `gb-grid-halfhourly.csv` | grid | NESO, Historic GB Generation Mix | NESO Open Data Licence |
+| `npm-chart-libs-weekly.csv` | npm | npm download counts API | npm registry terms |
+| `life-expectancy.csv` | missing data | v1 snapshot with deliberate gaps; source not recorded | unknown |
 
-## License
+Retired and unused: `energy-mix.csv` (the synthetic September hero), `co2-mauna-loa-monthly.csv`, `btc-usd-daily.csv`.
 
-MIT for the code in this repo. Each charting library keeps its own license — noted on its demo page and in EVALUATION.md.
+## Licence
+
+MIT for the code in this repo. Each charting library keeps its own licence, shown on its demo page. Data licences as above.
