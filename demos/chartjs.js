@@ -50,7 +50,10 @@ mountDemo({
       "Core build + <code>chartjs-plugin-annotation@3.1.0</code> (~30 KB) for the band, the reference line, the leader line with its arrowhead, the annotation text and the end-of-line labels. The end labels are <code>type: \"label\"</code> annotations at the last x value, with the plugin's <code>clip</code> turned off so they can sit in the right-hand padding, de-collided by the shared <code>spreadLabels()</code> helper like the other libraries.",
   },
   charts: {
-    hero(host, { hero }, { theme }) {
+    // RETIRED v1 hero (synthetic energy data), kept only as a reference for
+    // the annotation machinery. Not in KEYS, so it never runs; HERO no longer
+    // has the fields it reads. Delete once hero/grid/npm are built (docs/TESTS.md).
+    energyV1(host, { hero }, { theme }) {
       const { band, ref, note } = HERO;
       const w = host.clientWidth || 640;
       const h = Math.max(280, Math.min(380, Math.round(w * 0.55)));

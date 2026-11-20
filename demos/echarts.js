@@ -46,7 +46,10 @@ mountDemo({
       "Full build via UMD, SVG renderer for parity with the others (Canvas is the default and is faster on very large series). Every piece of the hero chart's furniture is a first-class option: <code>series.endLabel</code> for the direct labels, <code>markArea</code> for the band, <code>markLine</code> for the reference line and the leader, <code>markPoint</code> for the annotation text.",
   },
   charts: {
-    hero(host, { hero }, { theme }) {
+    // RETIRED v1 hero (synthetic energy data), kept only as a reference for
+    // the annotation machinery. Not in KEYS, so it never runs; HERO no longer
+    // has the fields it reads. Delete once hero/grid/npm are built (docs/TESTS.md).
+    energyV1(host, { hero }, { theme }) {
       const { h } = heroBox(host);
       const c = chart(host, h);
       const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);

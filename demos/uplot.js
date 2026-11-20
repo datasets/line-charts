@@ -35,7 +35,10 @@ mountDemo({
       "The hero chart uses three hooks: <code>drawClear</code> (before anything) for the band, <code>drawAxes</code> (after the gridlines, before the series) for the reference line, and <code>draw</code> (after the series) for the leader, the arrowhead and every label. Every size is multiplied by the static <code>uPlot.pxRatio</code> because hooks work in device pixels, not CSS pixels. Drag horizontally on the life-expectancy chart to zoom; double-click to reset.",
   },
   charts: {
-    hero(host, { hero }, { theme }) {
+    // RETIRED v1 hero (synthetic energy data), kept only as a reference for
+    // the annotation machinery. Not in KEYS, so it never runs; HERO no longer
+    // has the fields it reads. Delete once hero/grid/npm are built (docs/TESTS.md).
+    energyV1(host, { hero }, { theme }) {
       const { band, ref, note } = HERO;
       const w = host.clientWidth || 640;
       const h = Math.max(280, Math.min(380, Math.round(w * 0.55)));

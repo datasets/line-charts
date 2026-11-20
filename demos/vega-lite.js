@@ -43,7 +43,10 @@ mountDemo({
       "Loaded as three UMD scripts (~320 KB together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file. In the hero spec, emphasis is done with three encoding scales (colour, size, opacity) over the same line layer rather than five separate layers.",
   },
   charts: {
-    hero(host, { hero }, { theme }) {
+    // RETIRED v1 hero (synthetic energy data), kept only as a reference for
+    // the annotation machinery. Not in KEYS, so it never runs; HERO no longer
+    // has the fields it reads. Delete once hero/grid/npm are built (docs/TESTS.md).
+    energyV1(host, { hero }, { theme }) {
       const { w, h } = heroBox(host);
       const { band, ref, note } = HERO;
       const order = [...HERO.context, ...HERO.emphasis];   // draw order = data order

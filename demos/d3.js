@@ -74,7 +74,10 @@ mountDemo({
       "The hero chart below is standalone — scales, axes, gridlines, band, reference line, leader line, arrowhead and labels are all in the snippet, nothing hidden in a helper. The life-expectancy card uses a shared ~35-line <code>mkFrame()</code> helper shown at the top of the module instead.",
   },
   charts: {
-    hero(host, { hero }, { theme }) {
+    // RETIRED v1 hero (synthetic energy data), kept only as a reference for
+    // the annotation machinery. Not in KEYS, so it never runs; HERO no longer
+    // has the fields it reads. Delete once hero/grid/npm are built (docs/TESTS.md).
+    energyV1(host, { hero }, { theme }) {
       const { band, ref, note } = HERO;
       const w = host.clientWidth || 640;
       const h = Math.max(280, Math.min(380, Math.round(w * 0.55)));

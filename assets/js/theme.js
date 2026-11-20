@@ -1,9 +1,11 @@
 /* Shared theme surface for every demo.
  * The palette matches assets/css/site.css (dataviz reference palette,
- * slots 1–5) so libraries are compared on rendering, not colour choice. */
+ * slots 1–8, validated as an ordered set) so libraries are compared on
+ * rendering, not colour choice. Slots 6–8 are not in site.css; only the npm
+ * chart (seven coloured lines) uses them. */
 
-export const PALETTE_LIGHT = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"];
-export const PALETTE_DARK  = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181"];
+export const PALETTE_LIGHT = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"];
+export const PALETTE_DARK  = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"];
 
 export const FONT_SANS =
   'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';

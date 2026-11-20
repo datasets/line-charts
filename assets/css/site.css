@@ -215,3 +215,12 @@ table.scores tbody tr:hover { background: color-mix(in srgb, var(--text-primary)
 .doc tr:last-child td { border-bottom: none; }
 .doc-source { font-size: 13px; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); max-width: 78ch; }
 .doc > :not(.table-scroll) { max-width: 78ch; }
+
+/* ---- view switch inside a chart card (page.js viewSwitch) ---------- */
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 0 0 8px; }
+.seg button {
+  border: 0; background: var(--surface); color: var(--text-secondary);
+  font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer;
+}
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }

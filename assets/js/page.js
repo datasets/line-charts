@@ -1,14 +1,23 @@
 /* Demo-page framework. Each library's page calls mountDemo() with a render
- * function per shared dataset and gets an identical layout: header, stacked
- * cards, a live "rendered in N ms" badge, and the exact source of each render
- * function — expanded for the hero chart, collapsed for the rest. */
+ * function per chart key and gets an identical layout: header, stacked
+ * cards, a live "rendered in N ms" badge, an optional "N points · step"
+ * line, and the exact source of each render function.
+ *
+ * A render function is  (host, data, ctx) => cleanup | Promise<cleanup> | void
+ *   host  an empty div at the card's content width
+ *   data  { [key]: dataset }  — only this chart's dataset, loaded lazily
+ *   ctx   { theme, datasets, key, report }
+ *         report({ points, step, note }) puts "rendered N points (step)" on
+ *         the card; for grid it is required (see docs/TESTS.md).
+ * The badge stops when the returned promise resolves AND two animation
+ * frames have passed, i.e. after the library has actually painted. */
 
-import { loadAll, DATASETS } from "./data.js";
+import { loadFor, DATASETS } from "./data.js";
 import { theme, onThemeChange, installThemeToggle, restoreTheme } from "./theme.js";
 
 restoreTheme();
 
-const KEYS = ["hero", "life"];
+export const KEYS = ["hero", "grid", "npm", "life"];
 
 /* `?chart=<key>` renders one dataset instead of all of them; `&bare=1` also
  * drops the page header and source panel. Together they give an embeddable
@@ -22,98 +31,133 @@ function viewOptions() {
   };
 }
 
+const painted = () =>
+  new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
 export async function mountDemo({ meta, charts }) {
   document.title = `${meta.name} — line-charts`;
   const { keys, bare } = viewOptions();
   const root = document.getElementById("app");
   root.innerHTML = shell(meta, keys, bare);
   if (!bare) installThemeToggle(root.querySelector(".toggle"));
+  const embedded = parent !== window;
+  const tell = (msg) => embedded && parent.postMessage({ lib: meta.name, ...msg }, "*");
 
-  let data;
-  try {
-    data = await loadAll();
-  } catch (err) {
-    root.querySelectorAll(".chart-host").forEach((h) => (h.innerHTML = errorHTML(err)));
-    console.error(err);
-    return;
-  }
-  const hosts = {};
-  const cleanups = {};
-  const generation = {};   // bumps on every render, so a slow async render that
-                           // finishes after a newer one has started is discarded
+  const hosts = {}, cleanups = {}, generation = {}, data = {}, visible = {};
 
   for (const key of keys) {
     const card = root.querySelector(`[data-card="${key}"]`);
+    hosts[key] = card.querySelector(".chart-host");
+    if (typeof charts[key] !== "function") {
+      // not built yet in this library: a tidy card, no line count, no error
+      hosts[key].innerHTML = notBuiltHTML(meta.name, key);
+      card.querySelector(".src")?.remove();
+      card.querySelectorAll(".metric").forEach((m) => m.remove());
+      card.querySelector("details")?.setAttribute("open", "");   // show what it will be judged on
+      tell({ type: "lc:lines", key, lines: null });
+      tell({ type: "lc:rendered", key, ms: null });
+      continue;
+    }
     const src = sourceOf(charts[key]);
     const lines = src.split("\n").length;
     card.querySelector(".src pre")?.replaceChildren(src);
-    const count = card.querySelector("[data-lines]");
-    if (count) count.textContent = lines;
-    hosts[key] = card.querySelector(".chart-host");
+    card.querySelectorAll("[data-lines]").forEach((el) => (el.textContent = lines));
     // the front-page grid embeds these pages and reads the measured count
-    if (parent !== window) {
-      parent.postMessage({ type: "lc:lines", lib: meta.name, key, lines }, "*");
-    }
+    tell({ type: "lc:lines", key, lines });
   }
+  const built = keys.filter((k) => typeof charts[k] === "function");
 
-  async function renderOne(key, ctx) {
+  async function renderOne(key) {
     const gen = (generation[key] = (generation[key] || 0) + 1);
-    try {
-      cleanups[key]?.();
-    } catch {}
+    try { cleanups[key]?.(); } catch {}
     cleanups[key] = null;
     const card = hosts[key];
+    const metric = card.parentElement.querySelector("[data-ms]");
+    const pts = card.parentElement.querySelector("[data-points]");
+    if (!data[key]) {
+      card.innerHTML = `<p class="card__desc" style="padding:18px 0;color:var(--text-muted)">loading data…</p>`;
+      try {
+        const tl = performance.now();
+        data[key] = await loadFor(key);
+        if (pts) pts.title = `data loaded and parsed in ${Math.round(performance.now() - tl)} ms`;
+      } catch (err) {
+        card.innerHTML = errorHTML(err);
+        console.error(key, err);
+        return;
+      }
+      if (gen !== generation[key]) return;
+    }
     card.innerHTML = "";
     // render into a padding-free child, so a library that sizes itself from
     // host.clientWidth gets the content width and does not overflow the card
     const host = card.appendChild(document.createElement("div"));
-    const badge = card.parentElement.querySelector(".metric b");
+    let reported = null;
+    const report = (r) => { reported = r; };
+    const ctx = { theme: theme(), datasets: DATASETS, key, report };
     const t0 = performance.now();
     try {
-      // a render fn returns cleanup, or a promise of cleanup (async libs)
-      let out = charts[key](host, data, { ...ctx, key });
+      let out = charts[key](host, { [key]: data[key] }, ctx);
       if (out && typeof out.then === "function") out = await out;
       const cleanup = typeof out === "function" ? out : null;
-      if (gen !== generation[key]) {
-        // superseded while rendering: tear this one down, keep the newer one
-        try { cleanup?.(); } catch {}
-        return;
-      }
+      if (gen !== generation[key]) { try { cleanup?.(); } catch {} return; }
       cleanups[key] = cleanup;
+      await painted();
+      if (gen !== generation[key]) return;
     } catch (err) {
       if (gen !== generation[key]) return;
       card.innerHTML = errorHTML(err);
       console.error(key, err);
     }
     const ms = performance.now() - t0;
-    if (badge) badge.textContent = ms < 1 ? "<1 ms" : `${ms.toFixed(ms < 60 ? 1 : 0)} ms`;
+    if (metric) metric.textContent = ms < 1 ? "<1 ms" : `${ms.toFixed(ms < 60 ? 1 : 0)} ms`;
+    if (pts) pts.innerHTML = reported ? pointsHTML(reported) : "";
+    tell({ type: "lc:rendered", key, ms, ...(reported || {}) });
   }
 
-  function renderAll() {
-    const ctx = { theme: theme(), datasets: DATASETS };
-    keys.forEach((key) => renderOne(key, ctx));
-  }
+  const renderVisible = () => built.forEach((k) => visible[k] && renderOne(k));
 
-  renderAll();
-  onThemeChange(renderAll);
+  /* Render a card when it first scrolls near the viewport, so the full page
+   * does not fetch the 5.5 MB grid file before you get there. */
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const key = e.target.dataset.card;
+      if (e.isIntersecting && !visible[key]) { visible[key] = true; renderOne(key); }
+    }
+  }, { rootMargin: "300px 0px" });
+  built.forEach((k) => io.observe(root.querySelector(`[data-card="${k}"]`)));
+
+  onThemeChange(renderVisible);
   // an embedded page reports its own height so the grid can size the iframe
-  if (bare && parent !== window) {
-    const post = () =>
-      parent.postMessage({ type: "lc:size", height: Math.ceil(root.getBoundingClientRect().height) }, "*");
+  if (bare && embedded) {
+    const post = () => tell({ type: "lc:size", height: Math.ceil(root.getBoundingClientRect().height) });
     new ResizeObserver(post).observe(root);
     post();
   }
-  let t;
+  let t, lastW = innerWidth;
   addEventListener("resize", () => {
+    if (innerWidth === lastW) return;   // height-only changes (mobile URL bar) don't re-render
+    lastW = innerWidth;
     clearTimeout(t);
-    t = setTimeout(renderAll, 180);
+    t = setTimeout(renderVisible, 180);
   });
 }
 
 /* ---------------------------------------------------------------- */
 
 const errorHTML = (err) =>
-  `<pre style="color:var(--series-2)">${String((err && err.stack) || err)}</pre>`;
+  `<pre style="color:var(--series-2);white-space:pre-wrap;font-size:11px">${String((err && err.stack) || err)}</pre>`;
+
+const notBuiltHTML = (lib, key) =>
+  `<div class="not-built" style="margin:10px 0 14px;padding:28px 16px;border:1px dashed var(--border);border-radius:10px;text-align:center;color:var(--text-muted);font-size:12.5px">
+     Not built yet in ${lib}: <b style="color:var(--text-secondary);font-weight:600">${DATASETS[key].label}</b>.
+   </div>`;
+
+const pointsHTML = ({ points, step, note }) =>
+  [
+    points != null ? `<b>${Number(points).toLocaleString("en")}</b> points` : "",
+    step ? `step: <b>${step}</b>` : "",
+    note || "",
+  ].filter(Boolean).join(" · ");
 
 function shell(meta, keys, bare) {
   if (bare) {
@@ -146,22 +190,25 @@ function shell(meta, keys, bare) {
   </header>
   <main class="wrap" style="padding-bottom:60px">
     <div style="display:grid;gap:22px;margin-top:18px">
-      ${keys.map((k) => cardHTML(k)).join("")}
+      ${keys.map((k) => cardHTML(k, false, meta)).join("")}
     </div>
   </main>`;
 }
 
-function cardHTML(key, bare = false) {
+function cardHTML(key, bare = false, meta = {}) {
   const d = DATASETS[key];
   const hero = key === "hero";
+  const points = `<span class="metric" data-points style="display:block;margin-right:auto"></span>`;
   /* Embedded in the front-page grid the card is only the chart: the grid
    * already says which library and which dataset this is. The timing badge
-   * stays, because seeing it per cell is half the point of a live grid. */
+   * and the points/step line stay, because seeing them per cell is half the
+   * point of a live grid. */
   if (bare) {
     return `
     <section class="card" data-card="${key}" style="border:0;background:transparent">
       <div class="chart-host" style="min-height:0;padding:4px 10px 0"></div>
-      <p style="margin:2px 10px 6px;text-align:right"><span class="metric">rendered <b>—</b></span></p>
+      <p style="margin:2px 10px 6px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+        ${points}<span class="metric">rendered <b data-ms>—</b></span></p>
     </section>`;
   }
   // the hero chart's source is the point of the site, so it is open by
@@ -170,19 +217,24 @@ function cardHTML(key, bare = false) {
     ? `<div class="src src--open">
          <div class="src__head">source · <b data-lines>—</b> lines</div><pre></pre>
        </div>`
-    : `<details class="src"><summary>source</summary><pre></pre></details>`;
+    : `<details class="src"><summary>source · <span data-lines>—</span> lines</summary><pre></pre></details>`;
+  const note = meta.cardNotes?.[key];
   return `
   <section class="card" data-card="${key}">
     <div class="card__head">
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
         <h2 class="card__title">${d.title}</h2>
-        <span class="metric">rendered <b>—</b></span>
+        <span class="metric" style="white-space:nowrap">rendered <b data-ms>—</b></span>
       </div>
       <p class="card__desc">${d.desc}</p>
-      <p class="card__desc" style="color:var(--text-muted)"><b style="font-weight:600">Stresses:</b> ${d.stress}</p>
+      <details class="card__desc" style="color:var(--text-muted)"><summary style="cursor:pointer">Judged on ${d.requirements.length} requirement${d.requirements.length > 1 ? "s" : ""}</summary>
+        <ol style="margin:4px 0 2px;padding-left:20px">${d.requirements.map((r) => `<li>${r}</li>`).join("")}</ol>
+      </details>
+      ${note ? `<p class="card__desc" style="margin-top:6px"><b style="font-weight:600">${meta.name}:</b> ${note}</p>` : ""}
+      <p class="card__desc" style="margin-top:4px;display:flex">${points}</p>
     </div>
     <div class="chart-host"></div>
-    ${bare ? "" : source}
+    ${source}
   </section>`;
 }
 
@@ -225,4 +277,30 @@ export function spreadLabels(items, gap, [lo, hi]) {
     if (out[i].v < lo) out[i] = { ...out[i], v: lo + i * gap };
   }
   return out;
+}
+
+/* A segmented control for switching a chart's view (the npm test: all /
+ * indexed / small multiples). Shared chrome, not chart code, so every
+ * library gets the same one and none pays for it in its line count.
+ *   views     { value: "button text" }
+ *   onSelect  (value, out) => void|cleanup — fill `out`, a fresh empty div
+ * Returns a cleanup that runs the current view's cleanup. */
+export function viewSwitch(host, views, onSelect, initial = Object.keys(views)[0]) {
+  const bar = host.appendChild(document.createElement("div"));
+  bar.className = "seg";
+  bar.setAttribute("role", "group");
+  bar.innerHTML = Object.entries(views)
+    .map(([v, t]) => `<button type="button" value="${v}">${t}</button>`).join("");
+  const out = host.appendChild(document.createElement("div"));
+  let cleanup = null;
+  const select = (v) => {
+    try { cleanup?.(); } catch {}
+    bar.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.value === v)));
+    out.replaceChildren();
+    const r = onSelect(v, out);
+    cleanup = typeof r === "function" ? r : null;
+  };
+  bar.addEventListener("click", (e) => e.target.value && select(e.target.value));
+  select(initial);
+  return () => { try { cleanup?.(); } catch {} };
 }

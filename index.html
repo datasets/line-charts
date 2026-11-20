@@ -93,11 +93,13 @@
   <div class="pick">
     <span class="pick__label">Chart:</span>
     <span class="pick__opts" role="group" aria-label="Choose the chart every library draws">
-      <button type="button" data-chart="hero" aria-pressed="true">The annotated chart</button>
-      <button type="button" data-chart="life" aria-pressed="false">Missing-data test</button>
+      <button type="button" data-chart="hero" aria-pressed="true">Oil, 1986–2026</button>
+      <button type="button" data-chart="grid" aria-pressed="false">Grid, half-hourly</button>
+      <button type="button" data-chart="npm" aria-pressed="false">npm downloads</button>
+      <button type="button" data-chart="life" aria-pressed="false">Missing data</button>
     </span>
     <span class="pick__label" data-caption>
-      One chart, seven libraries. Line counts are measured from the code that just ran.
+      Two oil benchmarks, forty years, one negative price. Line counts are measured from the code that just ran.
     </span>
   </div>
 
@@ -143,15 +145,12 @@
     </a>
   </div>
 
-  <h2>The two test charts</h2>
-  <ul class="tight">
-    <li><strong>The annotated chart</strong> — electricity generation by source, 5 series × 27 years. Direct end-of-line labels, an annotation with a leader line at the 2011 coal/gas crossover, a shaded 2008–09 band behind the lines, a dashed 100 TWh reference line, wind and solar emphasised against three muted series, and none of it allowed to collide when the chart narrows.</li>
-    <li><strong>Missing-data test</strong> — life expectancy, five countries, with deliberate missing years. Does a <code>null</code> break the line or silently bridge it? Only one library gets this right without being told.</li>
-  </ul>
+  <h2>The test charts</h2>
+  <ul class="tight" id="tests"></ul>
   <p class="lede">
-    Retired after v1: CO₂ at Mauna Loa and BTC-USD daily. Both were "plot a line and let the defaults
-    do the work", which every library here is good at, so neither told you anything. Their CSVs are
-    still in <code>assets/data/</code>.
+    Retired: CO₂ at Mauna Loa and BTC-USD daily (v1), and the synthetic electricity-mix hero (v2).
+    The first two were "plot a line and let the defaults do the work"; the third was made-up data.
+    Their CSVs are still in <code>assets/data/</code>.
   </p>
 
   <h2>Considered, not included (yet)</h2>
@@ -172,6 +171,7 @@
 </div>
 <script type="module">
   import { installThemeToggle, restoreTheme } from "./assets/js/theme.js";
+  import { DATASETS } from "./assets/js/data.js";
   restoreTheme();
   installThemeToggle(document.querySelector(".toggle"));
 
@@ -205,34 +205,77 @@
   const frames = [...grid.querySelectorAll("iframe")];
   const cellOf = (win) => frames.find((f) => f.contentWindow === win)?.closest(".cell");
 
+  /* The grid chart is 1.25M points from a 5.5 MB file: seven of those at once
+   * would fight over one CPU and make every timing meaningless. So for grid
+   * the cells render one after another, each starting when the previous one
+   * reports it has painted (or after 60 s). Other charts load as usual. */
+  let queue = [], timer;
+  const WAITING = `<p style="font:12.5px system-ui;color:#898781;text-align:center;margin-top:120px">
+    waiting its turn: grid cells render one at a time so timings are not contended</p>`;
+  function next() {
+    clearTimeout(timer);
+    const item = queue.shift();
+    if (!item) return;
+    const [f, url] = item;
+    f.removeAttribute("srcdoc");
+    f.src = url;
+    timer = setTimeout(next, 60000);
+  }
+
   addEventListener("message", (e) => {
     const cell = cellOf(e.source);
     if (!cell || !e.data || typeof e.data !== "object") return;
     if (e.data.type === "lc:lines") {
-      cell.querySelector("[data-lines]").textContent = e.data.lines;
+      cell.querySelector("[data-lines]").textContent = e.data.lines ?? "—";
     } else if (e.data.type === "lc:size" && e.data.height > 0) {
       cell.querySelector("iframe").style.height = e.data.height + "px";
+    } else if (e.data.type === "lc:rendered" && e.data.key === current) {
+      next();
     }
   });
 
   const CAPTION = {
-    hero: "One chart, seven libraries. Line counts are measured from the code that just ran.",
+    hero: "Two oil benchmarks, forty years, one negative price. Line counts are measured from the code that just ran.",
+    grid: "1.25M points. Cells render one at a time so each timing is uncontended; each says which decimation step it needed.",
+    npm: "22 packages on a log scale: the seven in colour. Hover to pick out a line; switch to indexed or small multiples.",
     life: "Five countries with missing years. Watch which lines break at a gap and which bridge it.",
   };
   const caption = document.querySelector("[data-caption]");
-  document.querySelectorAll(".pick__opts button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const chart = btn.dataset.chart;
-      document.querySelectorAll(".pick__opts button").forEach((b) =>
-        b.setAttribute("aria-pressed", String(b === btn)));
-      caption.textContent = CAPTION[chart];
-      frames.forEach((f) => {
-        const slug = f.closest(".cell").dataset.lib;
-        f.closest(".cell").querySelector("[data-lines]").textContent = "—";
-        f.src = `./demos/${slug}?chart=${chart}&bare=1`;
-      });
+  const buttons = [...document.querySelectorAll(".pick__opts button")];
+  let current;
+  function show(chart) {
+    current = chart;
+    buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.chart === chart)));
+    caption.textContent = CAPTION[chart];
+    clearTimeout(timer);
+    queue = [];
+    frames.forEach((f, i) => {
+      const slug = f.closest(".cell").dataset.lib;
+      const url = `./demos/${slug}?chart=${chart}&bare=1`;
+      f.closest(".cell").querySelector("[data-lines]").textContent = "—";
+      if (chart === "grid") {
+        f.loading = "eager";
+        f.removeAttribute("src");
+        f.srcdoc = WAITING;
+        queue.push([f, url]);
+      } else {
+        f.removeAttribute("srcdoc");
+        f.src = url;
+      }
     });
-  });
+    if (chart === "grid") next();
+  }
+  buttons.forEach((btn) => btn.addEventListener("click", () => {
+    history.replaceState(null, "", btn.dataset.chart === "hero" ? location.pathname : "#" + btn.dataset.chart);
+    show(btn.dataset.chart);
+  }));
+  const fromHash = location.hash.slice(1);
+  if (fromHash in CAPTION && fromHash !== "hero") show(fromHash);
+  else current = "hero";
+
+  // the test-chart list reads the same titles and requirements as the cards
+  document.getElementById("tests").innerHTML = Object.values(DATASETS).map((d) =>
+    `<li><strong>${d.label}</strong> — ${d.title}. ${d.desc}</li>`).join("");
 </script>
 </body>
 </html>

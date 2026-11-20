@@ -41,7 +41,10 @@ mountDemo({
       "Using the full <code>plotly.js-dist-min</code> for convenience. In the hero chart the band and the reference line are <code>layout.shapes</code>, the annotation is a single <code>layout.annotations</code> entry with <code>showarrow</code> (Plotly draws the leader and the arrowhead), and the end-of-line labels are arrowless annotations — Plotly does not lay those out for you, so they go through the shared <code>spreadLabels()</code> helper.",
   },
   charts: {
-    hero(host, { hero }, { theme }) {
+    // RETIRED v1 hero (synthetic energy data), kept only as a reference for
+    // the annotation machinery. Not in KEYS, so it never runs; HERO no longer
+    // has the fields it reads. Delete once hero/grid/npm are built (docs/TESTS.md).
+    energyV1(host, { hero }, { theme }) {
       const { w, h } = heroBox(host);
       const { band, ref, note } = HERO;
       const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
