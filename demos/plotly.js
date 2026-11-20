@@ -231,7 +231,8 @@ mountDemo({
       let drawn;                                // the first view's newPlot promise: the badge waits for it
       const cleanup = viewSwitch(host, { all: "All 22", indexed: "Indexed", multiples: "Small multiples" },
         (v, out) => {
-          drawn ??= v === "multiples" ? multiples(out) : lines(out, v === "indexed");
+          const p = v === "multiples" ? multiples(out) : lines(out, v === "indexed");
+          drawn ??= p;
           return () => Plotly.purge(out);
         });
       return drawn.then(() => cleanup);
