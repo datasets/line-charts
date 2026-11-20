@@ -85,11 +85,12 @@ mountDemo({
     },
 
     life(host, { life }, { theme }) {
-      // Plot breaks the line at null y automatically — no .defined() needed
+      // a null y breaks the line by default — no .defined() needed
       host.append(
         base(theme, {
           year: true,
           legend: true,
+          color: { domain: life.countries, range: theme.palette, legend: true },
           width: host.clientWidth || 440,
           y: { label: null, grid: true, domain: [35, 88] },
           marks: [

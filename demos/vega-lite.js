@@ -69,7 +69,7 @@ mountDemo({
       const bySource = (range) => ({ field: "source", type: "nominal", legend: null,
         scale: { domain: order, range } });
       return embed(host, {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v6.json",
         width: w - 106, height: h - 38,
         padding: { left: 42, top: 14, right: 64, bottom: 24 },
         autosize: { type: "none" },
@@ -111,18 +111,17 @@ mountDemo({
 
     life(host, { life }, { theme }) {
       return embed(host, {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v6.json",
         width: Math.max((host.clientWidth || 480) - 90, 300), height: H,
         data: { values: life.long },
         mark: { type: "line", strokeWidth: 2, interpolate: "monotone", tooltip: true },
         encoding: {
           x: { field: "year", type: "quantitative", title: null, axis: { format: "d" } },
           y: { field: "value", type: "quantitative", scale: { domain: [35, 88] }, title: null },
-          color: { field: "country", type: "nominal", title: null, legend: { orient: "bottom-right" } },
+          color: { field: "country", type: "nominal", title: null, scale: { domain: life.countries }, legend: { orient: "bottom-right" } },
         },
       }, theme);
-      // the null rows are handed to Vega-Lite intact, and it bridges the gaps
-      // anyway: its default invalid-data handling filters them out of the path.
+      // null rows break the line by default (Vega-Lite's invalid-data handling)
     },
   },
 });

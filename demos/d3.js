@@ -167,7 +167,7 @@ mountDemo({
         yNice: false,
         pad: { top: 34 },
       });
-      // .defined() is how D3 breaks the line across missing years
+      // without .defined(), D3 cannot draw a null at all — the path breaks with NaN
       const line = d3
         .line()
         .defined((d) => d.v != null)
@@ -177,10 +177,6 @@ mountDemo({
       series.forEach((s, i) => {
         svg.append("path").datum(s.values).attr("fill", "none")
           .attr("stroke", theme.palette[i]).attr("stroke-width", 2).attr("d", line);
-        // faint bridge showing where data is missing
-        svg.append("path").datum(s.values.filter((d) => d.v != null)).attr("fill", "none")
-          .attr("stroke", theme.palette[i]).attr("stroke-width", 1).attr("stroke-dasharray", "2 3")
-          .attr("stroke-opacity", 0.4).attr("d", d3.line().x((d) => x(d.year)).y((d) => y(d.v)));
       });
       drawLegend(svg, life.countries, theme.palette, width);
     },

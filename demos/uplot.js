@@ -143,7 +143,7 @@ mountDemo({
     life(host, { life }, { theme }) {
       const data = [
         life.years,
-        ...life.countries.map((c) => life.wide.map((r) => r[c])),  // nulls → gaps
+        ...life.countries.map((c) => life.wide.map((r) => r[c])),  // nulls break the line by default
       ];
       const u = new uPlot({
         width: W(host), height: 300,
@@ -151,7 +151,7 @@ mountDemo({
         series: [
           { label: "year" },
           ...life.countries.map((c, i) => ({
-            label: c, stroke: theme.palette[i], width: 2, spanGaps: false,
+            label: c, stroke: theme.palette[i], width: 2,
           })),
         ],
         axes: axes(theme, { x: { values: (u, v) => v.map((x) => String(x)) } }),

@@ -138,8 +138,8 @@ mountDemo({
         data: {
           labels: life.years,
           datasets: life.countries.map((c, i) => ({
-            label: c, data: life.wide.map((r) => r[c]),   // nulls → gaps
-            borderColor: theme.palette[i], spanGaps: false, tension: 0.3,
+            label: c, data: life.wide.map((r) => r[c]),   // nulls break the line by default
+            borderColor: theme.palette[i], tension: 0.3,
           })),
         },
         options: common(theme, {

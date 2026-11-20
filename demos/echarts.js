@@ -108,7 +108,7 @@ mountDemo({
           data: life.years, ...axisCommon(theme) },
         yAxis: { type: "value", min: 35, max: 88, ...axisCommon(theme) },
         series: life.countries.map((country) => ({
-          name: country, type: "line", smooth: true, showSymbol: false, connectNulls: false,
+          name: country, type: "line", smooth: true, showSymbol: false,   // nulls break the line by default
           data: life.wide.map((r) => r[country]),
         })),
       }));

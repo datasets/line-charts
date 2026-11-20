@@ -105,8 +105,8 @@ mountDemo({
     life(host, { life }, { theme }) {
       const traces = life.countries.map((c) => ({
         x: life.wide.map((r) => r.year),
-        y: life.wide.map((r) => r[c]),        // nulls kept + connectgaps:false → line breaks
-        name: c, mode: "lines", line: { width: 2, shape: "spline" }, connectgaps: false,
+        y: life.wide.map((r) => r[c]),        // nulls break the line by default
+        name: c, mode: "lines", line: { width: 2, shape: "spline" },
       }));
       return draw(host, traces,
         layout(theme, { yaxis: { gridcolor: theme.grid, range: [35, 88], zeroline: false } }));

@@ -84,15 +84,19 @@ export async function loadLife() {
     value: num(r.life_expectancy),
   }));
   const countries = [...new Set(data.map((d) => d.country))];
-  // wide form with explicit nulls where a year is missing (gap test)
+  // The gap test: a missing year becomes an explicit null in BOTH shapes, so
+  // every library is handed the same nulls. (A row that is simply absent is
+  // not a gap to any of them; they all draw straight across it.)
   const years = [...new Set(data.map((d) => d.year))].sort((a, b) => a - b);
   const byKey = new Map(data.map((d) => [d.country + ":" + d.year, d.value]));
+  const at = (c, y) => (byKey.has(c + ":" + y) ? byKey.get(c + ":" + y) : null);
   const wide = years.map((y) => {
     const o = { year: y };
-    countries.forEach((c) => (o[c] = byKey.has(c + ":" + y) ? byKey.get(c + ":" + y) : null));
+    countries.forEach((c) => (o[c] = at(c, y)));
     return o;
   });
-  return { countries, years, long: data, wide };
+  const long = countries.flatMap((c) => years.map((y) => ({ year: y, country: c, value: at(c, y) })));
+  return { countries, years, long, wide };
 }
 
 export async function loadBTC() {
