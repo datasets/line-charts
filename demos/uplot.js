@@ -144,7 +144,6 @@ mountDemo({
           }],
           ready: [(u) => {
             u.over.append(tip);
-            if (range) zoomTo(u, ...range);                    // open on a window if asked
             // pinch / ctrl+wheel zooms around the cursor; horizontal swipe / shift+wheel pans;
             // a plain vertical wheel still scrolls the page
             u.over.addEventListener("wheel", (e) => {
@@ -183,6 +182,7 @@ mountDemo({
           }],
         },
       }, [g.t, ...GRID.series.map((s) => g[s.key])], host);
+      if (range) zoomTo(u, ...range);                          // open on a window if asked
       report({ points: g.n * g.keys.length, step: g.step,
         note: `solar peak drawn ${mw(g.solar.reduce((a, b) => Math.max(a, b)))} of ${mw(GRID.peaks.solar.mw)}` });
       return () => u.destroy();

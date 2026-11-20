@@ -99,13 +99,13 @@ D3's three render functions are standalone: scales, axes, gridlines and interact
 
 | Library | Oil | Grid | npm |
 |---|---|---|---|
-| D3 | 60 | 98 | 100 |
+| D3 | 60 | 100 | 100 |
 | Observable Plot | 44 | 32 | 77 |
 | Vega-Lite | 53 | 51 | 81 |
-| Plotly.js | 49 | 44 | 81 |
+| Plotly.js | 49 | 44 | 82 |
 | Chart.js | 70 | 67 | 96 |
-| Apache ECharts | 51 | 48 | 85 |
-| µPlot | 65 | 79 | 85 |
+| Apache ECharts | 51 | 49 | 85 |
+| µPlot | 65 | 80 | 85 |
 
 Read a line count together with the requirements it meets. Plot's 32-line grid has no zoom or pan and draws daily means; D3's 98 draws every point with zoom, pan and a crosshair.
 

@@ -44,14 +44,35 @@ function viewOptions() {
  * modifier every library here zooms on. Shared chrome, so no library pays
  * for it in its line count. */
 function guardWheel() {
+  // touch: a vertical swipe scrolls the page natively; horizontal drags and
+  // pinches still reach the chart (libraries set touch-action: none)
+  document.head.insertAdjacentHTML("beforeend",
+    "<style>.chart-host, .chart-host * { touch-action: pan-y !important; }</style>");
+  // ...and keep a one-finger vertical swipe from the library, which would
+  // otherwise preventDefault it to pan: the direction is fixed on the first move
+  let start = null, vertical = false;
+  addEventListener("touchstart", (e) => {
+    start = e.touches.length === 1 ? [e.touches[0].clientX, e.touches[0].clientY] : null;
+    vertical = false;
+  }, { capture: true, passive: true });
+  addEventListener("touchmove", (e) => {
+    if (start && e.touches.length === 1) {
+      const dx = Math.abs(e.touches[0].clientX - start[0]), dy = Math.abs(e.touches[0].clientY - start[1]);
+      if (dx + dy > 4) { vertical = dy > dx; start = null; }
+    }
+    if (vertical) e.stopImmediatePropagation();
+  }, { capture: true, passive: true });
   addEventListener("wheel", (e) => {
     if (!e.isTrusted || e.ctrlKey) return;
     e.stopImmediatePropagation();
     if (!e.metaKey) return;                          // plain wheel: the browser scrolls the page
     e.preventDefault();
-    e.target.dispatchEvent(new WheelEvent("wheel", { bubbles: true, cancelable: true, composed: true,
+    const ev = new WheelEvent("wheel", { bubbles: true, cancelable: true, composed: true,
       clientX: e.clientX, clientY: e.clientY, screenX: e.screenX, screenY: e.screenY,
-      deltaX: e.deltaX, deltaY: e.deltaY, deltaMode: e.deltaMode, ctrlKey: true }));
+      deltaX: e.deltaX, deltaY: e.deltaY, deltaMode: e.deltaMode, ctrlKey: true });
+    // the legacy wheelDelta* that some libraries (zrender) read cannot be set in the constructor
+    for (const k of ["wheelDelta", "wheelDeltaX", "wheelDeltaY"]) Object.defineProperty(ev, k, { value: e[k] });
+    e.target.dispatchEvent(ev);
   }, { capture: true, passive: false });
 }
 
