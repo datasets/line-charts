@@ -35,14 +35,14 @@ mountDemo({
       "The hero chart uses three hooks: <code>drawClear</code> (before anything) for the band, <code>drawAxes</code> (after the gridlines, before the series) for the reference line, and <code>draw</code> (after the series) for the leader, the arrowhead and every label. Every size is multiplied by the static <code>uPlot.pxRatio</code> because hooks work in device pixels, not CSS pixels. Drag horizontally on the life-expectancy chart to zoom; double-click to reset.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { band, ref, note } = HERO;
       const w = host.clientWidth || 640;
       const h = Math.max(280, Math.min(380, Math.round(w * 0.55)));
       const order = [...HERO.context, ...HERO.emphasis];
-      const ink = (s) => (s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
+      const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
       const lead = (s) => HERO.emphasis.includes(s);
-      const last = energy.wide[energy.wide.length - 1];
+      const last = hero.wide[hero.wide.length - 1];
       /* Hooks hand you a raw 2D context in device pixels: every coordinate
        * comes back from valToPos(…, true) and every size — line width, font,
        * gap — has to be scaled by the device pixel ratio by hand. The ratio
@@ -59,19 +59,19 @@ mountDemo({
         width: w, height: h,
         padding: [10, 64, 0, 0],       // room on the right for the end labels
         cursor: { show: false }, legend: { show: false },
-        scales: { x: { time: false, range: [1997, 2023] }, y: { range: [0, HERO.yMax] } },
+        scales: { x: { time: false, range: HERO.x.domain }, y: { range: [0, HERO.yMax] } },
         series: [
           {},
           ...order.map((s) => ({
             label: s, stroke: ink(s), width: lead(s) ? 2.6 : 1.5,
-            alpha: s === "nuclear" ? 0.65 : 1,
+            alpha: HERO.opacity[s] ?? 1,
             paths: uPlot.paths.spline(), points: { show: false },   // monotone cubic
           })),
         ],
         axes: [
           { stroke: theme.muted, size: 30, font: `10px ${theme.fontSans}`,
             grid: { show: false }, ticks: { stroke: theme.baseline, size: 4 },
-            incrs: [5, 10],                // whole years, not 1997.5
+            incrs: [HERO.x.step, 2 * HERO.x.step],   // whole steps, never fractions
             values: (u, vals) => vals.map((v) => String(v)) },
           { stroke: theme.muted, size: 38, font: `10px ${theme.fontSans}`,
             grid: { stroke: theme.grid, width: 1 }, ticks: { show: false } },
@@ -138,7 +138,7 @@ mountDemo({
             },
           ],
         },
-      }, [energy.wide.map((r) => r.year), ...order.map((s) => energy.wide.map((r) => r[s]))], host);
+      }, [hero.wide.map((r) => r.x), ...order.map((s) => hero.wide.map((r) => r[s]))], host);
       return () => u.destroy();
     },
 

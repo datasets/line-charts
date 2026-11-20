@@ -50,16 +50,16 @@ mountDemo({
       "Core build + <code>chartjs-plugin-annotation@3.1.0</code> (~30 KB) for the band, the reference line, the leader line with its arrowhead, the annotation text and the end-of-line labels. The end labels are <code>type: \"label\"</code> annotations at the last x value, with the plugin's <code>clip</code> turned off so they can sit in the right-hand padding, de-collided by the shared <code>spreadLabels()</code> helper like the other libraries.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { band, ref, note } = HERO;
       const w = host.clientWidth || 640;
       const h = Math.max(280, Math.min(380, Math.round(w * 0.55)));
-      const ink = (s) => (s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
+      const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
       const lead = (s) => HERO.emphasis.includes(s);
       const order = [...HERO.context, ...HERO.emphasis];
-      const last = energy.wide[energy.wide.length - 1];
+      const last = hero.wide[hero.wide.length - 1];
       // the annotation plugin places labels but never moves them apart, so
-      // the end labels are de-collided first, in TWh (13px through the y scale)
+      // the end labels are de-collided first, in data units (13px through the y scale)
       const ends = spreadLabels(order.map((s) => ({ s, v: last[s] })),
         (13 * HERO.yMax) / (h - 30), [0, HERO.yMax]);
       const chart = new Chart(canvas(host, h), {
@@ -67,8 +67,8 @@ mountDemo({
         data: {
           datasets: order.map((s) => ({
             label: s,
-            data: energy.wide.map((r) => ({ x: r.year, y: r[s] })),
-            borderColor: ink(s) + (s === "nuclear" ? "a6" : ""),   // 65% opacity
+            data: hero.wide.map((r) => ({ x: r.x, y: r[s] })),
+            borderColor: Chart.helpers.color(ink(s)).alpha(HERO.opacity[s] ?? 1).rgbString(),
             borderWidth: lead(s) ? 2.6 : 1.5,
             cubicInterpolationMode: "monotone", pointRadius: 0,
           })),
@@ -77,9 +77,9 @@ mountDemo({
           responsive: true, maintainAspectRatio: false, animation: false,
           layout: { padding: { right: 60, top: 6 } },
           scales: {
-            x: { type: "linear", min: 1997, max: 2023, grid: { display: false },
+            x: { type: "linear", min: HERO.x.domain[0], max: HERO.x.domain[1], grid: { display: false },
               border: { color: theme.baseline },
-              ticks: { color: theme.muted, font: { size: 10 }, stepSize: 5,
+              ticks: { color: theme.muted, font: { size: 10 }, stepSize: HERO.x.step,
                 maxRotation: 0, callback: (v) => String(v) } },
             y: { min: 0, max: HERO.yMax, grid: { color: theme.grid, drawTicks: false },
               border: { display: false },
@@ -110,7 +110,7 @@ mountDemo({
                 note: { type: "label", xValue: note.x, yValue: note.textY,
                   content: note.text, color: theme.text, font: { size: 11.5 } },
                 ...Object.fromEntries(ends.map((d) => [d.s, { type: "label",   // direct labels
-                  xValue: 2023, yValue: d.v, content: d.s, color: ink(d.s),
+                  xValue: HERO.x.domain[1], yValue: d.v, content: d.s, color: ink(d.s),
                   position: { x: "start", y: "center" }, xAdjust: 5, padding: 0,
                   font: { size: 11, weight: lead(d.s) ? 600 : 400 } }])),
               },

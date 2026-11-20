@@ -1,5 +1,5 @@
 /* Shared sample data for every demo. Two datasets: the annotated hero
- * chart (energy mix) and the gap-handling test (life expectancy). Loaded
+ * chart (whatever HERO.file names) and the gap-handling test (life expectancy). Loaded
  * once, cached, and handed to every library in the same shape.
  * co2-mauna-loa-monthly.csv and btc-usd-daily.csv are still in
  * assets/data/ — their loaders are below, unused by the pages. */
@@ -49,7 +49,7 @@ let _cache;
 
 export function loadAll() {
   if (_cache) return _cache;
-  _cache = Promise.all([loadEnergy(), loadLife()]).then(([energy, life]) => ({ energy, life }));
+  _cache = Promise.all([loadHero(), loadLife()]).then(([hero, life]) => ({ hero, life }));
   return _cache;
 }
 
@@ -65,17 +65,19 @@ export async function loadCO2() {
     .map((d) => ({ ...d, trend: d.trend != null && d.trend > 0 ? d.trend : null }));
 }
 
-export async function loadEnergy() {
-  const rows = await csv("energy-mix.csv");
-  const sources = ["coal", "gas", "nuclear", "wind", "solar"];
+/* The hero dataset is any wide CSV: the first column is x (a number, e.g. a
+ * year), every other column is one series. Demos see { series, wide, long }
+ * with rows { x, <series>: y } and { x, series, y }. */
+export async function loadHero() {
+  const rows = await csv(HERO.file);
+  const [xCol, ...series] = Object.keys(rows[0]);
   const wide = rows.map((r) => {
-    const o = { year: +r.year };
-    sources.forEach((s) => (o[s] = num(r[s])));
+    const o = { x: +r[xCol] };
+    series.forEach((s) => (o[s] = num(r[s])));
     return o;
   });
-  const long = [];
-  wide.forEach((r) => sources.forEach((s) => long.push({ year: r.year, source: s, twh: r[s] })));
-  return { sources, wide, long };
+  const long = wide.flatMap((r) => series.map((s) => ({ x: r.x, series: s, y: r[s] })));
+  return { series, wide, long };
 }
 
 export async function loadLife() {
@@ -106,13 +108,19 @@ export async function loadBTC() {
   return rows.map((r) => ({ date: new Date(r.date + "T00:00:00Z"), close: num(r.close) }));
 }
 
-/* The hero chart's editorial furniture, identical in all seven libraries so
- * the only variable is what each one costs to build. Every demo reads these
- * numbers rather than hard-coding its own. */
+/* The hero chart: its data and its editorial furniture, identical in all
+ * seven libraries so the only variable is what each one costs to build.
+ * Every demo reads these rather than hard-coding its own, so swapping the
+ * dataset is a new CSV plus this block (and DATASETS.hero below). */
 export const HERO = {
-  emphasis: ["wind", "solar"],          // full colour + weight
-  context: ["coal", "gas", "nuclear"],  // muted to one grey, told apart by their labels
+  file: "energy-mix.csv",
+  unit: "TWh",
+  x: { domain: [1997, 2023], step: 5 }, // end labels sit at domain[1]
   yMax: 190,                            // fixed, so all seven share a frame
+  emphasis: ["wind", "solar"],          // full colour + weight, drawn last
+  context: ["coal", "gas", "nuclear"],  // muted to one grey, told apart by their labels
+  slot: { wind: 2, solar: 3 },          // palette slot for each emphasised series
+  opacity: { nuclear: 0.65 },           // any series not listed is fully opaque
   band: { x0: 2008, x1: 2009, label: "financial crisis", labelY: 181 },
   ref: { y: 100, label: "100 TWh", labelX: 1997.3, labelY: 105 },
   /* The annotation: text centred over a vertical leader that drops into the

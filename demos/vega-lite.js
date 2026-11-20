@@ -43,18 +43,17 @@ mountDemo({
       "Loaded as three UMD scripts (~320 KB together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file. In the hero spec, emphasis is done with three encoding scales (colour, size, opacity) over the same line layer rather than five separate layers.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { w, h } = heroBox(host);
       const { band, ref, note } = HERO;
       const order = [...HERO.context, ...HERO.emphasis];   // draw order = data order
-      const ink = order.map((s) =>
-        s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
-      const colour = { field: "source", type: "nominal", legend: null,
+      const ink = order.map((s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted));
+      const colour = { field: "series", type: "nominal", legend: null,
         scale: { domain: order, range: ink } };
-      const last = energy.wide[energy.wide.length - 1];
-      // no label layout in Vega-Lite either: de-collide in TWh by hand
+      const last = hero.wide[hero.wide.length - 1];
+      // no label layout in Vega-Lite either: de-collide in data units by hand
       const ends = spreadLabels(
-        order.map((s) => ({ source: s, x: 2023, v: last[s],
+        order.map((s) => ({ series: s, x: HERO.x.domain[1], v: last[s],
           weight: HERO.emphasis.includes(s) ? 600 : 400 })),
         (13 * HERO.yMax) / (h - 38), [0, HERO.yMax]);
       /* Layers share one x and one y scale. The helpers below give every
@@ -62,13 +61,13 @@ mountDemo({
        * the shared scale, and the axis config rides on the band layer,
        * which has to be drawn first anyway. */
       const x = (field, axis) => ({ field, type: "quantitative", title: null,
-        scale: { domain: [1997, 2023], nice: false }, ...(axis ? { axis } : {}) });
+        scale: { domain: HERO.x.domain, nice: false }, ...(axis ? { axis } : {}) });
       const y = (field, axis) => ({ field, type: "quantitative", title: null,
         scale: { domain: [0, HERO.yMax] }, ...(axis ? { axis } : {}) });
       const lyr = (values, mark, encoding) => ({ data: { values }, mark, encoding });
       // a discrete size/opacity scale defaults to "point", which reads only the
       // first two range values; "ordinal" maps each series to its own value
-      const bySource = (range) => ({ field: "source", type: "ordinal", legend: null,
+      const bySeries = (range) => ({ field: "series", type: "ordinal", legend: null,
         scale: { type: "ordinal", domain: order, range } });
       return embed(host, {
         $schema: "https://vega.github.io/schema/vega-lite/v6.json",
@@ -87,14 +86,14 @@ mountDemo({
             { x: x("labelX"), y: y("labelY"), text: { field: "label" } }),
           {
             data: { values: order.flatMap((s) =>
-              energy.wide.map((r) => ({ year: r.year, twh: r[s], source: s }))) },
+              hero.wide.map((r) => ({ x: r.x, y: r[s], series: s }))) },
             mark: { type: "line", interpolate: "monotone" },
             encoding: {
-              x: x("year"),
-              y: y("twh"),
+              x: x("x"),
+              y: y("y"),
               color: colour,
-              size: bySource(order.map((s) => (HERO.emphasis.includes(s) ? 2.6 : 1.5))),
-              opacity: bySource(order.map((s) => (s === "nuclear" ? 0.65 : 1))),
+              size: bySeries(order.map((s) => (HERO.emphasis.includes(s) ? 2.6 : 1.5))),
+              opacity: bySeries(order.map((s) => HERO.opacity[s] ?? 1)),
             },
           },
           // leader line: a rule, and a point shaped as a triangle for the head,
@@ -107,7 +106,7 @@ mountDemo({
             { x: x("x"), y: y("textY"), text: { field: "text" } }),
           lyr(ends, { type: "text", align: "left", dx: 5, fontSize: 11,
             fontWeight: { expr: "datum.weight" } },        // weight is not a channel
-            { x: x("x"), y: y("v"), text: { field: "source" }, color: colour }),
+            { x: x("x"), y: y("v"), text: { field: "series" }, color: colour }),
         ],
       }, theme);
     },

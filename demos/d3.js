@@ -74,16 +74,16 @@ mountDemo({
       "The hero chart below is standalone — scales, axes, gridlines, band, reference line, leader line, arrowhead and labels are all in the snippet, nothing hidden in a helper. The life-expectancy card uses a shared ~35-line <code>mkFrame()</code> helper shown at the top of the module instead.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { band, ref, note } = HERO;
       const w = host.clientWidth || 640;
       const h = Math.max(280, Math.min(380, Math.round(w * 0.55)));
       const m = { top: 14, right: 64, bottom: 24, left: 42 };
-      const ink = (s) => (s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
+      const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
       const lead = (s) => HERO.emphasis.includes(s);
       const svg = d3.select(host).append("svg")
         .attr("viewBox", `0 0 ${w} ${h}`).attr("width", w).attr("height", h);
-      const x = d3.scaleLinear([1997, 2023], [m.left, w - m.right]);
+      const x = d3.scaleLinear(HERO.x.domain, [m.left, w - m.right]);
       const y = d3.scaleLinear([0, HERO.yMax], [h - m.bottom, m.top]);
 
       // 1. the band, first so everything else lands on top of it
@@ -117,13 +117,13 @@ mountDemo({
         .attr("fill", theme.muted).attr("font-size", 10).text(ref.label);
 
       // 4. the lines: muted context first, emphasis over the top
-      const line = d3.line().x((d) => x(d.year)).y((d) => y(d.v)).curve(d3.curveMonotoneX);
+      const line = d3.line().x((d) => x(d.x)).y((d) => y(d.v)).curve(d3.curveMonotoneX);
       [...HERO.context, ...HERO.emphasis].forEach((s) => {
         svg.append("path")
-          .datum(energy.wide.map((r) => ({ year: r.year, v: r[s] })))
+          .datum(hero.wide.map((r) => ({ x: r.x, v: r[s] })))
           .attr("fill", "none").attr("stroke", ink(s))
           .attr("stroke-width", lead(s) ? 2.6 : 1.5)
-          .attr("stroke-opacity", s === "nuclear" ? 0.65 : 1)
+          .attr("stroke-opacity", HERO.opacity[s] ?? 1)
           .attr("d", line);
       });
 
@@ -140,7 +140,7 @@ mountDemo({
         .attr("fill", theme.text).attr("font-size", 11.5).text(note.text);
 
       // 6. direct labels, pushed apart in pixel space
-      const last = energy.wide[energy.wide.length - 1];
+      const last = hero.wide[hero.wide.length - 1];
       spreadLabels(
         [...HERO.context, ...HERO.emphasis].map((s) => ({ s, v: y(last[s]) })),
         13, [m.top, h - m.bottom]

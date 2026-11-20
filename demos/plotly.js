@@ -41,14 +41,14 @@ mountDemo({
       "Using the full <code>plotly.js-dist-min</code> for convenience. In the hero chart the band and the reference line are <code>layout.shapes</code>, the annotation is a single <code>layout.annotations</code> entry with <code>showarrow</code> (Plotly draws the leader and the arrowhead), and the end-of-line labels are arrowless annotations — Plotly does not lay those out for you, so they go through the shared <code>spreadLabels()</code> helper.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { w, h } = heroBox(host);
       const { band, ref, note } = HERO;
-      const ink = (s) => (s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
+      const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
       const lead = (s) => HERO.emphasis.includes(s);
-      const last = energy.wide[energy.wide.length - 1];
+      const last = hero.wide[hero.wide.length - 1];
       // Plotly annotations are positioned in data units, so the minimum
-      // label gap has to be converted from pixels into TWh
+      // label gap has to be converted from pixels into data units
       const perPx = HERO.yMax / (h - 38);   // plot height = h minus the t/b margins
       const ends = spreadLabels(
         [...HERO.context, ...HERO.emphasis].map((s) => ({ s, v: last[s] })),
@@ -58,17 +58,17 @@ mountDemo({
       return draw(
         host,
         [...HERO.context, ...HERO.emphasis].map((s) => ({
-          x: energy.wide.map((r) => r.year),
-          y: energy.wide.map((r) => r[s]),
+          x: hero.wide.map((r) => r.x),
+          y: hero.wide.map((r) => r[s]),
           name: s, mode: "lines", hoverinfo: "skip",
           line: { color: ink(s), width: lead(s) ? 2.6 : 1.5, shape: "spline" },
-          opacity: s === "nuclear" ? 0.65 : 1,
+          opacity: HERO.opacity[s] ?? 1,
         })),
         layout(theme, {
           width: w, height: h,
           margin: { t: 14, r: 64, b: 24, l: 42 },
           showlegend: false,
-          xaxis: { range: [1997, 2023], dtick: 5, tickformat: "d", showgrid: false,
+          xaxis: { range: HERO.x.domain, dtick: HERO.x.step, tickformat: "d", showgrid: false,
             linecolor: theme.baseline, zeroline: false, fixedrange: true },
           yaxis: { range: [0, HERO.yMax], gridcolor: theme.grid, zeroline: false,
             showline: false, fixedrange: true },
@@ -90,7 +90,7 @@ mountDemo({
             { x: ref.labelX, y: ref.labelY, text: ref.label, showarrow: false,
               xanchor: "left", font: { size: 10, color: theme.muted } },
             ...ends.map((d) => ({                                        // direct labels
-              x: 2023, y: d.v, text: d.s, showarrow: false,
+              x: HERO.x.domain[1], y: d.v, text: d.s, showarrow: false,
               xanchor: "left", xshift: 5, align: "left",
               font: { size: 11, color: ink(d.s), weight: lead(d.s) ? 600 : 400 },
             })),

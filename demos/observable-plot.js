@@ -37,30 +37,29 @@ mountDemo({
       "<code>Plot.plot()</code> returns a detached SVG/figure node — you append it yourself. The hero chart's furniture is all marks: <code>Plot.rect</code> for the band, <code>Plot.ruleY</code> for the reference line, <code>Plot.arrow</code> for the leader, <code>Plot.text</code> for every label. Mark order is z-order, so the band simply goes first.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { w, h } = heroBox(host);
       const { band, ref, note } = HERO;
-      const ink = (s) => (s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
+      const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
       const lead = (s) => HERO.emphasis.includes(s);
-      const last = energy.wide[energy.wide.length - 1];
-      const rows = (s) => energy.wide.map((r) => ({ year: r.year, twh: r[s], source: s }));
+      const last = hero.wide[hero.wide.length - 1];
       // Plot has no label layout, so end labels are de-collided by hand, in
-      // TWh (13px of gap converted through the y scale)
+      // data units (13px of gap converted through the y scale)
       const ends = spreadLabels(
         [...HERO.context, ...HERO.emphasis].map((s) => ({ s, v: last[s] })),
         (13 * HERO.yMax) / (h - 38),
         [0, HERO.yMax]
       );
       const line = (s) =>
-        Plot.lineY(rows(s), { x: "year", y: "twh", curve: "monotone-x",
+        Plot.lineY(hero.wide, { x: "x", y: s, curve: "monotone-x",
           stroke: ink(s), strokeWidth: lead(s) ? 2.6 : 1.5,
-          strokeOpacity: s === "nuclear" ? 0.65 : 1 });
+          strokeOpacity: HERO.opacity[s] ?? 1 });
       host.append(
         Plot.plot({
           width: w, height: h,
           marginTop: 14, marginRight: 64, marginBottom: 24, marginLeft: 42,
           style: { background: "transparent", color: theme.text, fontSize: "11px" },
-          x: { label: null, grid: false, tickFormat: "d", domain: [1997, 2023] },
+          x: { label: null, grid: false, tickFormat: "d", domain: HERO.x.domain },
           y: { label: null, grid: true, domain: [0, HERO.yMax] },
           marks: [
             Plot.rect([band], { x1: "x0", x2: "x1", y1: 0, y2: HERO.yMax,   // event band
@@ -76,7 +75,7 @@ mountDemo({
               stroke: theme.textSecondary, strokeWidth: 1, headLength: 6 }),
             Plot.text([note], { x: "x", y: "textY", text: "text",
               fill: theme.text, fontSize: 11.5 }),
-            Plot.text(ends, { x: 2023, y: "v", text: "s", textAnchor: "start", dx: 5,
+            Plot.text(ends, { x: HERO.x.domain[1], y: "v", text: "s", textAnchor: "start", dx: 5,
               fill: (d) => ink(d.s), fontSize: 11,
               fontWeight: (d) => (lead(d.s) ? 600 : 400) }),
           ],

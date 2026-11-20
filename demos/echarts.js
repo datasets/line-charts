@@ -46,17 +46,17 @@ mountDemo({
       "Full build via UMD, SVG renderer for parity with the others (Canvas is the default and is faster on very large series). Every piece of the hero chart's furniture is a first-class option: <code>series.endLabel</code> for the direct labels, <code>markArea</code> for the band, <code>markLine</code> for the reference line and the leader, <code>markPoint</code> for the annotation text.",
   },
   charts: {
-    hero(host, { energy }, { theme }) {
+    hero(host, { hero }, { theme }) {
       const { h } = heroBox(host);
       const c = chart(host, h);
-      const ink = (s) => (s === "wind" ? theme.palette[2] : s === "solar" ? theme.palette[3] : theme.muted);
+      const ink = (s) => (s in HERO.slot ? theme.palette[HERO.slot[s]] : theme.muted);
       const lead = (s) => HERO.emphasis.includes(s);
       const { band, ref, note } = HERO;
       c.setOption({
         textStyle: { fontFamily: theme.fontSans },
         animation: false,
         grid: { top: 14, right: 64, bottom: 24, left: 42 },
-        xAxis: { type: "value", min: 1997, max: 2023, minInterval: 1,
+        xAxis: { type: "value", min: HERO.x.domain[0], max: HERO.x.domain[1], minInterval: 1,
           axisLabel: { color: theme.muted, fontSize: 10, formatter: (v) => String(v) },
           axisLine: { lineStyle: { color: theme.baseline } },
           splitLine: { show: false }, axisTick: { show: false } },
@@ -67,8 +67,8 @@ mountDemo({
         // context first so the emphasised series draw on top of them
         series: [...HERO.context, ...HERO.emphasis].map((s, i) => ({
           name: s, type: "line", smooth: true, showSymbol: false, z: lead(s) ? 4 : 2,
-          data: energy.wide.map((r) => [r.year, r[s]]),
-          lineStyle: { color: ink(s), width: lead(s) ? 2.6 : 1.5, opacity: s === "nuclear" ? 0.65 : 1 },
+          data: hero.wide.map((r) => [r.x, r[s]]),
+          lineStyle: { color: ink(s), width: lead(s) ? 2.6 : 1.5, opacity: HERO.opacity[s] ?? 1 },
           endLabel: { show: true, formatter: s, color: ink(s), fontSize: 11,
             fontWeight: lead(s) ? 600 : 400, offset: [4, 0] },
           labelLayout: { moveOverlap: "shiftY" },   // keeps the end labels apart
