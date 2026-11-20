@@ -49,7 +49,7 @@ mountDemo({
       const last = energy.wide[energy.wide.length - 1];
       // Plotly annotations are positioned in data units, so the minimum
       // label gap has to be converted from pixels into TWh
-      const perPx = HERO.yMax / (h - 46);   // plot height = h minus the t/b margins
+      const perPx = HERO.yMax / (h - 38);   // plot height = h minus the t/b margins
       const ends = spreadLabels(
         [...HERO.context, ...HERO.emphasis].map((s) => ({ s, v: last[s] })),
         13 * perPx,
@@ -66,7 +66,7 @@ mountDemo({
         })),
         layout(theme, {
           width: w, height: h,
-          margin: { t: 14, r: 64, b: 32, l: 42 },
+          margin: { t: 14, r: 64, b: 24, l: 42 },
           showlegend: false,
           xaxis: { range: [1997, 2023], dtick: 5, tickformat: "d", showgrid: false,
             linecolor: theme.baseline, zeroline: false, fixedrange: true },
@@ -81,7 +81,7 @@ mountDemo({
               line: { color: theme.baseline, width: 1, dash: "dash" } },
           ],
           annotations: [
-            { x: note.x, y: note.to, ax: 0, ay: -(note.from - note.to) / perPx,   // the annotation
+            { x: note.x, y: note.to, ax: 0, ay: note.textY, ayref: "y",   // the annotation
               text: note.text, showarrow: true, arrowhead: 2, arrowsize: 1,
               arrowwidth: 1, arrowcolor: theme.textSecondary,
               font: { size: 11.5, color: theme.text } },

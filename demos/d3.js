@@ -67,7 +67,7 @@ mountDemo({
     bundleKB: 90,
     license: "ISC / BSD",
     tagline:
-      "Not a chart library — a low-level toolkit of scales, shape generators, axes and selections. You build the chart. The quality ceiling is the highest here and nothing is off-limits: the annotation, the band and the labels are the same kind of object as the lines, so none of them is a special case you have to hope the library supports. Every pixel is your code, and the hero chart is roughly three times the code of the declarative options.",
+      "Not a chart library — a low-level toolkit of scales, shape generators, axes and selections. You build the chart. The quality ceiling is the highest here and nothing is off-limits: the annotation, the band and the labels are the same kind of object as the lines, so none of them is a special case you have to hope the library supports. Every pixel is your code, and the hero chart is about 1.7 times the code of Observable Plot's.",
     docs: "https://d3js.org/",
     cdn: "https://cdn.jsdelivr.net/npm/d3@7.9.2/+esm",
     notes:
