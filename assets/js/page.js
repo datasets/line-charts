@@ -6,9 +6,10 @@
  * A render function is  (host, data, ctx) => cleanup | Promise<cleanup> | void
  *   host  an empty div at the card's content width
  *   data  { [key]: dataset }  — only this chart's dataset, loaded lazily
- *   ctx   { theme, datasets, key, report }
+ *   ctx   { theme, datasets, key, report, range }
  *         report({ points, step, note }) puts "rendered N points (step)" on
  *         the card; for grid it is required (see docs/TESTS.md).
+ *         range: [fromMs, toMs] or null, the window to open on (see viewOptions)
  * The badge stops when the returned promise resolves AND two animation
  * frames have passed, i.e. after the library has actually painted. */
 
@@ -21,14 +22,37 @@ export const KEYS = ["hero", "grid", "npm", "life"];
 
 /* `?chart=<key>` renders one dataset instead of all of them; `&bare=1` also
  * drops the page header and source panel. Together they give an embeddable
- * single chart — used by the front-page grid's iframes and the OG screenshots. */
+ * single chart — used by the front-page grid's iframes and the OG screenshots.
+ * `&from=YYYY-MM-DD&to=YYYY-MM-DD` asks a zoomable chart to open on that
+ * window: it reaches the render function as ctx.range = [fromMs, toMs]
+ * (UTC), and a library without zoom may ignore it. */
 function viewOptions() {
   const p = new URLSearchParams(location.search);
   const only = p.get("chart");
+  const day = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") ? Date.parse(s + "T00:00:00Z") : NaN);
+  const [from, to] = [day(p.get("from")), day(p.get("to"))];
   return {
     keys: KEYS.includes(only) ? [only] : KEYS,
     bare: p.get("bare") === "1",
+    range: from < to ? [from, to] : null,
   };
+}
+
+/* Embedded in another page, a chart must not eat the page's scroll: a plain
+ * wheel over it scrolls the page, and only Ctrl/⌘ + wheel (a trackpad pinch
+ * arrives as Ctrl + wheel) reaches the library. ⌘ is re-sent as Ctrl, the
+ * modifier every library here zooms on. Shared chrome, so no library pays
+ * for it in its line count. */
+function guardWheel() {
+  addEventListener("wheel", (e) => {
+    if (!e.isTrusted || e.ctrlKey) return;
+    e.stopImmediatePropagation();
+    if (!e.metaKey) return;                          // plain wheel: the browser scrolls the page
+    e.preventDefault();
+    e.target.dispatchEvent(new WheelEvent("wheel", { bubbles: true, cancelable: true, composed: true,
+      clientX: e.clientX, clientY: e.clientY, screenX: e.screenX, screenY: e.screenY,
+      deltaX: e.deltaX, deltaY: e.deltaY, deltaMode: e.deltaMode, ctrlKey: true }));
+  }, { capture: true, passive: false });
 }
 
 const painted = () =>
@@ -36,11 +60,12 @@ const painted = () =>
 
 export async function mountDemo({ meta, charts }) {
   document.title = `${meta.name} — line-charts`;
-  const { keys, bare } = viewOptions();
+  const { keys, bare, range } = viewOptions();
   const root = document.getElementById("app");
   root.innerHTML = shell(meta, keys, bare);
   if (!bare) installThemeToggle(root.querySelector(".toggle"));
   const embedded = parent !== window;
+  if (embedded) guardWheel();
   const tell = (msg) => embedded && parent.postMessage({ lib: meta.name, ...msg }, "*");
 
   const hosts = {}, cleanups = {}, generation = {}, data = {}, visible = {};
@@ -93,7 +118,7 @@ export async function mountDemo({ meta, charts }) {
     const host = card.appendChild(document.createElement("div"));
     let reported = null;
     const report = (r) => { reported = r; };
-    const ctx = { theme: theme(), datasets: DATASETS, key, report };
+    const ctx = { theme: theme(), datasets: DATASETS, key, report, range };
     const t0 = performance.now();
     try {
       let out = charts[key](host, { [key]: data[key] }, ctx);
@@ -144,6 +169,9 @@ export async function mountDemo({ meta, charts }) {
 
 /* ---------------------------------------------------------------- */
 
+/* Gzipped size of the pinned CDN files the page loads, in kB (1 kB = 1,000 bytes). */
+export const bundleSize = (kb) => (kb >= 1000 ? `${(kb / 1000).toFixed(2)} MB` : `${Math.round(kb)} KB`);
+
 const errorHTML = (err) =>
   `<pre style="color:var(--series-2);white-space:pre-wrap;font-size:11px">${String((err && err.stack) || err)}</pre>`;
 
@@ -181,7 +209,7 @@ function shell(meta, keys, bare) {
     </h1>
     <p style="margin:0;max-width:70ch;color:var(--text-secondary);font-size:14px">${meta.tagline}</p>
     <p style="margin:10px 0 0;font-size:12.5px;color:var(--text-muted)">
-      ~${meta.bundleKB} KB min+gzip
+      ${bundleSize(meta.bundleKB)} gzipped, as loaded${meta.bundleNote ? ` (${meta.bundleNote})` : ""}
       &nbsp;·&nbsp; <a href="${meta.docs}" target="_blank" rel="noopener">docs</a>
       &nbsp;·&nbsp; <a href="${meta.cdn}" target="_blank" rel="noopener">CDN build</a>
       ${meta.license ? `&nbsp;·&nbsp; ${meta.license}` : ""}
