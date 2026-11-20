@@ -83,7 +83,9 @@
       </p>
     </div>
     <div style="display:flex;gap:14px;align-items:center">
-      <a href="./changelog.html" style="font-size:13px;color:var(--text-secondary)">Changelog</a>
+      <a href="./verdict" style="font-size:13px;color:var(--text-secondary)">Verdict</a>
+      <a href="./method" style="font-size:13px;color:var(--text-secondary)">Method</a>
+      <a href="./changelog" style="font-size:13px;color:var(--text-secondary)">Changelog</a>
       <button class="toggle"></button>
     </div>
   </div>
@@ -104,38 +106,38 @@
   <p class="lede" style="margin-top:14px">
     Every cell is the library's own demo page, embedded — click its name for the full page with the
     source expanded underneath. What it took to build each one is in
-    <a href="./docs/BUILD-NOTES.md">BUILD-NOTES.md</a>; the method is in
-    <a href="./ANALYSIS.md">ANALYSIS.md</a> and the scorecard and verdict are in
-    <a href="./EVALUATION.md">EVALUATION.md</a>.
+    <a href="./build-notes">build notes</a>; the method is in
+    <a href="./method">method</a> and the scorecard and verdict are in
+    <a href="./verdict">verdict</a>.
   </p>
 
   <h2>The libraries</h2>
   <div class="grid">
-    <a class="lib" href="./demos/d3.html">
+    <a class="lib" href="./demos/d3">
       <h3>D3</h3><p>Low-level toolkit. The quality ceiling — you build every pixel, including the arrowhead.</p>
       <div class="meta">~90 KB · ISC/BSD</div>
     </a>
-    <a class="lib" href="./demos/observable-plot.html">
+    <a class="lib" href="./demos/observable-plot">
       <h3>Observable Plot</h3><p>Concise grammar of graphics from D3's author. Annotation is just another mark.</p>
       <div class="meta">~65 KB · ISC</div>
     </a>
-    <a class="lib" href="./demos/vega-lite.html">
+    <a class="lib" href="./demos/vega-lite">
       <h3>Vega-Lite</h3><p>Charts as declarative JSON specs you can lint and diff. Annotation means layers.</p>
       <div class="meta">~320 KB · BSD-3</div>
     </a>
-    <a class="lib" href="./demos/plotly.html">
+    <a class="lib" href="./demos/plotly">
       <h3>Plotly.js</h3><p>Batteries-included. Shapes, annotations and real arrows for free; a megabyte to ship.</p>
       <div class="meta">~1.1 MB · MIT</div>
     </a>
-    <a class="lib" href="./demos/chartjs.html">
+    <a class="lib" href="./demos/chartjs">
       <h3>Chart.js</h3><p>The popular default. Editorial furniture needs a plugin — and end labels need canvas.</p>
       <div class="meta">~70 KB + ~30 KB plugin · MIT</div>
     </a>
-    <a class="lib" href="./demos/echarts.html">
+    <a class="lib" href="./demos/echarts">
       <h3>Apache ECharts</h3><p>Production-hardened. The most complete annotation vocabulary of the seven.</p>
       <div class="meta">~330 KB · Apache-2.0</div>
     </a>
-    <a class="lib" href="./demos/uplot.html">
+    <a class="lib" href="./demos/uplot">
       <h3>µPlot</h3><p>The performance option. ~18 KB and milliseconds — and no annotation model at all.</p>
       <div class="meta">~18 KB · MIT</div>
     </a>
@@ -192,12 +194,12 @@
   grid.innerHTML = LIBS.map(([slug, name], i) => `
     <article class="cell" data-lib="${slug}">
       <div class="cell__head">
-        <a href="./demos/${slug}.html">${name}</a>
+        <a href="./demos/${slug}">${name}</a>
         <span class="cell__lines"><b data-lines>—</b> lines</span>
       </div>
       <iframe title="${name} rendering the current chart"
               loading="${i < 3 ? "eager" : "lazy"}" scrolling="no"
-              src="./demos/${slug}.html?chart=hero&bare=1"></iframe>
+              src="./demos/${slug}?chart=hero&bare=1"></iframe>
     </article>`).join("");
 
   const frames = [...grid.querySelectorAll("iframe")];
@@ -227,7 +229,7 @@
       frames.forEach((f) => {
         const slug = f.closest(".cell").dataset.lib;
         f.closest(".cell").querySelector("[data-lines]").textContent = "—";
-        f.src = `./demos/${slug}.html?chart=${chart}&bare=1`;
+        f.src = `./demos/${slug}?chart=${chart}&bare=1`;
       });
     });
   });
