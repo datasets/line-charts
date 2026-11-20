@@ -7,7 +7,9 @@
 const asURL = (f) => new URL(`../data/${f}`, import.meta.url);
 
 async function csv(file) {
-  const text = await (await fetch(asURL(file))).text();
+  const res = await fetch(asURL(file));
+  if (!res.ok) throw new Error(`${file}: HTTP ${res.status}`);
+  const text = await res.text();
   const [head, ...lines] = text.trim().split(/\r?\n/);
   const cols = splitRow(head);
   return lines.filter(Boolean).map((line) => {

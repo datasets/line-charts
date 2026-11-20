@@ -29,9 +29,18 @@ export async function mountDemo({ meta, charts }) {
   root.innerHTML = shell(meta, keys, bare);
   if (!bare) installThemeToggle(root.querySelector(".toggle"));
 
-  const data = await loadAll();
+  let data;
+  try {
+    data = await loadAll();
+  } catch (err) {
+    root.querySelectorAll(".chart-host").forEach((h) => (h.innerHTML = errorHTML(err)));
+    console.error(err);
+    return;
+  }
   const hosts = {};
   const cleanups = {};
+  const generation = {};   // bumps on every render, so a slow async render that
+                           // finishes after a newer one has started is discarded
 
   for (const key of keys) {
     const card = root.querySelector(`[data-card="${key}"]`);
@@ -48,9 +57,11 @@ export async function mountDemo({ meta, charts }) {
   }
 
   async function renderOne(key, ctx) {
+    const gen = (generation[key] = (generation[key] || 0) + 1);
     try {
       cleanups[key]?.();
     } catch {}
+    cleanups[key] = null;
     const card = hosts[key];
     card.innerHTML = "";
     // render into a padding-free child, so a library that sizes itself from
@@ -62,9 +73,16 @@ export async function mountDemo({ meta, charts }) {
       // a render fn returns cleanup, or a promise of cleanup (async libs)
       let out = charts[key](host, data, { ...ctx, key });
       if (out && typeof out.then === "function") out = await out;
-      cleanups[key] = typeof out === "function" ? out : null;
+      const cleanup = typeof out === "function" ? out : null;
+      if (gen !== generation[key]) {
+        // superseded while rendering: tear this one down, keep the newer one
+        try { cleanup?.(); } catch {}
+        return;
+      }
+      cleanups[key] = cleanup;
     } catch (err) {
-      card.innerHTML = `<pre style="color:var(--series-2)">${String((err && err.stack) || err)}</pre>`;
+      if (gen !== generation[key]) return;
+      card.innerHTML = errorHTML(err);
       console.error(key, err);
     }
     const ms = performance.now() - t0;
@@ -93,6 +111,9 @@ export async function mountDemo({ meta, charts }) {
 }
 
 /* ---------------------------------------------------------------- */
+
+const errorHTML = (err) =>
+  `<pre style="color:var(--series-2)">${String((err && err.stack) || err)}</pre>`;
 
 function shell(meta, keys, bare) {
   if (bare) {
