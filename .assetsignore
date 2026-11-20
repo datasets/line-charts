@@ -8,6 +8,5 @@ node_modules/**
 wrangler.jsonc
 AGENTS.md
 CLAUDE.md
-SHARING.md
 docs/ROADMAP.md
 markdown-charts/**
