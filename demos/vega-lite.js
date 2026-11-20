@@ -2,7 +2,8 @@ import { mountDemo, spreadLabels } from "../assets/js/page.js";
 import { HERO } from "../assets/js/data.js";
 
 /* vega, vega-lite, vega-embed are UMD globals from the <script> tags.
- * A render fn just builds a spec object and calls embed(). */
+ * A render fn just builds a spec object and calls embed(), which resolves
+ * to the view's finalize() as the cleanup. */
 const embed = (host, spec, theme) =>
   window.vegaEmbed(host, spec, {
     actions: false,
@@ -18,7 +19,7 @@ const embed = (host, spec, theme) =>
       range: { category: theme.palette },
       view: { stroke: null },
     },
-  });
+  }).then((result) => () => result.finalize());
 
 const H = 290;
 
@@ -35,7 +36,7 @@ mountDemo({
     bundleKB: 320,
     license: "BSD-3",
     tagline:
-      "A high-level declarative grammar: charts are JSON specs, compiled to full Vega then to SVG/Canvas. Extremely little code for standard charts, and a real published spec you can lint and diff. An annotated editorial chart is entirely possible but turns into a tall stack of layers, each with its own inline datum — and there is no arrowhead primitive, so the leader line's head has to be faked with a triangle point mark.",
+      "A high-level declarative grammar: charts are JSON specs, compiled to full Vega then to SVG/Canvas. Extremely little code for standard charts, and a real published spec you can lint and diff. An annotated editorial chart is entirely possible but turns into a tall stack of layers, each with its own inline datum — and there is no arrow mark, so the leader line's head is a triangle point mark, rotated with its <code>angle</code> property.",
     docs: "https://vega.github.io/vega-lite/",
     cdn: "https://cdn.jsdelivr.net/npm/vega-lite@5.23.0/build/vega-lite.min.js",
     notes:
@@ -53,21 +54,22 @@ mountDemo({
       const last = energy.wide[energy.wide.length - 1];
       // no label layout in Vega-Lite either: de-collide in TWh by hand
       const ends = spreadLabels(
-        order.map((s) => ({ source: s, x: 2023, v: last[s] })),
+        order.map((s) => ({ source: s, x: 2023, v: last[s],
+          weight: HERO.emphasis.includes(s) ? 600 : 400 })),
         (13 * HERO.yMax) / (h - 38), [0, HERO.yMax]);
-      /* Two quirks of layering, both of which cost an hour: layers do not
-       * share a scale unless every one of them spells the same domain out
-       * (a layer that omits it gets zero-baselined and drags the shared axis
-       * with it), and the axis is merged from the *first* layer that asks for
-       * one — so the axis config rides on the band, which happens to be the
-       * layer that has to be drawn first anyway. */
+      /* Layers share one x and one y scale. The helpers below give every
+       * layer the same type, domain and title so no layer can zero-baseline
+       * the shared scale, and the axis config rides on the band layer,
+       * which has to be drawn first anyway. */
       const x = (field, axis) => ({ field, type: "quantitative", title: null,
         scale: { domain: [1997, 2023], nice: false }, ...(axis ? { axis } : {}) });
       const y = (field, axis) => ({ field, type: "quantitative", title: null,
         scale: { domain: [0, HERO.yMax] }, ...(axis ? { axis } : {}) });
       const lyr = (values, mark, encoding) => ({ data: { values }, mark, encoding });
-      const bySource = (range) => ({ field: "source", type: "nominal", legend: null,
-        scale: { domain: order, range } });
+      // a discrete size/opacity scale defaults to "point", which reads only the
+      // first two range values; "ordinal" maps each series to its own value
+      const bySource = (range) => ({ field: "source", type: "ordinal", legend: null,
+        scale: { type: "ordinal", domain: order, range } });
       return embed(host, {
         $schema: "https://vega.github.io/schema/vega-lite/v6.json",
         width: w - 106, height: h - 38,
@@ -95,16 +97,17 @@ mountDemo({
               opacity: bySource(order.map((s) => (s === "nuclear" ? 0.65 : 1))),
             },
           },
-          // leader line: a rule, plus a triangle standing in for an arrowhead
+          // leader line: a rule, and a point shaped as a triangle for the head,
+          // rotated to point along it (angle is clockwise from straight up)
           lyr([note], { type: "rule", stroke: theme.textSecondary },
             { x: x("x"), y: y("from"), y2: { field: "to" } }),
-          lyr([note], { type: "point", shape: "triangle-down", filled: true,
-            fill: theme.textSecondary, size: 34 }, { x: x("x"), y: y("to") }),
+          lyr([note], { type: "point", shape: "triangle", angle: 180, filled: true,
+            fill: theme.textSecondary, size: 34, opacity: 1 }, { x: x("x"), y: y("to") }),
           lyr([note], { type: "text", fill: theme.text, fontSize: 11.5 },
             { x: x("x"), y: y("textY"), text: { field: "text" } }),
-          lyr(ends, { type: "text", align: "left", dx: 5, fontSize: 11 },
-            { x: x("x"), y: y("v"), text: { field: "source" }, color: colour,
-              fontWeight: bySource(order.map((s) => (HERO.emphasis.includes(s) ? 600 : 400))) }),
+          lyr(ends, { type: "text", align: "left", dx: 5, fontSize: 11,
+            fontWeight: { expr: "datum.weight" } },        // weight is not a channel
+            { x: x("x"), y: y("v"), text: { field: "source" }, color: colour }),
         ],
       }, theme);
     },
