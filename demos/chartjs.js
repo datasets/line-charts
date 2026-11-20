@@ -1,8 +1,7 @@
 import { mountDemo, spreadLabels } from "../assets/js/page.js";
 import { HERO } from "../assets/js/data.js";
 
-/* `Chart` is a UMD global; the date-fns adapter bundle registers the
- * time scale and chartjs-plugin-annotation registers itself. Each render
+/* `Chart` is a UMD global and chartjs-plugin-annotation registers itself. Each render
  * makes a <canvas>, news up a Chart, and returns chart.destroy as the
  * cleanup. */
 function canvas(host, height = 300) {
@@ -44,11 +43,11 @@ mountDemo({
     bundleKB: 70,
     license: "MIT",
     tagline:
-      "The popular default. Canvas-rendered, small, friendly config object, good docs, huge plugin ecosystem. The editorial furniture is all there — but only via chartjs-plugin-annotation, a separate 30 KB dependency, and only up to a point: there is no end-of-line label, so the direct labels drop out of the config object and into hand-written canvas calls in a bespoke plugin.",
+      "The popular default. Canvas-rendered, small, friendly config object, good docs, huge plugin ecosystem. The editorial furniture is all there — but only via chartjs-plugin-annotation, a separate 30 KB dependency, and with one gap: there is no end-of-line label, so the direct labels are one plugin label per series, which the plugin places but does not keep apart.",
     docs: "https://www.chartjs.org/docs/latest/",
     cdn: "https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js",
     notes:
-      "Core build + <code>chartjs-adapter-date-fns</code> for the time axis + <code>chartjs-plugin-annotation@3.1.0</code> (~30 KB) for the band, the reference line, the leader line with its arrowhead and the annotation text. The end-of-line labels are the inline <code>endLabels</code> plugin in the snippet below — <code>ctx.fillText</code> at scale pixels, because canvas output cannot be styled after the fact.",
+      "Core build + <code>chartjs-plugin-annotation@3.1.0</code> (~30 KB) for the band, the reference line, the leader line with its arrowhead, the annotation text and the end-of-line labels. The end labels are <code>type: \"label\"</code> annotations at the last x value, with the plugin's <code>clip</code> turned off so they can sit in the right-hand padding, de-collided by the shared <code>spreadLabels()</code> helper like the other libraries.",
   },
   charts: {
     hero(host, { energy }, { theme }) {
@@ -59,34 +58,19 @@ mountDemo({
       const lead = (s) => HERO.emphasis.includes(s);
       const order = [...HERO.context, ...HERO.emphasis];
       const last = energy.wide[energy.wide.length - 1];
-      /* No end-label support anywhere in Chart.js or the annotation plugin,
-       * so this draws them straight onto the canvas after the datasets. */
-      const endLabels = {
-        id: "endLabels",
-        afterDatasetsDraw(chart) {
-          const { ctx, scales } = chart;
-          ctx.save();
-          ctx.textBaseline = "middle";
-          spreadLabels(
-            order.map((s) => ({ s, v: scales.y.getPixelForValue(last[s]) })),
-            13, [scales.y.top, scales.y.bottom]
-          ).forEach((d) => {
-            ctx.fillStyle = ink(d.s);
-            ctx.font = `${lead(d.s) ? 600 : 400} 11px ${theme.fontSans}`;
-            ctx.fillText(d.s, scales.x.right + 5, d.v);
-          });
-          ctx.restore();
-        },
-      };
+      // the annotation plugin places labels but never moves them apart, so
+      // the end labels are de-collided first, in TWh (13px through the y scale)
+      const ends = spreadLabels(order.map((s) => ({ s, v: last[s] })),
+        (13 * HERO.yMax) / (h - 30), [0, HERO.yMax]);
       const chart = new Chart(canvas(host, h), {
         type: "line",
-        plugins: [endLabels],
         data: {
           datasets: order.map((s) => ({
             label: s,
             data: energy.wide.map((r) => ({ x: r.year, y: r[s] })),
-            borderColor: ink(s), borderWidth: lead(s) ? 2.6 : 1.5,
-            tension: 0.35, pointRadius: 0,
+            borderColor: ink(s) + (s === "nuclear" ? "a6" : ""),   // 65% opacity
+            borderWidth: lead(s) ? 2.6 : 1.5,
+            cubicInterpolationMode: "monotone", pointRadius: 0,
           })),
         },
         options: {
@@ -105,9 +89,10 @@ mountDemo({
             legend: { display: false },
             tooltip: { enabled: false },
             annotation: {                                   // the whole editorial layer
+              clip: false,                                  // end labels sit outside the plot
               annotations: {
                 band: { type: "box", drawTime: "beforeDatasetsDraw",
-                  xMin: band.x0, xMax: band.x1, backgroundColor: theme.grid,
+                  xMin: band.x0, xMax: band.x1, backgroundColor: theme.grid + "b3",   // 70%
                   borderWidth: 0 },
                 bandLabel: { type: "label", xValue: (band.x0 + band.x1) / 2, yValue: band.labelY,
                   content: band.label, color: theme.muted, font: { size: 10 } },
@@ -124,6 +109,10 @@ mountDemo({
                     borderColor: theme.textSecondary } } },
                 note: { type: "label", xValue: note.x, yValue: note.textY,
                   content: note.text, color: theme.text, font: { size: 11.5 } },
+                ...Object.fromEntries(ends.map((d) => [d.s, { type: "label",   // direct labels
+                  xValue: 2023, yValue: d.v, content: d.s, color: ink(d.s),
+                  position: { x: "start", y: "center" }, xAdjust: 5, padding: 0,
+                  font: { size: 11, weight: lead(d.s) ? 600 : 400 } }])),
               },
             },
           },
