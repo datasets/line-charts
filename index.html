@@ -121,6 +121,22 @@
   table.cmp td b { color: var(--text-primary); font-weight: 650; }
   .bar { display: inline-block; width: 66px; height: 8px; margin-right: 8px; border-radius: 4px; vertical-align: 0;
     background: linear-gradient(90deg, var(--accent) calc(var(--v) / 11 * 100%), color-mix(in srgb, var(--text-primary) 8%, transparent) 0); }
+  @media (max-width: 760px) {
+    table.cmp { min-width: 0; }
+    table.cmp thead { display: none; }
+    table.cmp, table.cmp tbody, table.cmp tr, table.cmp td { display: block; }
+    table.cmp tr { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 8px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    table.cmp td { border: 0; padding: 0; text-align: left !important; grid-column: 2; font-size: 13px; }
+    table.cmp td.n { grid-column: 1; grid-row: 1; }
+    table.cmp td:nth-child(n+3)::before { color: var(--text-muted); }
+    table.cmp td:nth-child(3)::before { content: "Stars · npm a week: "; }
+    table.cmp td:nth-child(4)::before { content: "Size: "; }
+    table.cmp td:nth-child(5)::before { content: "1.25M points: "; }
+    table.cmp td:nth-child(6)::before { content: "Done for you: "; }
+    table.cmp td:nth-child(7)::before { content: "Code: "; }
+    table.cmp td:nth-child(7)::after { content: " lines"; }
+    table.cmp td:nth-child(8)::before { content: "Best for: "; }
+  }
   ul.notes { margin: 12px 0 0; padding: 0; list-style: none; font-size: 13px; line-height: 1.55; color: var(--text-muted); max-width: 100ch; }
   ul.notes li { margin: 0 0 6px; }
   ul.notes b { color: var(--text-secondary); }
@@ -175,6 +191,9 @@
   .cell__lines { font-size: 11.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .cell__lines b { color: var(--text-secondary); font-weight: 600; }
   .cell iframe { width: 100%; border: 0; display: block; height: 330px; }
+  .cell__note { margin: 0; padding: 0 12px 10px; font-size: 12.5px; line-height: 1.45; color: var(--text-secondary); }
+  .cell__note:empty { display: none; }
+  @media (min-width: 1200px) { #evidence .grid7 { grid-template-columns: repeat(4, minmax(0, 1fr)); } #evidence .cell iframe { height: 300px; } }
   .footnote { font-size: 13px; color: var(--text-muted); margin: 12px 0 0; max-width: 92ch; }
 
   /* ---- judged / versions / faq ------------------------------------ */
@@ -283,24 +302,24 @@
           <td class="why"><b>1.25 million points in about 25 ms</b>, <b>23 KB</b>. No callouts, and you write wheel zoom and pan yourself.</td>
         </tr>
         <tr class="small">
-          <td class="job"><b>A one-off chart</b><span>The chart is the product.</span></td>
+          <td class="job"><b>A custom chart</b><span>The chart is the product.</span></td>
           <td class="use"><a href="./demos/d3">D3</a></td>
           <td class="alt"></td>
           <td class="why">Did everything, all by hand: 1.3 to 2.6 times Plot's code.</td>
         </tr>
       </tbody>
     </table>
-    <p class="picks-foot">DataHub uses Plot for its data stories and ECharts for interactive charts. <a href="./why">Why we did this</a> · <a href="./verdict">The full verdict</a></p>
+    <p class="picks-foot">For DataHub we chose Plot for data stories and ECharts for interactive charts. <a href="./why">Why we did this</a> · <a href="./verdict">The full verdict</a></p>
   </section>
 
   <section class="block" id="compare" aria-labelledby="compare-h">
     <h2 class="sec-title" id="compare-h">The seven, side by side</h2>
-    <p class="sec-intro">Six things worth knowing when you choose, in our ranking order.</p>
+    <p class="sec-intro">Ranked for DataHub. Stars and downloads say how safe a bet it is; size and render time, what it costs your page; done for you and code, how much work it is.</p>
     <div class="tablewrap">
     <table class="cmp">
       <thead><tr>
         <th>#</th><th>Library</th>
-        <th>Used by<small>GitHub stars · npm a week</small></th>
+        <th>Stars · downloads<small>GitHub · npm, a week</small></th>
         <th class="num">Size<small>gzipped, as loaded</small></th>
         <th>1.25M points<small>first paint · what it draws</small></th>
         <th>Done for you<small>of 11 requirements</small></th>
@@ -309,8 +328,8 @@
       </tr></thead>
       <tbody>
         <tr><td class="n">1</td><td class="lib"><a href="./demos/echarts">Apache ECharts</a></td><td>68k · 10.5M</td><td class="num">368 KB</td><td><b>103 ms</b> · every point, min–max sampled</td><td><span class="bar" style="--v:9"></span>9</td><td class="num">185</td><td>One library for everything</td></tr>
-        <tr><td class="n">2</td><td class="lib"><a href="./demos/observable-plot">Observable Plot</a></td><td>5k · 1.6M</td><td class="num">190 KB</td><td><b>431 ms</b> · a daily mean and low–high band</td><td><span class="bar" style="--v:6"></span>6</td><td class="num">159</td><td>Charts in articles</td></tr>
-        <tr><td class="n">3</td><td class="lib"><a href="./demos/d3">D3</a></td><td>114k · 33.6M</td><td class="num">118 KB</td><td><b>69 ms</b> · every point, on canvas</td><td><span class="bar" style="--v:1"></span>1</td><td class="num">260</td><td>A chart that is the product</td></tr>
+        <tr><td class="n">2</td><td class="lib"><a href="./demos/observable-plot">Observable Plot</a></td><td>5k · 1.6M</td><td class="num">190 KB</td><td><b>431 ms</b> · a daily mean and low–high band</td><td><span class="bar" style="--v:5.5"></span>5½</td><td class="num">159</td><td>Charts in articles</td></tr>
+        <tr><td class="n">3</td><td class="lib"><a href="./demos/d3">D3</a></td><td>114k · 33.6M</td><td class="num">118 KB</td><td><b>69 ms</b> · every point, on canvas</td><td><span class="bar" style="--v:1"></span>1</td><td class="num">260</td><td>Custom charts</td></tr>
         <tr><td class="n">4</td><td class="lib"><a href="./demos/plotly">Plotly.js</a></td><td>18k · 0.9M</td><td class="num">1,480 KB</td><td><b>696 ms</b> · every point, WebGL; slow hover until tuned</td><td><span class="bar" style="--v:6.5"></span>6½</td><td class="num">180</td><td>Callouts and zoom as config</td></tr>
         <tr><td class="n">5</td><td class="lib"><a href="./demos/uplot">µPlot</a></td><td>11k · 1.0M</td><td class="num">23 KB</td><td><b>24 ms</b> · every point, min–max</td><td><span class="bar" style="--v:4"></span>4</td><td class="num">256</td><td>Speed and size</td></tr>
         <tr><td class="n">6</td><td class="lib"><a href="./demos/chartjs">Chart.js</a></td><td>68k · 16.6M</td><td class="num">122 KB</td><td><b>86 ms</b> · every point, min–max decimation</td><td><span class="bar" style="--v:5"></span>5</td><td class="num">233</td><td>Keep it if you have it</td></tr>
@@ -321,22 +340,22 @@
     <ul class="notes">
       <li><b>Why this order.</b> We weighed what each library does itself, interaction on the dense chart, keeping the true peaks in dense data, how the result looks, then size. Chart.js does more for you than µPlot but sits below it: it needs five extra scripts, draws to canvas only and had the most small traps. Vega-Lite does a lot for you but took 0.9 s per zoom step on hourly data. <a href="./verdict">The full reasoning</a></li>
       <li><b>Done for you</b> counts the requirements of our three tests that the library met with an option or a mark, not code we wrote. <a href="https://github.com/datasets/line-charts/blob/main/docs/measurements/done-for-you.md">Every call</a></li>
-      <li><b>Used by:</b> stars on 21 November 2026; npm downloads for the week of 9 November, main package only (Plotly's prebuilt packages add about 1.1M; D3's count includes installs as a dependency). <b>Timings:</b> medians of six runs, MacBook Air M4, Chrome. <a href="./method">Method</a></li>
+      <li><b>Stars and downloads:</b> stars on 21 November 2026; npm downloads for the week of 9 November, main package only (Plotly's prebuilt packages add about 1.1M; D3's count includes installs as a dependency). <b>Timings:</b> medians of six warm runs, render only (library download and data parsing excluded), MacBook Air M4, Chrome, 900 × 700. <b>Sizes:</b> the full builds a CDN tag loads, not a tuned app bundle. <a href="./method">Method</a></li>
     </ul>
   </section>
 
   <section class="block" id="map" aria-labelledby="map-h">
     <h2 class="sec-title" id="map-h">Why the picks differ</h2>
-    <p class="sec-intro">Two things pull against each other: how much a library does for you, and how much data it can draw. No library wins both, apart from ECharts.</p>
+    <p class="sec-intro">Libraries that do more for you tend to draw big data more slowly. ECharts does the most and is still fast.</p>
     <figure class="map">
       <div id="map-chart" role="img" aria-label="Scatter plot. Across: requirements met natively, of 11. Up: time to draw 1.25 million points, faster at the top. ECharts is top right. µPlot, D3 and Chart.js are fast but do less. Plotly is in the middle. Plot and Vega-Lite do a lot but are slow at full resolution."></div>
-      <figcaption>Hollow dots: Plot and Vega-Lite at full resolution, timed by hand while building; they ship a daily step instead. Drawn with Observable Plot.</figcaption>
+      <figcaption>Filled dots: scripted medians. Hollow dots: Plot and Vega-Lite drawing every point, timed by hand while building; what they ship is a daily step (431 and 219 ms). Drawn with Observable Plot.</figcaption>
     </figure>
   </section>
 
   <section class="block" id="evidence" aria-labelledby="evidence-h">
     <h2 class="sec-title" id="evidence-h">Out of the box, and styled</h2>
-    <p class="sec-intro">The same oil data in all seven. Out of the box is what you get on day one. Styled, they look alike because we wrote the code to make them alike: the line counts are what that took.</p>
+    <p class="sec-intro">The same oil data in all seven. Out of the box is what you get on day one. Styled, they look alike because we made them alike; the Code column above shows how many lines that took.</p>
     <div class="pick">
       <span class="pick__opts" role="group" aria-label="Defaults or styled">
         <button type="button" data-chart="defaults" aria-pressed="true">Out of the box</button>
@@ -350,7 +369,7 @@
 
   <section class="block" id="try" aria-labelledby="try-h">
     <h2 class="sec-title" id="try-h">Try it: 1.25 million points</h2>
-    <p class="sec-intro">Britain's electricity generation every half hour since 2009, four series. Pick a library and watch the render time.</p>
+    <p class="sec-intro">Britain's electricity generation every half hour since 2009, four series. The buttons show our measured median; the chart times itself in your browser.</p>
     <div class="switch">
       <span class="switch__opts" role="group" aria-label="Library drawing the chart below" id="switch"></span>
     </div>
@@ -371,7 +390,7 @@
       <li><b>How a library thins dense data changes the chart.</b> A daily average shows a solar peak of 5,444 MW; keeping each pixel's high and low shows the true 16,289.</li>
       <li><b>Plotly draws 1.25M points in 0.7 s, then hovers at about one frame a second</b>, until you set one option (<code>hoverdistance</code>).</li>
       <li><b>Vega-Lite's zoom is one line, but it doesn't scale.</b> 17.8 s at full resolution, and 0.9 s per zoom step even at hourly.</li>
-      <li><b>No library fills a gap you didn't mark.</b> All seven break the line at a null and draw straight across a missing row.</li>
+      <li><b>No library fills a gap you didn't mark.</b> Our builds break the line at an explicit null (D3 needs <code>.defined()</code>), and all seven draw straight across a missing row.</li>
     </ul>
   </section>
 
@@ -380,7 +399,7 @@
       <h2 class="sec-title">How we tested</h2>
       <ul class="judged">
         <li>We have compared charting libraries for DataHub for about a decade; this is the 2026 round.</li>
-        <li>Three charts that need different things: an annotated chart for an article (oil prices), a dense interactive one (Britain's grid, 1.25M points) and a many-series one (npm downloads, 22 lines). One written brief, the same data and page shell for all seven.</li>
+        <li>One written brief, the same data and the same page shell for all seven.</li>
         <li>Timings and sizes come from scripts in the repo; the source is under every chart. <a href="./method">Method</a> · <a href="./build-notes">Build notes</a> · <a href="./why">Why we did this</a></li>
       </ul>
     </div>
@@ -490,6 +509,7 @@
         <span class="cell__lines"><b data-lines>—</b> lines</span>
       </div>
       <iframe title="${name} rendering the current chart" scrolling="no"></iframe>
+      <p class="cell__note" data-note></p>
     </article>`).join("");
 
   const frames = [...grid.querySelectorAll("iframe")];
@@ -517,11 +537,13 @@
     if (e.source === stage.contentWindow) {
       // ignore the short "loading" height, so the page does not jump while the chart draws
       if (e.data.type === "lc:size" && e.data.height > 160) stage.style.height = e.data.height + "px";
-      if (e.data.type === "lc:rendered" && e.data.ms != null) stageMs.textContent = Math.round(e.data.ms).toLocaleString() + " ms";
+      if (e.data.type === "lc:rendered" && e.data.lib === stageLib.textContent && e.data.key === "grid")
+        stageMs.textContent = e.data.error ? "failed" : e.data.ms == null ? "—" : Math.round(e.data.ms).toLocaleString() + " ms";
       return;
     }
     const cell = cellOf(e.source);
     if (!cell) return;
+    if (e.data.key && e.data.key !== current) return;   // a late message from the previous chart
     if (e.data.type === "lc:lines") {
       const t = current === "hero" ? THEME[cell.dataset.lib] : 0;
       cell.querySelector("[data-lines]").textContent = e.data.lines == null ? "—" : t ? `${e.data.lines} + ${t}-line theme` : e.data.lines;
@@ -535,8 +557,18 @@
   [stage, ...frames].forEach((f) => f.addEventListener("load", () => broadcastTheme([f])));
 
   const CAPTION = {
-    defaults: "Data, a time axis and a size. Nothing else.",
+    defaults: "Data, a time axis and a size, plus what a library needs to draw a line at all.",
     hero: "Our brief: end labels, callouts, recession bands, exact ticks, one palette.",
+  };
+  /* what each library's defaults do with this data (out of the box only) */
+  const NOTES = {
+    d3: "No chart defaults: both lines in one colour, no legend, no tooltip.",
+    "observable-plot": "Two colours, clean ticks, no legend or tooltip. The closest to finished.",
+    "vega-lite": "A legend, axis titles from the field names, crowded year ticks. White in dark mode.",
+    plotly: "A legend, tooltips and a zero line, with wide margins. White in dark mode.",
+    chartjs: "A dot on all 20,000 points, an entry animation, every year ticked and rotated.",
+    echarts: "A marker on every point, sparse ticks, no legend or tooltip. Light theme only.",
+    uplot: "No line colour by default, so we set black; a live-value legend and a crosshair. Ignores dark mode.",
   };
   /* each library's theme helper, outside the counted render function */
   const THEME = { echarts: 24, plotly: 15, chartjs: 10, "vega-lite": 20, "observable-plot": 1, d3: 0, uplot: 0 };
@@ -553,6 +585,7 @@
       const slug = f.closest(".cell").dataset.lib;
       const url = `./demos/${slug}?chart=${chart}&bare=1`;
       f.closest(".cell").querySelector("[data-lines]").textContent = "—";
+      f.closest(".cell").querySelector("[data-note]").textContent = chart === "defaults" ? NOTES[slug] : "";
       if (chart === "grid") {
         f.removeAttribute("src");
         f.srcdoc = WAITING;
@@ -590,8 +623,8 @@
   /* x: requirements met natively, of 11 (docs/measurements/done-for-you.md).
    * y: first paint of the 1.25M-point grid chart, median ms
    * (docs/measurements/timings-2026-11-21.md); Plot and Vega-Lite at full
-   * resolution, hand-timed while building (Plot 9 to 13 s, Vega-Lite 3.7 s
-   * for the lines alone), since what they ship is a daily step. */
+   * resolution, hand-timed while building (Plot 9 to 13 s, Vega-Lite 17.8 s
+   * for the full chart), since what they ship is a daily step. */
   import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.19/+esm";
   import { theme, onThemeChange } from "./assets/js/theme.js";
   const LIBS = [
@@ -600,11 +633,12 @@
     { name: "µPlot", x: 4, ms: 24 },
     { name: "D3", x: 1, ms: 69 },
     { name: "Plotly", x: 6.5, ms: 696 },
-    { name: "Vega-Lite", x: 7.5, ms: 3700, hand: true },
-    { name: "Plot", x: 6, ms: 11000, hand: true },
+    { name: "Vega-Lite", x: 7.5, ms: 17800, hand: true },
+    { name: "Plot", x: 5.5, ms: 11000, hand: true },
   ];
   const host = document.getElementById("map-chart");
   const fmt = (ms) => ms < 1000 ? `${ms} ms` : `${ms / 1000} s`;
+  const label = (d) => `${d.name} · ${fmt(d.ms)}`;
   function draw() {
     const t = theme();
     const width = Math.min(host.clientWidth || 720, 760);
@@ -613,16 +647,19 @@
     host.replaceChildren(Plot.plot({
       width, height: narrow ? 360 : 420, marginTop: 34, marginLeft: 52, marginRight: 16, marginBottom: 44,
       style: { fontFamily: t.fontSans, fontSize: "12px", color: t.textSecondary, background: "transparent" },
-      x: { domain: [0, 11], ticks: [0, 2, 4, 6, 8, 10], label: "Does more for you →", labelAnchor: "right", labelOffset: 36 },
+      x: { domain: [0, 11], ticks: [0, 2, 4, 6, 8, 10], label: "Requirements met for you, of 11 →", labelAnchor: "right", labelOffset: 36 },
       y: { type: "log", domain: [12, 20000], reverse: true, ticks: [100, 1000, 10000], tickFormat: fmt, label: "↑ Draws 1.25M points faster", labelAnchor: "top", labelOffset: 48 },
       marks: [
-        Plot.ruleX([5.5], { stroke: t.baseline, strokeDasharray: "3,3" }),
+        Plot.ruleX([6.25], { stroke: t.baseline, strokeDasharray: "3,3" }),
         Plot.ruleY([1000], { stroke: t.baseline, strokeDasharray: "3,3" }),
         corner(10.9, 14, "Dashboards", "end"),
-        corner(0.1, 14, "Speed, or bespoke", "start"),
-        corner(10.9, 17000, "Articles and specs", "end"),
+        corner(0.1, 14, "Speed, or custom charts", "start"),
+        corner(10.9, 1700, "Articles and specs", "end"),
         Plot.dot(LIBS, { x: "x", y: "ms", r: 6, fill: (d) => d.hand ? t.page : d.name === "ECharts" ? t.palette[0] : t.text, stroke: (d) => d.name === "ECharts" ? t.palette[0] : t.text, strokeWidth: 1.5 }),
-        Plot.text(LIBS, { x: "x", y: "ms", text: (d) => `${d.name} · ${fmt(d.ms)}`, dx: 10, textAnchor: "start", fill: t.text, fontSize: 12.5, fontWeight: 600 }),
+        // labels to the right, except at the right edge, where they go left
+        // labels right of the dot; hand-timed ones to the left; ECharts below, clear of Chart.js
+        ...[[(d) => !d.hand && d.x <= 8, 10, 0, "start"], [(d) => d.hand, -10, 0, "end"], [(d) => d.x > 8, 6, 17, "end"]].map(([filter, dx, dy, textAnchor]) =>
+          Plot.text(LIBS, { filter, x: "x", y: "ms", text: label, dx, dy, textAnchor, fill: t.text, fontSize: narrow ? 11.5 : 12.5, fontWeight: 600 })),
       ],
     }));
   }

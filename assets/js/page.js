@@ -129,6 +129,7 @@ export async function mountDemo({ meta, charts }) {
       } catch (err) {
         card.innerHTML = errorHTML(err);
         console.error(key, err);
+        tell({ type: "lc:rendered", key, ms: null, error: String(err?.message || err) });
         return;
       }
       if (gen !== generation[key]) return;
@@ -153,6 +154,9 @@ export async function mountDemo({ meta, charts }) {
       if (gen !== generation[key]) return;
       card.innerHTML = errorHTML(err);
       console.error(key, err);
+      if (metric) metric.textContent = "failed";
+      tell({ type: "lc:rendered", key, ms: null, error: String(err?.message || err) });
+      return;
     }
     const ms = performance.now() - t0;
     if (metric) metric.textContent = ms < 1 ? "<1 ms" : `${ms.toFixed(ms < 60 ? 1 : 0)} ms`;
