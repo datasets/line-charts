@@ -81,7 +81,7 @@ Weekly downloads of 22 charting packages, March 2015 to November 2026, 11,268 po
 
 ### Missing data: the side test
 
-Five countries with explicit nulls, the same input to all seven. All seven break the line at a null by default. D3 needs `.defined()` to draw past the first null (without it the path is invalid from that point on). And every one of the seven draws straight across a row that is simply absent from the data: a gap your loader does not turn into a null is not a gap to any library.
+Five countries of World Bank life expectancy with years removed on purpose, turned into explicit nulls, the same input to all seven. All seven implementations break the line at explicit nulls: six by default, D3 with `.defined()` (without it the path is invalid from the first null on). And every one of the seven draws straight across a row that is simply absent from the data: a gap your loader does not turn into a null is not a gap to any library.
 
 ## What surprised us
 
@@ -93,7 +93,7 @@ Five countries with explicit nulls, the same input to all seven. All seven break
 - **The same chart looks different at full resolution.** With 300 half-hours per pixel column the series overplot into solid envelopes, solar a yellow mass on top. Plot's daily means look calmer and prettier and hide the peak. Both are the data. Zoom to a month and the lines separate.
 - **Chart.js was quick on the dense chart.** All 1.25M points in, min-max decimation, 236 ms, every half-hour visible once zoomed in. The cost is elsewhere: five extra `<script>` tags, `order: -i` plus `legend.reverse` to get last-on-top, and a time axis that formats in local time while the tooltip says UTC (the luxon adapter with `zone: "UTC"` fixes it).
 - **Only D3 shares one line generator between SVG and canvas.** The same `d3.line()` with `.context(ctx)` strokes all 1.25M points on a canvas, with zoom, pan and a crosshair in an SVG layer on top. It is the idiomatic D3 route for big data, not a workaround, and no other library here lets the two renderers share the drawing code.
-- **The missing-data finding we published in September was a test bug.** Plot and Vega-Lite were handed sparse rows, the other five were handed nulls, and the flags we credited were already the defaults. With equal input, all seven break at a null. See below.
+- **The missing-data finding we published in September was a test bug.** Plot and Vega-Lite were handed sparse rows, the other five were handed nulls, and the flags we credited were already the defaults. With equal input, all seven implementations break at a null (six by default, D3 with `.defined()`). See below.
 
 ## How to read the numbers
 

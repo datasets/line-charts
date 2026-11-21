@@ -50,7 +50,7 @@ Three tests, each a different kind of line chart, each built to one shared brief
 - **Grid, half-hourly** (NESO, 1.25M points): the dense interactive chart. Zoom and pan to one week, a crosshair tooltip, and a straight answer to "did you draw the solar peak?"
 - **npm downloads** (22 libraries, 2015–2026): the many-series chart. Log scale, highlight one of 22, an indexed view and small multiples.
 
-Footnote: a missing-data side test gives all seven the same explicit nulls. All seven break the line; D3 needs `.defined()` to draw past the first null.
+Footnote: a missing-data side test (World Bank life expectancy, years removed on purpose) gives all seven the same explicit nulls. All seven implementations break the line at a null: six by default, D3 with `.defined()`.
 
 ## How we judged
 

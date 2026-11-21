@@ -29,7 +29,7 @@ GB electricity generation by fuel, every half hour since 2009: 312,816 half-hour
 2. Zoom and pan (wheel + drag), down to one week, with a reset.
 3. Crosshair with one tooltip listing all four series at the nearest timestamp.
 4. Decimation honesty: does the solar peak survive at full zoom-out (true peak 16,289 MW)?
-5. Event markers: a rule at "Last coal, 30 Sep 2024" and the "2012: coal 42%" label.
+5. Event markers: a rule at "Ratcliffe, last coal plant, closes 30 Sep 2024" and the "2012: coal 42%" label.
 6. Time to first paint on the card (the badge waits for the frame).
 
 ### npm: the many-series chart
@@ -45,7 +45,7 @@ Weekly npm downloads of 22 charting packages, March 2015 to November 2026: the s
 
 ### Side test: missing data
 
-Life expectancy for five countries, 1960–2022, with deliberate missing years. One requirement: a null year breaks the line and is not bridged. Every library now receives the same explicit nulls (see "What the September version got wrong").
+World Bank life expectancy at birth for five countries, 1960–2022, with 15 country-years removed on purpose (India 1969, 1980, 1991, 2002, 2013; Nigeria 1994–1997; China 1960–1965) to make gaps. One requirement: a null year breaks the line and is not bridged. Every library now receives the same explicit nulls (see "What the September version got wrong").
 
 ## Data
 
@@ -56,9 +56,9 @@ All the datasets are snapshots committed to the repo, so every library reads byt
 | Oil | U.S. Energy Information Administration, spot prices RBRTE and RWTC, via the cleaned DataPressr snapshot of 2026-09-05 (EIA's current files have dropped ~890 Brent and ~740 WTI historical days) | US Government work, public domain (DataPressr copy PDDL-1.0) |
 | Grid | NESO, Historic GB Generation Mix (`df_fuel_ckan.csv`), trimmed to four integer-MW columns; wind is transmission plus embedded | NESO Open Data Licence |
 | npm | npm download counts API, daily counts summed to Monday-start weeks | npm registry terms (factual telemetry) |
-| Missing data | v1 snapshot with deliberate gaps; its original source was not recorded | unknown |
+| Missing data | World Bank, World Development Indicators, `SP.DYN.LE00.IN`, 1960–2022, with 15 country-years removed on purpose | CC BY 4.0 |
 
-Every number in an annotation (−$36.98, $143.95, 42%, 16,289 MW, the last coal half-hour) was checked against these files. npm downloads count CI runs and mirrors, not people.
+Every number in an annotation (−$36.98, $143.95, 16,289 MW, coal on the day Ratcliffe closed) was checked against these files; coal's 42% in 2012 against the annual totals committed beside the grid file (`gb-grid-annual.csv`), since its denominator, total generation, is not in the half-hourly file. The closure date itself is from press reports of the operator's announcement, cited in the data README. npm downloads count CI runs and mirrors, not people.
 
 ## Ground rules
 

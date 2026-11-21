@@ -231,7 +231,7 @@
 
     <div class="grid7" id="grid"></div>
 
-    <p class="footnote">A missing-data side test gives all seven the same explicit nulls. All seven break the line; D3 needs <code>.defined()</code> to draw past the first null.</p>
+    <p class="footnote">A missing-data side test (World Bank life expectancy, years removed on purpose) gives all seven the same explicit nulls. All seven implementations break the line at a null: six by default, D3 with <code>.defined()</code>.</p>
   </section>
 
   <section class="block cols" aria-label="How we judged, versions and date">
@@ -253,7 +253,7 @@
     <h2 id="faq-h">FAQ</h2>
     <div class="faq">
       <details><summary>Is the data real?</summary>
-        <p>Yes. Oil prices are EIA daily spot prices, the grid is NESO's half-hourly GB generation mix, the npm numbers are the registry's download API. Provenance and the exact files are in <a href="https://github.com/datasets/line-charts/tree/main/assets/data" target="_blank" rel="noopener">the repo</a>. The September version used a synthetic electricity mix titled as if it were fact; we replaced it.</p></details>
+        <p>Yes. Oil prices are EIA daily spot prices, the grid is NESO's half-hourly GB generation mix, the npm numbers are the registry's download API, and the missing-data side test is World Bank life expectancy with some years removed on purpose to make gaps. Provenance and the exact files are in <a href="https://github.com/datasets/line-charts/tree/main/assets/data" target="_blank" rel="noopener">the repo</a>. The September version used a synthetic electricity mix titled as if it were fact; we replaced it.</p></details>
       <details><summary>Why not Highcharts, Recharts, ApexCharts or Nivo?</summary>
         <p>Highcharts is not free for commercial use and everything here is permissive open source. Recharts, Nivo and visx are React wrappers; this site is framework-free and a React page is a separate job. ApexCharts, Chartist, Frappe and billboard.js were not tested, so we make no claim about them.</p></details>
       <details><summary>Aren't line counts meaningless?</summary>

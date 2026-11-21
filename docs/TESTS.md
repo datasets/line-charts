@@ -41,7 +41,7 @@ Requirements:
 2. Zoom and pan (wheel and/or drag-select), never narrower than `GRID.zoom.minSpanMs` (one week), with a reset (double-click is fine). If the library has none, say so in the card note; don't build 200 lines of it.
 3. Crosshair with one tooltip listing all four series at the nearest timestamp.
 4. Decimation honesty: report the solar peak you actually drew against `GRID.peaks.solar.mw` (16,289).
-5. Events from `GRID.events`: a rule at "Last coal, 30 Sep 2024" (label text-anchor end, at the top) and the "2012: coal 42%" text (anchor start).
+5. Events from `GRID.events`: a rule at "Ratcliffe, last coal plant, closes 30 Sep 2024" (label text-anchor end, at the top) and the "2012: coal 42%" text (anchor start).
 6. Call `report({ points, step, note })`: `points` = points handed to the library, `step` = `"full"|"hour"|"day"` (append "+lttb" etc. if the library decimated further), `note` = `"solar peak drawn X MW of 16,289 MW"`.
 
 The badge measures from the call until two animation frames after your promise resolves, so return a promise if your library draws asynchronously. On the front page grid cells render one at a time.
@@ -60,9 +60,9 @@ Data `{ npm }`: `npm.keys` (22 packages), `npm.weeks` (Date[]), `npm.t`, `npm.co
 6. Readable without a legend at 640 px.
 7. `report({ points, step: "full" })`.
 
-## `life`: missing data (unchanged)
+## `life`: missing data
 
-Five countries with explicit nulls; a null must break the line. Leave it as it is unless it is broken.
+World Bank life expectancy, five countries, with years removed on purpose (see assets/data/README.md); the loader turns each removed year into an explicit null. A null must break the line. Leave it as it is unless it is broken.
 
 ## What counts as done
 
