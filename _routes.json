@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/.beads/*", "/.github/*", "/AGENTS.md", "/CLAUDE.md", "/wrangler.jsonc", "/.assetsignore", "/.gitignore", "/docs/ROADMAP.md", "/markdown-charts/*", "/scripts/*", "/functions/*"],
+  "exclude": []
+}

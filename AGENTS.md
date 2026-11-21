@@ -3,7 +3,7 @@
 A 2026 bake-off of seven open-source line-charting libraries (D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts, µPlot), built as a static site you scroll rather than a written report. Sibling of the [tables-bakeoff](https://github.com/datasets/tables-bakeoff) repo.
 
 - **Live:** https://linecharts.datahub.io/ — deployed and current.
-- **Build:** none. Plain HTML + ES modules; demos load libraries from jsDelivr and read data with `fetch()`, so it needs an `http://` server, not `file://` (`python3 -m http.server 8080`). Served by Cloudflare Workers Assets from the repo root — see `wrangler.jsonc`.
+- **Build:** none. Plain HTML + ES modules; demos load libraries from jsDelivr and read data with `fetch()`, so it needs an `http://` server, not `file://` (`python3 -m http.server 8080`). Served by Cloudflare Pages (project `line-charts`, Datopian account) from the repo root: pushing main deploys, a branch gets `<branch>.line-charts.pages.dev`. Pages ignores `.assetsignore`; `_routes.json` and `functions/_middleware.js` return 404 for repo housekeeping paths.
 - **Changelog page** (`changelog.html`) reads `changelog/manifest.json` at runtime, since there is no build step to glob the folder. When you add an entry file, add its filename to that manifest.
 - `CLAUDE.md` is a symlink to this file.
 
