@@ -224,3 +224,6 @@ table.scores tbody tr:hover { background: color-mix(in srgb, var(--text-primary)
 }
 .seg button + button { border-left: 1px solid var(--border); }
 .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+/* screenshots in doc pages (the Why page) stay a readable size */
+.doc img { display: block; max-width: min(100%, 640px); height: auto; margin: 8px 0; border: 1px solid var(--border); border-radius: 8px; }

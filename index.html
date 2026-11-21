@@ -240,8 +240,7 @@
 
   <header class="site-head">
     <nav class="doc-nav" aria-label="Site">
-      <a class="site-name" href="./" aria-current="page">line-charts</a>
-      <a href="./compare">All charts</a>
+      <a class="site-name" href="./" aria-current="page">Which Line Chart?</a>
       <a href="./why">Why</a>
       <a href="./verdict">Verdict</a>
       <a href="./method">Method</a>
@@ -353,17 +352,19 @@
   </section>
 
   <section class="block" id="evidence" aria-labelledby="evidence-h">
-    <h2 class="sec-title" id="evidence-h">Out of the box, and styled</h2>
-    <p class="sec-intro">The same oil data in all seven. Out of the box is what you get on day one. Styled, they look alike because we made them alike; the Code column above shows how many lines that took.</p>
+    <h2 class="sec-title" id="evidence-h">The same chart in all seven</h2>
+    <p class="sec-intro">Pick a chart; all seven draw it, in our ranking order. Out of the box is what you get on day one. Styled to our brief, they look alike because we made them alike; the Code column above shows how many lines that took.</p>
     <div class="pick">
-      <span class="pick__opts" role="group" aria-label="Defaults or styled">
-        <button type="button" data-chart="defaults" aria-pressed="true">Out of the box</button>
-        <button type="button" data-chart="hero" aria-pressed="false">Styled to our brief</button>
+      <span class="pick__opts" role="group" aria-label="Choose the chart every library draws">
+        <button type="button" data-chart="defaults" aria-pressed="true">Oil, out of the box</button>
+        <button type="button" data-chart="hero" aria-pressed="false">Oil, styled</button>
+        <button type="button" data-chart="grid" aria-pressed="false">1.25M points</button>
+        <button type="button" data-chart="npm" aria-pressed="false">22 series</button>
+        <button type="button" data-chart="life" aria-pressed="false">Missing data</button>
       </span>
       <span class="pick__label" data-caption></span>
     </div>
     <div class="grid7" id="grid"></div>
-    <p class="footnote">The dense grid chart, npm downloads and a missing-data test, in all seven: <a href="./compare">all the charts</a>.</p>
   </section>
 
   <section class="block" id="try" aria-labelledby="try-h">
@@ -433,28 +434,29 @@
    * number is this browser's own run, reported by the iframe. */
   const ALL = "All 1,251,264 points loaded";
   const DAILY = "draws one value per day: each day's mean as a line over a band from its lowest to its highest half-hour (78,204 values), which keeps the true solar peak";
+  // in our ranking order
   const STAGE_LIBS = [
     ["echarts", "ECharts", "Apache ECharts", 103,
       `${ALL}; <code>sampling: "minmax"</code> keeps each pixel's true high and low.`,
       "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, drag the slider, double-click to reset."],
-    ["d3", "D3", "D3", 69,
-      `${ALL} and stroked on a canvas, every one.`,
-      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset."],
     ["observable-plot", "Plot", "Observable Plot", 431,
       `Plot ${DAILY}. Full resolution took 9 to 13 s in SVG.`,
       "Hover for the tooltip. No zoom or pan."],
-    ["vega-lite", "Vega-Lite", "Vega-Lite", 219,
-      `Vega-Lite ${DAILY}. Full resolution took 17.8 s.`,
-      "Ctrl/⌘ + scroll to zoom, drag to pan, double-click to reset. No one-week floor, and no touch zoom."],
+    ["d3", "D3", "D3", 69,
+      `${ALL} and stroked on a canvas, every one.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset."],
     ["plotly", "Plotly", "Plotly.js", 696,
       `${ALL} and drawn with WebGL (<code>scattergl</code>), no thinning.`,
       "Drag to zoom into a range, Ctrl/⌘ + scroll to zoom, the pan tool (top right) to pan, double-click to reset."],
-    ["chartjs", "Chart.js", "Chart.js", 86,
-      `${ALL}; built-in min–max decimation keeps each pixel's true high and low.`,
-      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset."],
     ["uplot", "µPlot", "µPlot", 24,
       `${ALL}; its path builder keeps each pixel's true high and low.`,
       "Drag to zoom into a range, Shift + drag to pan, Ctrl/⌘ + scroll to zoom, double-click to reset."],
+    ["chartjs", "Chart.js", "Chart.js", 86,
+      `${ALL}; built-in min–max decimation keeps each pixel's true high and low.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset."],
+    ["vega-lite", "Vega-Lite", "Vega-Lite", 219,
+      `Vega-Lite ${DAILY}. Full resolution took 17.8 s.`,
+      "Ctrl/⌘ + scroll to zoom, drag to pan, double-click to reset. No one-week floor, and no touch zoom."],
   ];
   const stage = document.getElementById("stage");
   const stageLib = document.querySelector("[data-stage-lib]");
@@ -485,14 +487,15 @@
   stageIo.observe(stage);
 
   /* ---- the evidence: seven live cells ----------------------------- */
+  // in our ranking order, as in the table above
   const LIBS = [
-    ["d3", "D3"],
-    ["observable-plot", "Observable Plot"],
-    ["vega-lite", "Vega-Lite"],
-    ["plotly", "Plotly.js"],
-    ["chartjs", "Chart.js"],
     ["echarts", "Apache ECharts"],
+    ["observable-plot", "Observable Plot"],
+    ["d3", "D3"],
+    ["plotly", "Plotly.js"],
     ["uplot", "µPlot"],
+    ["chartjs", "Chart.js"],
+    ["vega-lite", "Vega-Lite"],
   ];
   /* Each cell is an iframe onto the library's own demo page in single-chart,
    * chrome-free mode: libraries that register globals or ship CSS stay
@@ -558,6 +561,9 @@
   const CAPTION = {
     defaults: "Data, a time axis and a size, plus what a library needs to draw a line at all.",
     hero: "Our brief: end labels, callouts, recession bands, exact ticks, one palette.",
+    grid: "Britain's grid every half hour since 2009. Cells draw one at a time, so each timing is uncontended.",
+    npm: "Weekly downloads of 22 packages on a log scale. Hover to pick out a line; switch to indexed or small multiples.",
+    life: "Life expectancy with years removed. Every line should break at a gap.",
   };
   /* what each library's defaults do with this data (out of the box only) */
   const NOTES = {

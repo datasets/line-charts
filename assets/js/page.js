@@ -223,7 +223,7 @@ function shell(meta, keys, bare) {
   <header class="wrap" style="padding-top:22px;padding-bottom:10px">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
       <div style="display:flex;gap:14px;align-items:center">
-        <a href="../" style="font-size:13px;color:var(--text-secondary)">← all libraries</a>
+        <a href="../" style="font-size:13px;font-weight:700;color:var(--text-primary)">Which Line Chart?</a>
         <a href="../verdict" style="font-size:13px;color:var(--text-secondary)">Verdict</a>
         <a href="../method" style="font-size:13px;color:var(--text-secondary)">Method</a>
         <a href="../changelog" style="font-size:13px;color:var(--text-secondary)">Changelog</a>

@@ -4,7 +4,13 @@ DataHub needed a line-chart library. We wanted to choose on evidence, so we buil
 
 ## Why
 
-Much of the data on DataHub is a time series: prices, emissions, energy, population. DataPressr, which renders DataHub's data stories, draws its charts with Observable Plot as static SVG when the page is built. We also need interactive charts: zoom into one week of a 17-year series, hover for a value, a million points that stay fast. We wanted to know whether one library could do both jobs, and if not, which two.
+Much of the data on DataHub is a time series: prices, emissions, energy, population. DataPressr, which renders DataHub's [data stories](https://datahub.io/blog), draws its charts with Observable Plot as static SVG when the page is built: for example [Arctic sea ice](https://datahub.io/blog/arctic-sea-ice) and [solar overtaking wind](https://datahub.io/blog/solar-overtakes-wind). Dataset pages such as [Brent and WTI oil prices](https://datahub.io/core/oil-prices) and [CO₂ in the atmosphere](https://datahub.io/core/co2-ppm) chart the data too. We also need interactive charts: zoom into one week of a 17-year series, hover for a value, a million points that stay fast. We wanted to know whether one library could do both jobs, and if not, which two.
+
+[![A DataHub data story: all 20 of the lowest Arctic sea ice minimums came in 2007–2026](../assets/why/datahub-arctic.jpg)](https://datahub.io/blog/arctic-sea-ice)
+
+[![A DataHub data story: solar's share of world electricity generation, 1985–2025](../assets/why/datahub-solar.jpg)](https://datahub.io/blog/solar-overtakes-wind)
+
+[![The DataHub dataset page for Brent crude oil prices, 1987 to the present, with its chart](../assets/why/datahub-oil.jpg)](https://datahub.io/core/oil-prices)
 
 The comparisons we found did not answer that. Most list features and stop short of a recommendation. Benchmarks measure speed and nothing else. We could not find a page that put the same real data through each library and said which one to use.
 
