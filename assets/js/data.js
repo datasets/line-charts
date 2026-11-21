@@ -3,7 +3,7 @@
  * Four charts, keyed as the pages key them:
  *   hero  "Forty years of oil"       Brent + WTI daily spot (EIA)       ~20k points
  *   grid  "The grid, every half hour" GB generation mix (NESO)          1.25M points
- *   npm   "Who actually installs these?" weekly npm downloads, 22 libs  13k points
+ *   npm   "Who actually installs these?" weekly npm downloads, 22 libs  11,268 non-null points
  *   life  missing-data side test      life expectancy, 5 countries
  *
  * Each chart has a loader (lazy, cached: the 5.5 MB grid file is only fetched
