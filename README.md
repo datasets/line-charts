@@ -83,8 +83,9 @@ Full provenance and trimming steps: [assets/data/README.md](./assets/data/README
 |---|---|---|---|
 | `oil-brent-daily.csv`, `oil-wti-daily.csv` | oil | U.S. Energy Information Administration spot prices, via the DataPressr snapshot of 2026-09-05 | public domain (DataPressr copy PDDL-1.0) |
 | `gb-grid-halfhourly.csv` | grid | NESO, Historic GB Generation Mix | NESO Open Data Licence |
+| `gb-grid-annual.csv` | grid (checks the 2012 coal share) | annual sums of the same NESO file | NESO Open Data Licence |
 | `npm-chart-libs-weekly.csv` | npm | npm download counts API | npm registry terms |
-| `life-expectancy.csv` | missing data | v1 snapshot with deliberate gaps; source not recorded | unknown |
+| `life-expectancy.csv` | missing data | World Bank WDI life expectancy (`SP.DYN.LE00.IN`), with 15 country-years removed on purpose | CC BY 4.0 |
 
 Retired and unused: `energy-mix.csv` (the synthetic September hero), `co2-mauna-loa-monthly.csv`, `btc-usd-daily.csv`.
 
