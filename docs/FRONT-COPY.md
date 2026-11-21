@@ -16,14 +16,14 @@ The words for `index.html`, in page order. Numbers match `EVALUATION.md` (served
 
 Ranked for someone choosing one library in 2026 for a website or an app, with no framework constraint. Tested on real data: forty years of oil prices, Britain's grid every half hour since 2009, and a decade of npm downloads.
 
-Criteria line under the list: Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the default look, then bundle size. Line counts are colour, never a criterion.
+Criteria line under the list: Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the finished appearance, then bundle size. Line counts are colour, never a criterion.
 
 1. **Apache ECharts**: use it when you want one library for everything, from an annotated story chart to a 1.25M-point dashboard. Chips: `all three tests met, mostly as options` · `1.25M pts in ~100 ms, zoom + slider built in` · `end labels laid out for you` · `368 KB gzipped`
 2. **Observable Plot**: use it when the chart is going into an article, a report or a static page. Chips: `44 lines, the fewest` · `renders to static SVG at build time` · `no zoom or pan` · `dense chart: a daily mean and low–high band`
 3. **D3**: use it when the chart is the product, or the team already writes D3. Chips: `1.25M pts on canvas in ~70 ms` · `everything met, everything by hand` · `60/100/100 lines, 1.3 to 2.6× Plot`
 4. **Plotly.js**: use it when you want callouts as single objects and zoom in config, and can pay 1.5 MB. Chips: `best callout model: one object each` · `1.25M pts in ~0.7 s via scattergl` · `hover 1 to 1.8 s per move until tuned` · `1.48 MB gzipped`
 5. **µPlot**: use it when speed and size are the whole problem. Chips: `1.25M pts in ~25 ms` · `23 KB` · `no annotation model` · `wheel zoom and pan are hooks you write`
-6. **Chart.js**: use it when you already use it. Chips: `all three tests met` · `1.25M pts in ~85 ms, decimation built in` · `annotations and zoom are plugins` · `end labels, index, multiples by hand`
+6. **Chart.js**: use it when you already use it. Chips: `all three tests met` · `1.25M pts in ~85 ms, decimation built in` · `five extra scripts to load and keep in step` · `canvas only, and the most small traps`
 7. **Vega-Lite**: use it when the chart must be a JSON spec and the data is small. Chips: `zoom, pan and hover in a few lines of params` · `zoom redraw 0.9 s per frame at hourly` · `no decimation, no minimum zoom span` · `dense chart: a daily mean and low–high band`
 
 Per-use-case line under the list: **Articles:** Plot. **Dashboards and dense data:** ECharts (µPlot if only speed matters). **Many series:** ECharts interactive, Plot static. **Already have one:** keep it; the verdict says what to add.
@@ -60,7 +60,7 @@ Footnote: a missing-data side test (World Bank life expectancy, years removed on
 
 - **What the library did itself.** Each requirement is marked native, by hand or not met, with the source on the page as proof. A chart that needs forty lines of canvas is a different answer from one that needs an option.
 - **How it fought back.** Silent failures, defaults that mislead, plugins and hooks needed to get there. Build notes record every one.
-- **What it costs and how it looks.** Lines of code as displayed (a rough guide, not a score), gzipped bundle as loaded from the CDN, single-run render times on one machine, and whether the result is a chart you would publish.
+- **What it costs and how it looks.** Lines of code as displayed (a rough guide, not a score), gzipped bundle as loaded from the CDN, render times (medians of six warm runs on one machine, linked to the method page), and whether the result is a chart you would publish.
 
 ## Versions and date
 

@@ -177,7 +177,7 @@
     <section aria-labelledby="ranking-h">
       <h2 class="eyebrow" id="ranking-h">The ranking</h2>
       <ol class="ranking" id="ranking"></ol>
-      <p class="hint">Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the default look, then bundle size. Line counts are colour, never a criterion.</p>
+      <p class="hint">Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the finished appearance, then bundle size. Line counts are colour, never a criterion.</p>
     </section>
     <aside class="aside">
       <p>Ranked for someone choosing one library in 2026 for a website or an app, with no framework constraint. Tested on real data: forty years of oil prices, Britain's grid every half hour since 2009, and a decade of npm downloads.</p>
@@ -240,7 +240,7 @@
       <ul class="judged">
         <li><strong>What the library did itself.</strong> Each requirement is marked native, by hand or not met, with the source on the page as proof. A chart that needs forty lines of canvas is a different answer from one that needs an option.</li>
         <li><strong>How it fought back.</strong> Silent failures, defaults that mislead, plugins and hooks needed to get there. <a href="./build-notes">Build notes</a> record every one.</li>
-        <li><strong>What it costs and how it looks.</strong> Lines of code as displayed (a rough guide, not a score), gzipped bundle as loaded from the CDN, single-run render times on one machine, and whether the result is a chart you would publish.</li>
+        <li><strong>What it costs and how it looks.</strong> Lines of code as displayed (a rough guide, not a score), gzipped bundle as loaded from the CDN, render times (medians of six warm runs on one machine, <a href="method.html">method</a>), and whether the result is a chart you would publish.</li>
       </ul>
     </div>
     <div>
@@ -257,7 +257,7 @@
       <details><summary>Why not Highcharts, Recharts, ApexCharts or Nivo?</summary>
         <p>Highcharts is not free for commercial use and everything here is permissive open source. Recharts, Nivo and visx are React wrappers; this site is framework-free and a React page is a separate job. ApexCharts, Chartist, Frappe and billboard.js were not tested, so we make no claim about them.</p></details>
       <details><summary>Aren't line counts meaningless?</summary>
-        <p>Nearly. They count the render function as it ran, comments included, and exclude shared helpers for everyone and each library's theme helper (which ranges from one line to 24). Formatting moves them by five or ten lines. We use them to say “about half”, never to rank. The finding is what is native and what is not, and that is on each page.</p></details>
+        <p>Nearly. They count the render function as it ran, comments included, and exclude shared helpers for everyone and each library's theme helper (which ranges from none to 24 lines). Formatting moves them by five or ten lines. We use them to say “about half”, never to rank. The finding is what is native and what is not, and that is on each page.</p></details>
       <details><summary>Was this built by AI?</summary>
         <p>Yes, by AI coding agents under our direction, each library by a separate agent working from one shared brief and a Plot reference. We reviewed every chart against the requirements, re-measured the numbers, and the source is under every chart so you can check our work. <a href="./verdict">The verdict page</a> says exactly how.</p></details>
       <details><summary>Why quote full bundles?</summary>
@@ -304,7 +304,7 @@
     ["uplot", "µPlot", "Use it when speed and size are the whole problem.",
       ["1.25M pts in ~25 ms", "23 KB", "no annotation model", "wheel zoom and pan are hooks you write"]],
     ["chartjs", "Chart.js", "Use it when you already use it.",
-      ["all three tests met", "1.25M pts in ~85 ms, decimation built in", "annotations and zoom are plugins", "end labels, index, multiples by hand"]],
+      ["all three tests met", "1.25M pts in ~85 ms, decimation built in", "five extra scripts to load and keep in step", "canvas only, and the most small traps"]],
     ["vega-lite", "Vega-Lite", "Use it when the chart must be a JSON spec and the data is small.",
       ["zoom, pan and hover in a few lines of params", "zoom redraw 0.9 s per frame at hourly", "no decimation, no minimum zoom span", "dense chart: a daily mean and low–high band"]],
   ];

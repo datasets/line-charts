@@ -2,7 +2,7 @@
 
 Machine: Mac16,12 Apple M4, 10 cores, 16 GB RAM, macOS 15.6 (Darwin 24.6.0).
 Browser: Google Chrome 158.0.8127.36 (headed); WebGL: ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version).
-Viewport 900×700, DPR 2. 7 runs per cell: run 1 cold, median/min/max over the other 6.
+Viewport 900×700, DPR 2. 7 runs per cell: run 1 is the first run (reported separately), median/min/max over the other 6.
 
 Note: Run shortly before the DPR 1 record, with lighter background load; no other measurement or build from this session was running.
 
@@ -22,7 +22,7 @@ Each value is the demo page's own badge: render call → returned promise → tw
 
 ## Every cell
 
-| Library | Chart | Cold | Median | Min | Max | Chart width | Points reported |
+| Library | Chart | First run | Median | Min | Max | Chart width | Points reported |
 |---|---|--:|--:|--:|--:|--:|---|
 | d3 | hero | 14 | 14 | 9.0 | 17 | 880px | 20,203 points · step: full |
 | d3 | grid | 51 | 50 | 50 | 51 | 880px | 1,251,264 points · step: full · solar peak drawn 16,289 MW of 16,289 MW |

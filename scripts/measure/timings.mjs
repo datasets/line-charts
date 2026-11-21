@@ -7,7 +7,7 @@
  *                    [--note "what else was running"]
  *
  * One browser context per invocation, a fresh page per run. Pass 1 opens
- * every lib × chart once: that is the cold run (library code fetched from
+ * every lib × chart once: that is the first run (library code fetched from
  * jsDelivr and compiled for the first time) and is reported separately.
  * Passes 2..N are interleaved across all cells, so drift (thermals,
  * background work) spreads evenly, and give the warm median/min/max.
@@ -91,7 +91,7 @@ const results = cells.map(({ lib, key, samples }) => {
 const date = today();
 const record = {
   date, generatedAt: new Date().toISOString(),
-  method: "Badge value from demos/<lib>.html?chart=<key>&bare=1: render call to returned promise plus two animation frames. Data loading excluded. Run 1 is cold (first fetch and compile of the library); median/min/max are over runs 2..N, interleaved across cells. One browser context, fresh page per run.",
+  method: "Badge value from demos/<lib>.html?chart=<key>&bare=1: render call to returned promise plus two animation frames. Data loading excluded. Run 1 is the first run (first fetch and compile of the library); median/min/max are over runs 2..N, interleaved across cells. One browser context, fresh page per run.",
   browser: { name: channel === "chrome" ? "Google Chrome" : `Chromium (${channel})`, version: browserVersion, userAgent, headless: flag("headless"), gpu },
   machine: machine(), viewport, dpr, runs, note,
   results,
@@ -106,7 +106,7 @@ const md = [
   "",
   `Machine: ${record.machine.model ?? ""} ${record.machine.cpu}, ${record.machine.cores} cores, ${record.machine.ramGB} GB RAM, ${record.machine.os}.`,
   `Browser: ${record.browser.name} ${record.browser.version}${record.browser.headless ? " (headless)" : " (headed)"}; WebGL: ${gpu?.renderer ?? "none"}.`,
-  `Viewport ${viewport.width}×${viewport.height}, DPR ${dpr}. ${runs} runs per cell: run 1 cold, median/min/max over the other ${runs - 1}.`,
+  `Viewport ${viewport.width}×${viewport.height}, DPR ${dpr}. ${runs} runs per cell: run 1 is the first run (reported separately), median/min/max over the other ${runs - 1}.`,
   ...(note ? ["", `Note: ${note}`] : []),
   "",
   "Each value is the demo page's own badge: render call → returned promise → two animation frames, data loading excluded. Produced by [`scripts/measure/timings.mjs`](../../scripts/measure/timings.mjs); raw samples in the matching `.json`.",
@@ -119,7 +119,7 @@ const md = [
   "",
   "## Every cell",
   "",
-  "| Library | Chart | Cold | Median | Min | Max | Chart width | Points reported |",
+  "| Library | Chart | First run | Median | Min | Max | Chart width | Points reported |",
   "|---|---|--:|--:|--:|--:|--:|---|",
   ...results.map((r) => `| ${r.lib} | ${r.chart} | ${fmt(r.coldMs)} | ${fmt(r.warm?.medianMs)} | ${fmt(r.warm?.minMs)} | ${fmt(r.warm?.maxMs)} | ${r.chartWidth}px | ${r.points ?? ""} |`),
   "",
