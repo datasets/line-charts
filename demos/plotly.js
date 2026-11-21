@@ -143,7 +143,8 @@ mountDemo({
         { scrollZoom: true, displaylogo: false, modeBarButtons: [["zoom2d", "pan2d", "resetScale2d"]] })
         .then(() => {
           host.on("plotly_relayout", () => {
-            const [a, b] = host.layout.xaxis.range.map((d) => Date.parse(String(d).replace(" ", "T") + "Z"));
+            // the range is epoch ms as given, or UTC strings once Plotly has set it
+            const [a, b] = host.layout.xaxis.range.map((d) => (typeof d === "number" ? d : Date.parse(d.replace(" ", "T") + (d.length > 10 ? "Z" : ""))));
             const min = GRID.zoom.minSpanMs, mid = (a + b) / 2;
             // Plotly has no minimum zoom span: widen any range under a week
             if (b - a < min - 1000) return Plotly.relayout(host, { "xaxis.range": [mid - min / 2, mid + min / 2] });
