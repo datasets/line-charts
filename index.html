@@ -27,24 +27,68 @@
   .site-name { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; margin-right: 4px; }
   .site-name:hover { text-decoration: none; color: var(--accent); }
 
-  /* ---- title block ---------------------------------------------- */
-  .intro { padding: 26px 0 0; }
-  h1 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.12; letter-spacing: -0.025em; margin: 0 0 10px; text-wrap: balance; }
-  .lede { font-size: 16.5px; line-height: 1.5; color: var(--text-secondary); max-width: 74ch; margin: 0; }
-  .verdict {
-    margin: 16px 0 0; padding: 1px 0 1px 16px; border-left: 3px solid var(--accent);
-    font-size: clamp(19px, 2.3vw, 23px); line-height: 1.35; font-weight: 650; letter-spacing: -0.012em;
-    color: var(--text-primary); text-wrap: balance;
+  /* ---- hero: what we did, beside a real chart -------------------- */
+  .hero { display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 13fr); gap: 28px 52px; align-items: center; padding: 40px 0 36px; border-bottom: 1px solid var(--border); }
+  @media (max-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 26px 0 28px; } }
+  h1 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.12; letter-spacing: -0.025em; margin: 0 0 12px; text-wrap: balance; max-width: 18ch; }
+  .lede { font-size: 16.5px; line-height: 1.5; color: var(--text-secondary); max-width: 50ch; margin: 0; }
+  .hero__facts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 18px 0 0; font-size: 13px; color: var(--text-muted); }
+  .hero__facts b { color: var(--text-secondary); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .hero__links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
+  .btn { display: inline-block; padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 1.2; }
+  .btn:hover { text-decoration: none; border-color: var(--text-muted); }
+  .btn--primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn--primary:hover { filter: brightness(0.94); border-color: var(--accent); }
+  .hero__figure { margin: 0; min-width: 0; }
+  .hero__img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 18px 50px -22px rgba(0, 0, 0, 0.35); }
+  .hero__img--dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .hero__img--light { display: none; }
+    :root:not([data-theme="light"]) .hero__img--dark { display: block; }
   }
+  :root[data-theme="dark"] .hero__img--light { display: none; }
+  :root[data-theme="dark"] .hero__img--dark { display: block; }
+  .hero__figure figcaption { margin: 10px 2px 0; font-size: 12.5px; color: var(--text-muted); }
+  .hero__figure figcaption a { font-weight: 600; }
+  .hero__figure figcaption a::after { content: " \2192"; }
 
-  /* ---- ranking + aside ------------------------------------------ */
-  .top { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px 44px; margin-top: 24px; align-items: start; }
-  @media (max-width: 920px) { .top { grid-template-columns: minmax(0, 1fr); } }
+  /* ---- what to use: picks by job ---------------------------------- */
+  .picks-head { font-size: 22px; letter-spacing: -0.015em; line-height: 1.25; margin: 40px 0 6px; }
+  table.picks { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 14px; }
+  table.picks th, table.picks td { text-align: left; vertical-align: top; padding: 14px 18px 14px 0; border-bottom: 1px solid var(--border); }
+  table.picks thead th { font-size: 12px; font-weight: 600; color: var(--text-muted); padding-top: 0; padding-bottom: 8px; }
+  table.picks td.job { width: 24%; }
+  table.picks td.job b { display: block; font-size: 17px; letter-spacing: -0.01em; color: var(--text-primary); line-height: 1.25; }
+  table.picks td.job span { display: block; font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  table.picks td.use { width: 20%; }
+  table.picks td.use a { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; color: var(--text-primary); line-height: 1.25; }
+  table.picks td.use a:hover { color: var(--accent); text-decoration: none; }
+  table.picks td.use small { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+  table.picks td.alt { width: 20%; font-size: 13.5px; color: var(--text-secondary); }
+  table.picks td.alt a { color: var(--text-primary); font-weight: 600; }
+  table.picks td.why { font-size: 13.5px; color: var(--text-secondary); }
+  table.picks td.why b { color: var(--text-primary); font-weight: 650; font-variant-numeric: tabular-nums; }
+  table.picks tr.small td { padding-top: 11px; padding-bottom: 11px; }
+  table.picks tr.small td.job b, table.picks tr.small td.use a { font-size: 15px; }
+  @media (max-width: 760px) {
+    table.picks, table.picks tbody { display: block; }
+    table.picks thead { display: none; }
+    table.picks tr { display: flex; flex-direction: column; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    table.picks td { display: block; width: auto !important; padding: 2px 0; border: 0; }
+    table.picks td.use { margin-top: 4px; }
+    table.picks td.alt { order: 3; margin-top: 2px; }
+    table.picks td.alt:not(:empty)::before { content: "Runner-up: "; color: var(--text-muted); }
+  }
+  .picks-foot { margin: 14px 0 0; font-size: 13.5px; color: var(--text-secondary); }
+  .picks-foot a { font-weight: 600; }
+
   .eyebrow { font-size: 11.5px; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
-  ol.ranking { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+
+  /* ---- the full ranking ------------------------------------------- */
+  ol.ranking { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); max-width: 980px; }
   .rank {
-    display: grid; grid-template-columns: 26px 132px minmax(0, 1fr); gap: 2px 12px;
-    padding: 6px 0 7px; border-bottom: 1px solid var(--border); align-items: baseline;
+    display: grid; grid-template-columns: 26px 150px minmax(0, 1fr); gap: 2px 12px;
+    padding: 7px 0 8px; border-bottom: 1px solid var(--border); align-items: baseline;
   }
   .rank__n { font-size: 15px; font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .rank:nth-child(-n+2) .rank__n { color: var(--accent); }
@@ -61,14 +105,6 @@
     .rank { grid-template-columns: 24px minmax(0, 1fr); }
     .rank__body { grid-column: 2; }
   }
-  .aside p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; color: var(--text-secondary); }
-  .aside strong { color: var(--text-primary); font-weight: 650; }
-  .uses { margin: 0 0 14px; padding: 0; list-style: none; font-size: 13.5px; line-height: 1.45; color: var(--text-secondary); }
-  .uses li { padding: 5px 0; border-bottom: 1px solid var(--border); }
-  .uses li:first-child { border-top: 1px solid var(--border); }
-  .uses b { color: var(--text-primary); font-weight: 650; }
-  .aside h2 { font-size: 15px; margin: 18px 0 6px; letter-spacing: -0.01em; }
-  .readmore { font-size: 13.5px; font-weight: 600; }
 
   /* ---- sections ---------------------------------------------- */
   section.block { margin-top: 56px; }
@@ -144,7 +180,6 @@
     .site-head .doc-nav { gap: 6px 12px; }
     .site-head .doc-nav a { font-size: 12.5px; }
     .toggle { padding: 3px 8px; font-size: 11.5px; }
-    .intro { padding-top: 22px; }
     .lede { font-size: 15.5px; }
     section.block { margin-top: 44px; }
     .stage__foot { padding: 10px 12px 12px; }
@@ -158,6 +193,7 @@
   <header class="site-head">
     <nav class="doc-nav" aria-label="Site">
       <a class="site-name" href="./" aria-current="page">line-charts</a>
+      <a href="./why">Why</a>
       <a href="./verdict">Verdict</a>
       <a href="./method">Method</a>
       <a href="./build-notes">Build notes</a>
@@ -167,31 +203,70 @@
     <button class="toggle" type="button"></button>
   </header>
 
-  <div class="intro">
-    <h1>Which JavaScript line&#8209;chart library should you use?</h1>
-    <p class="lede">We built the same three charts in seven libraries, from real data, so you don't have to. Here is the pick, the evidence, and the source under every chart.</p>
-    <p class="verdict">Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.</p>
-  </div>
+  <header class="hero">
+    <div class="hero__text">
+      <h1>Which JavaScript line&#8209;chart library should you use?</h1>
+      <p class="lede">We built the same three line charts in seven libraries, from real data: forty years of oil prices, Britain's electricity grid every half hour since 2009, and weekly npm downloads for 22 charting libraries. We timed them, measured their size and picked one for each job.</p>
+      <p class="hero__facts">
+        <span><b>7</b> libraries</span>
+        <span><b>3</b> charts on real data</span>
+        <span>up to <b>1.25 million</b> points</span>
+        <span>Nov 2026</span>
+      </p>
+      <p class="hero__links">
+        <a class="btn btn--primary" href="#picks">See the picks</a>
+        <a class="btn" href="./why">Why we did this</a>
+      </p>
+    </div>
+    <figure class="hero__figure">
+      <img class="hero__img hero__img--light" src="./assets/hero/hero-light.webp" width="700" height="378" fetchpriority="high"
+           alt="Brent and WTI oil prices from 1986 to 2026, drawn by Apache ECharts, with callouts for the Iraq invasion of Kuwait, the 2008 all-time high of $143.95, the OPEC price war, WTI at minus $36.98 on 20 April 2020 and Russia's invasion of Ukraine, over grey bands for US recessions">
+      <img class="hero__img hero__img--dark" src="./assets/hero/hero-dark.webp" width="700" height="378" loading="lazy"
+           alt="Brent and WTI oil prices from 1986 to 2026, drawn by Apache ECharts in dark mode, with callouts for the Iraq invasion of Kuwait, the 2008 all-time high, the OPEC price war, WTI at minus $36.98 and Russia's invasion of Ukraine">
+      <figcaption>Forty years of oil prices, drawn by Apache ECharts. <a href="#evidence">See all seven draw it</a></figcaption>
+    </figure>
+  </header>
 
-  <div class="top">
-    <section aria-labelledby="ranking-h">
-      <h2 class="eyebrow" id="ranking-h">The ranking</h2>
-      <ol class="ranking" id="ranking"></ol>
-      <p class="hint">Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the finished appearance, then bundle size. Line counts are colour, never a criterion.</p>
-    </section>
-    <aside class="aside">
-      <p>Ranked for someone choosing one library in 2026 for a website or an app, with no framework constraint. Tested on real data: forty years of oil prices, Britain's grid every half hour since 2009, and a decade of npm downloads.</p>
-      <ul class="uses">
-        <li><b>Articles:</b> Plot.</li>
-        <li><b>Dashboards and dense data:</b> ECharts (µPlot if only speed matters).</li>
-        <li><b>Many series:</b> ECharts interactive, Plot static.</li>
-        <li><b>Already have one:</b> keep it; the verdict says what to add.</li>
-      </ul>
-      <h2>We're choosing for DataHub</h2>
-      <p>We did this to choose for ourselves. DataPressr, which renders DataHub's data stories, draws its charts with Observable Plot to static SVG at build time, and that stays: for a published chart with a sentence pointing at the data, Plot is the least code and the best result. For interactive and dense charts on DataHub we will use ECharts. Two libraries, each where it won.</p>
-      <a class="readmore" href="./verdict">Read the full verdict →</a>
-    </aside>
-  </div>
+  <section id="picks" aria-labelledby="picks-h">
+    <h2 class="picks-head" id="picks-h">What to use</h2>
+    <p class="sec-intro">It depends what the chart is for. A pick and a runner-up for each job.</p>
+    <table class="picks" aria-label="Picks by job">
+      <thead><tr><th>The job</th><th>Use</th><th>Runner-up</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="job"><b>An interactive chart</b><span>A dashboard or an app. Zoom, tooltips, a million points, many series.</span></td>
+          <td class="use"><a href="./demos/echarts">Apache ECharts</a><small>Apache-2.0, canvas or SVG</small></td>
+          <td class="alt"><a href="./demos/plotly">Plotly.js</a>: zoom and callouts in config, but 1.5 MB, and slow hover on big data until tuned.</td>
+          <td class="why">Met all three tests, mostly with options. <b>1.25 million points in about 100 ms</b>, with zoom and a slider built in. <b>368 KB</b>.</td>
+        </tr>
+        <tr>
+          <td class="job"><b>A chart in an article</b><span>A report, a blog post, a data story. Static and annotated.</span></td>
+          <td class="use"><a href="./demos/observable-plot">Observable Plot</a><small>ISC, SVG</small></td>
+          <td class="alt"><a href="./demos/d3">D3</a>, when you need what Plot can't do.</td>
+          <td class="why"><b>44 lines</b> for the oil chart, the fewest. Renders to static SVG in Node, which is how DataHub uses it. No zoom or pan.</td>
+        </tr>
+        <tr>
+          <td class="job"><b>Huge data, small page</b><span>Speed and size are all that matter.</span></td>
+          <td class="use"><a href="./demos/uplot">µPlot</a><small>MIT, canvas</small></td>
+          <td class="alt"><a href="./demos/d3">D3</a> drawing to canvas.</td>
+          <td class="why"><b>1.25 million points in about 25 ms</b>, <b>23 KB</b>. No callouts, and you write wheel zoom and pan yourself.</td>
+        </tr>
+        <tr class="small">
+          <td class="job"><b>A one-off chart</b><span>The chart is the product.</span></td>
+          <td class="use"><a href="./demos/d3">D3</a></td>
+          <td class="alt"></td>
+          <td class="why">Did everything, all by hand: 1.3 to 2.6 times Plot's code.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="picks-foot">DataHub uses Plot for its data stories and ECharts for interactive charts. <a href="./why">Why we did this</a> · <a href="./verdict">The full verdict</a></p>
+  </section>
+
+  <section class="block" aria-labelledby="ranking-h">
+    <h2 class="sec-title" id="ranking-h">All seven, ranked</h2>
+    <p class="sec-intro">For someone choosing one library in 2026 for a website or an app, with no framework constraint. Weighed in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the finished appearance, then bundle size. Line counts are context, not a criterion.</p>
+    <ol class="ranking" id="ranking"></ol>
+  </section>
 
   <section class="block" id="try" aria-labelledby="try-h">
     <p class="eyebrow">Try it · <span data-stage-lib>Apache ECharts</span></p>
