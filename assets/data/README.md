@@ -7,6 +7,7 @@ Snapshots used by the demos. Loaders, specs and annotation values are in `assets
 | `oil-brent-daily.csv` | hero | 9,967 | 169 KB | EIA spot price RBRTE, 1987-05-20 → 2026-09-01 | US Government work, public domain (DataPressr copy PDDL-1.0) |
 | `oil-wti-daily.csv` | hero | 10,236 | 173 KB | EIA spot price RWTC, 1986-01-02 → 2026-09-01 | as above |
 | `gb-grid-halfhourly.csv` | grid | 312,816 | 5.6 MB (2.4 MB gzip) | NESO Historic GB Generation Mix | NESO Open Data Licence |
+| `gb-grid-annual.csv` | grid (label check) | 18 years | 2 KB | annual sums of the same NESO file | NESO Open Data Licence |
 | `npm-chart-libs-weekly.csv` | npm | 611 weeks × 22 | 80 KB | npm download counts API | npm registry terms (factual telemetry) |
 | `life-expectancy.csv` | life | 5 countries × 63 years | 6 KB | v1 snapshot with deliberate gaps, unchanged (source not recorded in the repo) | |
 
@@ -26,8 +27,10 @@ Trimmed for the site:
 
 - **No time column.** The series is perfectly regular in UTC once sorted (the raw file has two half-hours of 2025-12-03 out of order; nothing is missing or duplicated), so row *i* is `2009-01-01T00:00Z + i × 30 min`, last row 2026-11-04T23:30Z. `GRID.start` / `GRID.stepMs` in data.js.
 - **Four columns, integer MW:** `coal`, `gas`, `wind` (= `WIND` + `WIND_EMB`, transmission plus embedded), `solar`. Nuclear and carbon intensity dropped.
-- Coal after the last plant closed (Ratcliffe-on-Soar, 30 Sep 2024, last real output 26 MW at 14:30 UTC) is left as published: 24 stray non-zero half-hours, max 198 MW on 2024-11-20, which look like metering reclassification.
-- Facts used in annotations, from the full NESO file: coal 42.4% of `GENERATION` in calendar 2012 (gas 25.7%). Peaks in this file: coal 26,044 MW (2009-02-02 17:00), gas 27,868 MW (2024-12-12 08:00), wind 23,880 MW (2026-03-25 13:30), solar 16,289 MW (2026-04-23 12:00).
+- **Ratcliffe-on-Soar**, Britain's last coal-fired power station, closed at the end of 30 September 2024: its owner Uniper said it would stop operating at midnight (BST) that night ([Al Jazeera, 30 Sep 2024](https://www.aljazeera.com/news/2024/9/30/uks-last-coal-fired-power-plant-to-close-after-more-than-100-years); [ITV News, 1 Oct 2024](https://itv.com/news/central/2024-10-01/ratcliffe-on-soar-end-of-an-era-as-uks-last-coal-fired-power-station-shuts-down)). The chart's rule marks that closure (2024-09-30 23:00 UTC). In this file, coal that afternoon is 405 MW at 14:00 UTC, 26 MW at 14:30 UTC, then zero.
+- **Coal after the closure is left as NESO published it.** There are 24 non-zero coal half-hours after 2024-09-30 14:30 UTC: the largest is 198 MW on 2024-11-20 10:00 UTC, the last is 9 MW on 2026-09-23 16:00 UTC. We do not know what they are (metering or reclassification would be our guess, not a finding), and we have not removed them.
+- **Annual totals: `gb-grid-annual.csv`.** The coal share in the "2012: coal 42%" label needs total generation, which the half-hourly file drops. So the annual sums from the same NESO file are committed alongside it: per calendar year (UTC), the number of half-hours and each NESO fuel column plus `GENERATION`, in GWh (sum of half-hourly MW × 0.5 h ÷ 1,000), and `coal_share_pct` = `coal_gwh / generation_gwh`. NESO's `GENERATION` includes imports, pumped storage and embedded wind and solar. Coal was 42.4% of it in 2012 (gas 25.7%), coal's highest share of any year 2009–2026 in this data; 2026 is a part year (to 4 November).
+- Peaks in the half-hourly file: coal 26,044 MW (2009-02-02 17:00), gas 27,868 MW (2024-12-12 08:00), wind 23,880 MW (2026-03-25 13:30), solar 16,289 MW (2026-04-23 12:00).
 
 The host gzips `text/csv` in transit, so 2.4 MB goes over the wire.
 

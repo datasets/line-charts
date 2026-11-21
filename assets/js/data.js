@@ -163,6 +163,17 @@ export function aggregate(grid, step) {
   return out;
 }
 
+/* The full-resolution half-hours inside [fromMs, toMs): the same grid shape,
+ * for a library that cannot draw 1.25M points but is asked to open on a
+ * window (ctx.range). Two weeks is 672 half-hours × 4 series. */
+export function between(grid, [from, to]) {
+  const a = Math.max(0, Math.ceil((from - grid.t[0]) / GRID.stepMs));
+  const b = Math.min(grid.n, Math.ceil((to - grid.t[0]) / GRID.stepMs));
+  const out = { step: "full", n: b - a, t: grid.t.subarray(a, b), keys: grid.keys, min: {}, max: {} };
+  for (const k of grid.keys) out[k] = out.min[k] = out.max[k] = grid[k].subarray(a, b);
+  return out;
+}
+
 /* Row objects, for libraries that only take arrays of objects:
  *   "long"  [{ date: Date, series, mw }]          4 × n rows
  *   "wide"  [{ date: Date, coal, gas, wind, solar }]   n rows
@@ -312,12 +323,15 @@ export const GRID = {
   /* zoom: start fully zoomed out; never narrower than one week */
   zoom: { initial: "all", minSpanMs: 7 * 24 * 3600 * 1000 },
   events: [
-    /* a vertical rule + label. Coal's last half-hour with real output:
-     * 26 MW at 14:30 UTC (430 MW at 13:00). After it the file has 24 stray
-     * non-zero half-hours (max 198 MW, 2024-11-20): metering, not burning. */
-    { id: "last-coal", kind: "rule", date: "2024-09-30T14:30:00Z", label: "Last coal, 30 Sep 2024" },
+    /* a vertical rule + label: Ratcliffe-on-Soar, Britain's last coal plant,
+     * closed at midnight (BST) ending 30 Sep 2024 (Uniper; see the data README).
+     * Its last half-hour of real output in this file is 26 MW at 14:30 UTC that
+     * day. The file still has 24 later non-zero coal half-hours (max 198 MW on
+     * 2024-11-20, last 9 MW on 2026-09-23 16:00 UTC), left as NESO published them. */
+    { id: "last-coal", kind: "rule", date: "2024-09-30T23:00:00Z", label: "Ratcliffe, last coal plant, closes 30 Sep 2024" },
     /* a text label (no rule), text-anchor start at the start of 2012: coal's
-     * share of NESO's total generation in calendar 2012 = 42.4% (gas 25.7%) */
+     * share of NESO's GENERATION in calendar 2012 = 42.4% (gas 25.7%), its
+     * highest year in 2009–2026; reproducible from gb-grid-annual.csv */
     { id: "coal-2012", kind: "text", date: "2012-01-01T00:00:00Z", y: 28500, label: "2012: coal 42%" },
   ],
   /* for the decimation-honesty check: the true maxima in the file */
@@ -401,7 +415,7 @@ export const DATASETS = {
       "Zoom and pan (wheel + drag), down to one week, with a reset",
       "Crosshair with one tooltip listing all four series at the nearest timestamp",
       "Decimation honesty: does the solar peak survive at full zoom-out (true peak 16,289 MW)?",
-      "Event markers: a rule at “Last coal, 30 Sep 2024” and the “2012: coal 42%” label",
+      "Event markers: a rule at “Ratcliffe, last coal plant, closes 30 Sep 2024” and the “2012: coal 42%” label",
       "Time to first paint on the card (the badge waits for the frame)",
     ],
     x: "Time (UTC)", y: "MW",
