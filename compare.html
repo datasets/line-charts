@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="We built the same three charts in seven JavaScript libraries (D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts, µPlot) from real data. Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.">
+<link rel="canonical" href="https://linecharts.datahub.io/compare">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="line-charts">
+<meta property="og:url" content="https://linecharts.datahub.io/compare">
+<meta property="og:title" content="Which JavaScript line-charts library?">
+<meta property="og:description" content="Seven libraries, three real-data charts, source under every one. Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.">
+<meta property="og:image" content="https://linecharts.datahub.io/assets/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Title card: Which JavaScript line-chart library should you use? Use Apache ECharts, unless the chart is going into an article: then use Observable Plot. Beneath it, the annotated Brent and WTI oil chart.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Which JavaScript line-charts library?">
+<meta name="twitter:description" content="Seven libraries, three real-data charts, source under every one. Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.">
+<meta name="twitter:image:alt" content="Title card: Which JavaScript line-chart library should you use? Use Apache ECharts, unless the chart is going into an article: then use Observable Plot. Beneath it, the annotated Brent and WTI oil chart.">
+<meta name="twitter:image" content="https://linecharts.datahub.io/assets/og/home.png">
+<title>All charts — line-charts</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+<style>
+  /* ---- header ----------------------------------------------------- */
+  .site-head { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; flex-wrap: wrap; padding-top: 18px; }
+  .site-name { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; margin-right: 4px; }
+  .site-name:hover { text-decoration: none; color: var(--accent); }
+
+  .intro { padding: 26px 0 0; }
+  /* ---- hero: what we did, beside a real chart -------------------- */
+  .hero { display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 13fr); gap: 28px 52px; align-items: center; padding: 40px 0 36px; border-bottom: 1px solid var(--border); }
+  @media (max-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 26px 0 28px; } }
+  h1 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.12; letter-spacing: -0.025em; margin: 0 0 12px; text-wrap: balance; max-width: 18ch; }
+  .lede { font-size: 16.5px; line-height: 1.5; color: var(--text-secondary); max-width: 50ch; margin: 0; }
+  .hero__facts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 18px 0 0; font-size: 13px; color: var(--text-muted); }
+  .hero__facts b { color: var(--text-secondary); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .hero__links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
+  .btn { display: inline-block; padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 1.2; }
+  .btn:hover { text-decoration: none; border-color: var(--text-muted); }
+  .btn--primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn--primary:hover { filter: brightness(0.94); border-color: var(--accent); }
+  .hero__figure { margin: 0; min-width: 0; }
+  .hero__img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 18px 50px -22px rgba(0, 0, 0, 0.35); }
+  .hero__img--dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .hero__img--light { display: none; }
+    :root:not([data-theme="light"]) .hero__img--dark { display: block; }
+  }
+  :root[data-theme="dark"] .hero__img--light { display: none; }
+  :root[data-theme="dark"] .hero__img--dark { display: block; }
+  .hero__figure figcaption { margin: 10px 2px 0; font-size: 12.5px; color: var(--text-muted); }
+  .hero__figure figcaption a { font-weight: 600; }
+  .hero__figure figcaption a::after { content: " \2192"; }
+
+  /* ---- what to use: picks by job ---------------------------------- */
+  .picks-head { font-size: 22px; letter-spacing: -0.015em; line-height: 1.25; margin: 40px 0 6px; }
+  table.picks { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 14px; }
+  table.picks th, table.picks td { text-align: left; vertical-align: top; padding: 14px 18px 14px 0; border-bottom: 1px solid var(--border); }
+  table.picks thead th { font-size: 12px; font-weight: 600; color: var(--text-muted); padding-top: 0; padding-bottom: 8px; }
+  table.picks td.job { width: 24%; }
+  table.picks td.job b { display: block; font-size: 17px; letter-spacing: -0.01em; color: var(--text-primary); line-height: 1.25; }
+  table.picks td.job span { display: block; font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  table.picks td.use { width: 20%; }
+  table.picks td.use a { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; color: var(--text-primary); line-height: 1.25; }
+  table.picks td.use a:hover { color: var(--accent); text-decoration: none; }
+  table.picks td.use small { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+  table.picks td.alt { width: 20%; font-size: 13.5px; color: var(--text-secondary); }
+  table.picks td.alt a { color: var(--text-primary); font-weight: 600; }
+  table.picks td.why { font-size: 13.5px; color: var(--text-secondary); }
+  table.picks td.why b { color: var(--text-primary); font-weight: 650; font-variant-numeric: tabular-nums; }
+  table.picks tr.small td { padding-top: 11px; padding-bottom: 11px; }
+  table.picks tr.small td.job b, table.picks tr.small td.use a { font-size: 15px; }
+  @media (max-width: 760px) {
+    table.picks, table.picks tbody { display: block; }
+    table.picks thead { display: none; }
+    table.picks tr { display: flex; flex-direction: column; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    table.picks td { display: block; width: auto !important; padding: 2px 0; border: 0; }
+    table.picks td.use { margin-top: 4px; }
+    table.picks td.alt { order: 3; margin-top: 2px; }
+    table.picks td.alt:not(:empty)::before { content: "Runner-up: "; color: var(--text-muted); }
+  }
+  .picks-foot { margin: 14px 0 0; font-size: 13.5px; color: var(--text-secondary); }
+  .picks-foot a { font-weight: 600; }
+
+  .eyebrow { font-size: 11.5px; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
+
+  /* ---- the full ranking ------------------------------------------- */
+  ol.ranking { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); max-width: 980px; }
+  .rank {
+    display: grid; grid-template-columns: 26px 150px minmax(0, 1fr); gap: 2px 12px;
+    padding: 7px 0 8px; border-bottom: 1px solid var(--border); align-items: baseline;
+  }
+  .rank__n { font-size: 15px; font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .rank:nth-child(-n+2) .rank__n { color: var(--accent); }
+  .rank__name { font-size: 15px; font-weight: 650; color: var(--text-primary); letter-spacing: -0.01em; }
+  .rank__name:hover { color: var(--accent); }
+  .rank__when { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--text-secondary); }
+  .chips { list-style: none; margin: 3px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+  .chips li {
+    font-size: 11.5px; line-height: 1.3; color: var(--text-secondary); padding: 2px 7px; border-radius: 999px;
+    background: color-mix(in srgb, var(--text-primary) 5%, transparent); font-variant-numeric: tabular-nums;
+  }
+  .rank__body { grid-column: 3; }
+  @media (max-width: 560px) {
+    .rank { grid-template-columns: 24px minmax(0, 1fr); }
+    .rank__body { grid-column: 2; }
+  }
+
+  /* ---- sections ---------------------------------------------- */
+  section.block { margin-top: 56px; }
+  section.block > h2, .sec-title { font-size: 22px; letter-spacing: -0.015em; line-height: 1.25; margin: 0 0 8px; }
+  .sec-intro { font-size: 15px; line-height: 1.55; color: var(--text-secondary); max-width: 72ch; margin: 0 0 12px; }
+
+  /* ---- centrepiece ---------------------------------------------- */
+  .stage { border: 1px solid var(--border); border-radius: 12px; background: var(--page); overflow: hidden; margin-top: 12px; }
+  .stage iframe { display: block; width: 100%; height: 480px; border: 0; background: transparent; }
+  .stage__foot { padding: 10px 16px 14px; border-top: 1px solid var(--border); }
+  .caption { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-primary); max-width: 92ch; }
+  .hint { margin: 6px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--text-muted); max-width: 92ch; }
+  .switch { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 12px; }
+  .switch__label { font-size: 13px; color: var(--text-secondary); }
+  .switch__opts, .pick__opts { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+  .switch__opts button, .pick__opts button {
+    border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text-secondary);
+    font: inherit; font-size: 12.5px; padding: 5px 12px; cursor: pointer; line-height: 1.3;
+  }
+  .switch__opts button:hover, .pick__opts button:hover { color: var(--text-primary); }
+  .switch__opts button[aria-pressed="true"], .pick__opts button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .switch__note { font-size: 12px; color: var(--text-muted); }
+  .switch__opts button:focus-visible, .pick__opts button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- evidence ------------------------------------------------- */
+  ul.tests { margin: 0 0 6px; padding-left: 18px; font-size: 14px; line-height: 1.55; color: var(--text-secondary); max-width: 92ch; }
+  ul.tests li { margin: 4px 0; }
+  ul.tests strong { color: var(--text-primary); }
+  .pick { display: flex; align-items: baseline; gap: 8px 10px; flex-wrap: wrap; margin: 18px 0 12px; }
+  .pick__label { font-size: 12.5px; color: var(--text-muted); }
+  .grid7 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 1040px) { .grid7 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 660px)  { .grid7 { grid-template-columns: minmax(0, 1fr); } }
+  .cell { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--page); display: flex; flex-direction: column; }
+  .cell__head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 12px 7px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .cell__head a { font-size: 13.5px; font-weight: 650; color: var(--text-primary); }
+  .cell__head a:hover { color: var(--accent); }
+  .cell__lines { font-size: 11.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .cell__lines b { color: var(--text-secondary); font-weight: 600; }
+  .cell iframe { width: 100%; border: 0; display: block; height: 330px; }
+  .footnote { font-size: 13px; color: var(--text-muted); margin: 12px 0 0; max-width: 92ch; }
+
+  /* ---- judged / versions / faq ------------------------------------ */
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 44px; }
+  @media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+  ul.judged { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
+  ul.judged li { margin: 0 0 10px; }
+  ul.judged strong { color: var(--text-primary); }
+  .versions { font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+  .faq { border-top: 1px solid var(--border); max-width: 86ch; }
+  .faq details { border-bottom: 1px solid var(--border); }
+  .faq summary { cursor: pointer; list-style: none; padding: 11px 0; font-size: 15px; font-weight: 600; color: var(--text-primary); display: flex; gap: 10px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: "+"; color: var(--text-muted); font-weight: 400; width: 12px; flex: none; }
+  .faq details[open] summary::before { content: "−"; }
+  .faq summary:hover { color: var(--accent); }
+  .faq details p { margin: 0 0 14px 22px; font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+  code { font-family: var(--font-mono); font-size: 0.9em; background: color-mix(in srgb, var(--text-primary) 6%, transparent); padding: 1px 4px; border-radius: 4px; }
+
+  /* ---- links + footer ---------------------------------------------- */
+  .more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 860px) { .more { grid-template-columns: minmax(0, 1fr); } }
+  .more a { display: block; padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text-secondary); font-size: 13.5px; line-height: 1.5; }
+  .more a:hover { border-color: var(--accent); text-decoration: none; }
+  .more b { display: block; font-size: 15.5px; color: var(--text-primary); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .more a:hover b { color: var(--accent); }
+  .foot { margin: 56px 0 40px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .foot a { color: var(--text-secondary); }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    .site-head { padding-top: 14px; }
+    .site-head .doc-nav { gap: 6px 12px; }
+    .site-head .doc-nav a { font-size: 12.5px; }
+    .toggle { padding: 3px 8px; font-size: 11.5px; }
+    .lede { font-size: 15.5px; }
+    section.block { margin-top: 44px; }
+    .stage__foot { padding: 10px 12px 12px; }
+    .stage iframe { height: 380px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site-head">
+    <nav class="doc-nav" aria-label="Site">
+      <a class="site-name" href="./">line-charts</a>
+      <a href="./compare" aria-current="page">All charts</a>
+      <a href="./why">Why</a>
+      <a href="./verdict">Verdict</a>
+      <a href="./method">Method</a>
+      <a href="./build-notes">Build notes</a>
+      <a href="./changelog">Changelog</a>
+      <a href="https://github.com/datasets/line-charts" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <button class="toggle" type="button"></button>
+  </header>
+
+  <div class="intro">
+    <h1>All the charts, in all seven libraries</h1>
+    <p class="lede">Every chart we built, live. Pick a chart; the source and the measured line count are on each library's page. <a href="./">Back to the comparison</a></p>
+  </div>
+
+  <section class="block" id="evidence" aria-labelledby="evidence-h" style="margin-top:28px">
+    <h2 id="evidence-h" class="sec-title">The three tests</h2>
+    <p class="sec-intro">Three tests, each a different kind of line chart, each built to one shared brief in all seven libraries. Every cell below is live; the source and the measured line count are under each one.</p>
+    <ul class="tests">
+      <li><strong>Oil, 1986–2026</strong> (EIA, 20k points): the annotated editorial chart. End labels, callouts with leaders, recession bands, an axis that crosses zero for WTI at −$36.98 on 20 April 2020.</li>
+      <li><strong>Grid, half-hourly</strong> (NESO, 1.25M points): the dense interactive chart. Zoom and pan to one week, a crosshair tooltip, and a straight answer to “did you draw the solar peak?”</li>
+      <li><strong>npm downloads</strong> (22 libraries, 2015–2026): the many-series chart. Log scale, highlight one of 22, an indexed view and small multiples.</li>
+    </ul>
+
+    <div class="pick">
+      <span class="pick__label">Chart:</span>
+      <span class="pick__opts" role="group" aria-label="Choose the chart every library draws">
+        <button type="button" data-chart="defaults" aria-pressed="false">Oil, out of the box</button>
+        <button type="button" data-chart="hero" aria-pressed="true">Oil, 1986–2026</button>
+        <button type="button" data-chart="grid" aria-pressed="false">Grid, half-hourly</button>
+        <button type="button" data-chart="npm" aria-pressed="false">npm downloads</button>
+        <button type="button" data-chart="life" aria-pressed="false">Missing data</button>
+      </span>
+      <span class="pick__label" data-caption></span>
+    </div>
+
+    <div class="grid7" id="grid"></div>
+
+    <p class="footnote">A missing-data side test (World Bank life expectancy, years removed on purpose) gives all seven the same explicit nulls. All seven implementations break the line at a null: six by default, D3 with <code>.defined()</code>.</p>
+  </section>
+
+  <footer class="foot">
+    <span>line-charts: a bake-off of seven open-source line-chart libraries, November 2026.</span>
+    <a href="https://github.com/datasets/line-charts" target="_blank" rel="noopener">Source and data on GitHub (MIT)</a>
+    <a href="./changelog">Changelog</a>
+  </footer>
+
+</div>
+<script type="module">
+  import { installThemeToggle, restoreTheme, broadcastTheme } from "./assets/js/theme.js";
+  restoreTheme();
+  installThemeToggle(document.querySelector(".toggle"));
+
+  /* ---- the evidence: seven live cells ----------------------------- */
+  const LIBS = [
+    ["d3", "D3"],
+    ["observable-plot", "Observable Plot"],
+    ["vega-lite", "Vega-Lite"],
+    ["plotly", "Plotly.js"],
+    ["chartjs", "Chart.js"],
+    ["echarts", "Apache ECharts"],
+    ["uplot", "µPlot"],
+  ];
+  /* Each cell is an iframe onto the library's own demo page in single-chart,
+   * chrome-free mode: libraries that register globals or ship CSS stay
+   * isolated, and the embedded page reports its measured line count and its
+   * height back, so neither number can drift from what actually rendered.
+   * Cells load only when the section nears the viewport, so the centrepiece
+   * has the CPU (and the 5.6 MB grid file is cached by the time they ask). */
+  const grid = document.getElementById("grid");
+  grid.innerHTML = LIBS.map(([slug, name]) => `
+    <article class="cell" data-lib="${slug}">
+      <div class="cell__head">
+        <a href="./demos/${slug}">${name}</a>
+        <span class="cell__lines"><b data-lines>—</b> lines</span>
+      </div>
+      <iframe title="${name} rendering the current chart" scrolling="no"></iframe>
+    </article>`).join("");
+
+  const frames = [...grid.querySelectorAll("iframe")];
+  const cellOf = (win) => frames.find((f) => f.contentWindow === win)?.closest(".cell");
+
+  /* The grid chart is 1.25M points: seven of those at once would fight over
+   * one CPU and make every timing meaningless. So for grid the cells render
+   * one after another, each starting when the previous one reports it has
+   * painted (or after 60 s). Other charts load as usual. */
+  let queue = [], timer;
+  const WAITING = `<p style="font:12.5px system-ui;color:#898781;text-align:center;margin-top:120px">
+    waiting its turn: grid cells render one at a time so timings are not contended</p>`;
+  function next() {
+    clearTimeout(timer);
+    const item = queue.shift();
+    if (!item) return;
+    const [f, url] = item;
+    f.removeAttribute("srcdoc");
+    f.src = url;
+    timer = setTimeout(next, 60000);
+  }
+
+  addEventListener("message", (e) => {
+    if (e.origin !== location.origin || !e.data || typeof e.data !== "object") return;
+    const cell = cellOf(e.source);
+    if (!cell) return;
+    if (e.data.type === "lc:lines") {
+      cell.querySelector("[data-lines]").textContent = e.data.lines ?? "—";
+    } else if (e.data.type === "lc:size" && e.data.height > 0) {
+      cell.querySelector("iframe").style.height = e.data.height + "px";
+    } else if (e.data.type === "lc:rendered" && e.data.key === current) {
+      next();
+    }
+  });
+  // a frame that loads after a theme change hears the current choice too
+  frames.forEach((f) => f.addEventListener("load", () => broadcastTheme([f])));
+
+  const CAPTION = {
+    defaults: "The oil data with each library's defaults: data, a time axis and a size, nothing else.",
+    hero: "Two oil benchmarks, forty years, one negative price. Line counts are measured from the code that just ran.",
+    grid: "1.25M points. Cells render one at a time so each timing is uncontended; each says which decimation step it needed.",
+    npm: "22 packages on a log scale: the seven in colour. Hover to pick out a line; switch to indexed or small multiples.",
+    life: "Five countries with missing years. Watch which lines break at a gap and which bridge it.",
+  };
+  const caption = document.querySelector("[data-caption]");
+  const buttons = [...document.querySelectorAll(".pick__opts button")];
+  let current = null;
+  function show(chart) {
+    current = chart;
+    buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.chart === chart)));
+    caption.textContent = CAPTION[chart];
+    clearTimeout(timer);
+    queue = [];
+    frames.forEach((f) => {
+      const slug = f.closest(".cell").dataset.lib;
+      const url = `./demos/${slug}?chart=${chart}&bare=1`;
+      f.closest(".cell").querySelector("[data-lines]").textContent = "—";
+      if (chart === "grid") {
+        f.removeAttribute("src");
+        f.srcdoc = WAITING;
+        queue.push([f, url]);
+      } else {
+        f.removeAttribute("srcdoc");
+        f.src = url;
+      }
+    });
+    if (chart === "grid") next();
+  }
+  buttons.forEach((btn) => btn.addEventListener("click", () => {
+    history.replaceState(null, "", btn.dataset.chart === "hero" ? location.pathname : "#" + btn.dataset.chart);
+    show(btn.dataset.chart);
+  }));
+
+  const fromHash = location.hash.slice(1);
+  const initial = fromHash in CAPTION ? fromHash : "hero";
+  caption.textContent = CAPTION[initial];
+  buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.chart === initial)));
+  if (initial !== "hero") {
+    show(initial);
+    document.getElementById("evidence").scrollIntoView();
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting) || current) return;
+      io.disconnect();
+      show("hero");
+    }, { rootMargin: "400px 0px" });
+    io.observe(document.getElementById("evidence"));
+  }
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-/* Renders a repo Markdown file into a doc page (verdict / method / build-notes).
+/* Renders a repo Markdown file into a doc page (why / verdict / method / build-notes).
  * The .md file stays the single source of truth; the page declares which file
  * on <body data-doc="..."> and this module fetches and renders it. */
 import { restoreTheme, installThemeToggle } from "./theme.js";
@@ -9,7 +9,7 @@ const toggle = document.querySelector(".toggle");
 if (toggle) installThemeToggle(toggle);
 
 const REPO = "https://github.com/datasets/line-charts";
-const PAGES = { "EVALUATION.md": "./verdict", "ANALYSIS.md": "./method", "docs/BUILD-NOTES.md": "./build-notes" };
+const PAGES = { "index.html": "./", "EVALUATION.md": "./verdict", "ANALYSIS.md": "./method", "docs/BUILD-NOTES.md": "./build-notes", "docs/WHY.md": "./why" };
 
 const slugify = (s) =>
   s.toLowerCase().replace(/[`*_]/g, "").replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(/\s+/g, "-");

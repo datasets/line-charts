@@ -45,7 +45,7 @@ Weekly npm downloads of 22 charting packages, March 2015 to November 2026: the s
 
 ### Side test: missing data
 
-World Bank life expectancy at birth for five countries, 1960–2022, with 15 country-years removed on purpose (India 1969, 1980, 1991, 2002, 2013; Nigeria 1994–1997; China 1960–1965) to make gaps. One requirement: a null year breaks the line and is not bridged. Every library now receives the same explicit nulls (see "What the September version got wrong").
+World Bank life expectancy at birth for five countries, 1960–2022, with 15 country-years removed on purpose (India 1969, 1980, 1991, 2002, 2013; Nigeria 1994–1997; China 1960–1965) to make gaps. One requirement: a null year breaks the line and is not bridged. Every library receives the same explicit nulls.
 
 ## Data
 
@@ -126,18 +126,6 @@ Bundle sizes come from [`scripts/measure/bundles.mjs`](scripts/measure/bundles.m
 The grid test gives every library the same ladder: try all 1,251,264 points; if first paint takes more than about 3 s or the page locks up, step down to hourly means (625,632 points), then daily (26,068). The shared `aggregate()` builds each step, with each bucket's mean, minimum and maximum, so every library that steps down draws the same buckets. A library may use its own downsampling at the full step (Chart.js's decimation plugin, ECharts' `sampling`) and must say which.
 
 Which step a library ships is part of the finding, not a footnote, because decimation changes what the reader sees. A daily-mean line flattens the solar peak from 16,289 MW to 5,444 MW: a chart that tells you solar never passed 5.5 GW. So every library reports the solar peak it actually drew. Per-pixel min/max methods (Chart.js `min-max`, ECharts `minmax`, µPlot's line builder) keep the true peak, and so does a daily step drawn as an envelope: Plot and Vega-Lite draw each day's mean over a band from its minimum to its maximum, which shows 16,289 MW. What a daily step cannot give back is the half-hours inside a day when you zoom in.
-
-## What the September version got wrong
-
-The first version (September 2026) drew one synthetic electricity chart plus the missing-data test. A pre-launch review found real problems:
-
-- **Synthetic data** with real-sounding units, disclosed only in the README. Now every chart uses real, sourced data.
-- **One kind of chart, a general verdict.** A 135-point annotated chart cannot tell you which library suits a dashboard. Now there are three kinds, and the verdict says which kind each recommendation is for.
-- **The missing-data test fed different data to different libraries.** Two got sparse rows with no nulls; five got explicit nulls. All seven now get the same explicit nulls.
-- **Inconsistent standards.** Chart.js was counted with a hand-written canvas plugin for end labels when its annotation plugin plus the shared label helper would do, and a hand-drawn arrowhead counted as a feature in D3 but a gap in Vega-Lite.
-- **Timings read as a speed ranking** (4 ms against 80 ms, SVG against Canvas, single runs). Now they are scripted medians with a published record, and framed as above.
-- **"Identical geometry" was overclaimed**: libraries used different curve interpolations and one ignored a spec value. Now the claim is "comparable".
-- **Old major versions** (ECharts 5, Vega-Lite 5, Plotly 3). Now the current majors.
 
 ## How it was built
 

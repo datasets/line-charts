@@ -1,49 +1,60 @@
 # The verdict
 
-Which JavaScript line-chart library to use in 2026, for a website or an app, decided by building the same three charts in seven libraries from real data. The method is on the [method page](./method); what each build was like, library by library, is in the [build notes](./build-notes); every chart on the site is live and its source is under it.
+Which JavaScript line-chart library to use in 2026, for a website or an app. We built the same three charts from real data in seven libraries. The method is on the [method page](./method), library-by-library notes are in the [build notes](./build-notes), and every chart on the site is live with its source under it.
 
 **Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.**
 
 ## The ranking
 
-For someone choosing one line-chart library today, with no framework constraint and no existing investment. It is our judgement for DataHub, not a score, and these are the criteria, roughly in order of weight:
+For someone choosing one line-chart library today, with no framework constraint and nothing already invested. This is our judgement for DataHub, not a score. The criteria, roughly by weight:
 
-1. **What is native and what is by hand**, across the three tests: each requirement done as an option or a mark, versus event code, pixel maths or canvas calls.
+1. **Native or by hand**, across the three tests: each requirement done as an option or a mark, or with event code, pixel maths or canvas calls.
 2. **Interaction on the dense chart**: zoom, pan, reset and hover, working embedded in a page and on touch.
-3. **Dense-data honesty**: can it draw the full 1.25M points, and does what it draws keep the true extremes.
-4. **The finished appearance**: how close the result is to a chart we would publish without restyling it.
+3. **Dense-data honesty**: can it draw all 1.25M points, and does what it draws keep the true extremes.
+4. **Finished appearance**: how close the result is to a chart we would publish without restyling.
 5. **Bundle**, as loaded from a CDN.
 
-Line counts are colour, not a criterion: they describe our code and never move a library up or down. Speed counts where it changes what you can build, not as a league table.
+Line counts are context, not a criterion: they describe our code and never move a library up or down. Speed counts only where it changes what you can build.
 
 | # | Library | Use it when | Why it sits here |
 |---|---|---|---|
-| 1 | **Apache ECharts** 6.1.0 | You want one library for everything from an annotated story chart to a 1.25M-point dashboard | Five libraries met every requirement; ECharts met the most of them as options rather than code: end-label layout, bands, leaders, zoom, pan, slider, one-week floor and sampling are all config. 1.25M points in about 100 ms with everything interactive. Two things to know: its stock tooltip shows wrong values once sampling is on (a 5-line formatter fixes it), and 368 KB gzipped is the price. |
-| 2 | **Observable Plot** 0.6.19 | The chart is going into an article, a report or a static page | The least code and the cleanest result on the editorial chart (44 lines) and on the many-series chart (77, with the index and the small multiples native). Static SVG, so it renders at build time. No zoom or pan. On the dense chart it cannot draw the raw 1.25M points in reasonable time (9 to 13 s; hourly about 5 s), so it draws the daily step as a mean line over a low-to-high band, which keeps the true solar peak and paints in about 0.4 s. |
-| 3 | **D3** 7.9.2 | The chart is the product, or you already think in D3 | Did everything, including 1.25M points on canvas through the same `d3.line()` generator in about 70 ms with zoom and pan, and the result is the sharpest. Every piece of furniture is by hand, which is the point of D3 and its cost. |
-| 4 | **Plotly.js** 4.3.0 | You want callouts as single objects and zoom in config, and can pay 1.5 MB | The best annotation model in the set (a callout is one object, leader and dot included), and `scattergl` draws all 1.25M points. But at that size the default hover took 1 to 1.8 s per mouse move until tuned (a 2-line fix you find by profiling), a drag-zoom redraws in 0.3 to 1 s, and the bundle is 1.48 MB gzipped, four times ECharts. |
-| 5 | **µPlot** 1.6.32 | Speed and size are the whole problem | 1.25M points in about 25 ms, redraws in about 20 ms, 23 KB. No annotation model at all: about 45 of the oil chart's 65 lines are canvas furniture. Drag-to-zoom and reset are built in; wheel and pinch zoom, panning (Shift + drag, or a finger on touch) and the one-week floor are about 40 lines of hooks you write, since µPlot has no touch handling of its own. Fifth overall because it does least for you; first if the point count is the problem. |
-| 6 | **Chart.js** 4.6.1 | You already use it | Met every requirement, and handled all 1.25M points in about 85 ms with its built-in (core) min-max decimation. Below µPlot and above Vega-Lite by our preference, not by capability: it needs five extra scripts (a date adapter, luxon, the annotation and zoom plugins, hammer.js) loaded and kept in step, it draws to canvas only, and it hit the most small traps while we built it. The traps: no explicit tick list (a hook), decimation that breaks index-mode tooltips, a time axis that formats in local time until you set the adapter's zone, and a first-dataset-on-top draw order that is the reverse of the other six. |
-| 7 | **Vega-Lite** 6.5.0 | The chart must be a JSON spec, and the data is small | The fewest lines of interaction code of the seven (zoom, pan, crosshair and whole-line hover are each a few lines of `params`, no event code) and a fine editorial chart. But scale is where it hurts: at full resolution the lines alone took 3.7 s and the shipped chart with its crosshair 17.8 s; even at hourly, each zoom step took 0.9 s because the whole dataflow re-runs per frame; there is no decimation and no minimum zoom span. |
+| 1 | **Apache ECharts** 6.1.0 | You want one library for everything from an annotated story chart to a 1.25M-point dashboard | One of five that met every requirement, and the one that met most of them as options rather than code: end-label layout, bands, leaders, zoom, pan, slider, one-week floor and sampling are all config. 1.25M points in about 100 ms, all interactive. Caveat: with sampling on, the stock tooltip shows wrong values (a 5-line formatter fixes it). 368 KB gzipped. |
+| 2 | **Observable Plot** 0.6.19 | The chart is going into an article, a report or a static page | Least code and cleanest result on the editorial chart (44 lines) and the many-series chart (77, index and small multiples native). Static SVG, so it renders at build time. No zoom or pan. Raw 1.25M points take 9 to 13 s, so it draws a daily mean line over a low-to-high band: true solar peak, about 0.4 s. |
+| 3 | **D3** 7.9.2 | The chart is the product, or you already think in D3 | Did everything, including 1.25M points on canvas through the same `d3.line()` generator in about 70 ms, with zoom and pan. The sharpest result. Every piece of furniture is by hand. |
+| 4 | **Plotly.js** 4.3.0 | You want callouts as single objects and zoom in config, and can pay 1.5 MB | Best annotation model: a callout is one object, leader and dot included. `scattergl` draws all 1.25M points, but default hover took 1 to 1.8 s per mouse move until tuned (a 2-line fix found by profiling), and a drag-zoom redraws in 0.3 to 1 s. 1.48 MB gzipped, four times ECharts. |
+| 5 | **µPlot** 1.6.32 | Speed and size are the whole problem | 1.25M points in about 25 ms, redraws in about 20 ms, 23 KB. No annotation model: about 45 of the oil chart's 65 lines are canvas furniture. Drag-zoom and reset are built in; wheel and pinch zoom, panning and the one-week floor are about 40 lines of hooks (it has no touch handling). Fifth because it does least for you; first if point count is the problem. |
+| 6 | **Chart.js** 4.6.1 | You already use it | Met every requirement; all 1.25M points in about 85 ms with built-in min-max decimation. Below µPlot by our preference, not capability: five extra scripts to load and keep in step, canvas only, and the most small traps (no tick list option, decimation breaks index-mode tooltips, local-time axis until you set the zone, reversed draw order). |
+| 7 | **Vega-Lite** 6.5.0 | The chart must be a JSON spec, and the data is small | Fewest lines of interaction code: zoom, pan, crosshair and whole-line hover are a few lines of `params` each. A fine editorial chart. Does not scale: at full resolution the lines took 3.7 s and the shipped chart 17.8 s; even at hourly each zoom step took 0.9 s. No decimation, no minimum zoom span. |
 
 ### By use case
 
-- **Editorial and article charts: Observable Plot.** Bands, leaders, dots and labels are ordinary marks, mark order is z-order, and it renders to static SVG in Node. The one gap is end-label layout, which you write yourself (we use a 13-line shared helper). If labels must survive data you have not seen, ECharts does that layout for you.
-- **Dashboards and big or dense time series: Apache ECharts.** `sampling: "minmax"` keeps the solar peak at the true 16,289 MW, `dataZoom` gives wheel, drag, slider and a one-week floor in config, and the typed arrays go in as a column dataset with no reshaping. If you are drawing hundreds of thousands of points live and nothing else, µPlot: about 25 ms, 23 KB.
-- **Many series, exploratory: Apache ECharts for an interactive page, Plot for a static one.** ECharts dims the other 21 lines and their labels with one option (`emphasis.focus: "series"`) and lays out the end labels itself, though picking the nearest line under the pointer is about 12 lines by hand; Plot's `normalizeY` and facets make the indexed view and the small multiples a few lines each.
-- **You already have one:** keep Chart.js and add `chartjs-plugin-annotation` and `chartjs-plugin-zoom`; keep Plotly and set `hoverdistance` before you ship a big chart; keep Vega-Lite while your charts stay in the tens of thousands of points; keep D3 if the team already writes it.
+- **Editorial and article charts: Observable Plot.** Bands, leaders, dots and labels are ordinary marks, mark order is z-order, and it renders static SVG in Node. You write end-label layout yourself (our shared helper is 13 lines); if labels must survive data you have not seen, ECharts does it for you.
+- **Dashboards and dense time series: Apache ECharts.** `sampling: "minmax"` keeps the true 16,289 MW solar peak, `dataZoom` gives wheel, drag, slider and a one-week floor in config, and typed arrays go in as a column dataset with no reshaping. For hundreds of thousands of live points and nothing else: µPlot (about 25 ms, 23 KB).
+- **Many series, exploratory: ECharts if interactive, Plot if static.** ECharts dims the other 21 lines and their labels with one option (`emphasis.focus: "series"`) and lays out end labels itself; picking the nearest line is about 12 lines by hand. Plot's `normalizeY` and facets make the indexed view and small multiples a few lines each.
+- **You already have one:**
+  - Chart.js: add `chartjs-plugin-annotation` and `chartjs-plugin-zoom`.
+  - Plotly: set `hoverdistance` before you ship a big chart.
+  - Vega-Lite: keep it while charts stay in the tens of thousands of points.
+  - D3: keep it if the team already writes it.
 
 ### What DataHub uses
 
-We did this to choose for ourselves. DataPressr, the engine behind DataHub's data stories, renders its charts with Observable Plot to static SVG at build time, and nothing here changes that: for a published chart with a sentence pointing at a specific moment in the data, Plot is the least code and the best result. For interactive and dense charts on DataHub, where the reader needs to zoom into seventeen years of half-hourly data, we will use ECharts.
+We did this to choose for ourselves. DataPressr, the engine behind DataHub's data stories, renders charts with Observable Plot to static SVG at build time, and that stays: for a published chart pointing at a specific moment in the data, Plot is the least code and the best result. For interactive and dense charts, where the reader needs to zoom into seventeen years of half-hourly data, DataHub will use ECharts.
 
 ## Scorecards
 
-Three tests, each a different kind of line chart, built to one shared brief in all seven libraries. "Native" means the library did it as an option or a mark; "by hand" means event handlers, pixel maths or canvas calls; the key number follows. Line counts are the render function as displayed on the page (see [how to read the numbers](#how-to-read-the-numbers)). Render times are medians of six warm runs at 900 px on one machine ([method](method.html)).
+Three tests, each a different kind of line chart, built to one shared brief in all seven libraries. "Native" means an option or a mark; "by hand" means event handlers, pixel maths or canvas calls. Line counts are the render function as shown on the page; render times are medians of six warm runs at 900 px on one machine. See [how to read the numbers](#how-to-read-the-numbers) and the [method](method.html).
 
 ### Oil, 1986 to 2026: the annotated editorial chart
 
-EIA daily Brent and WTI spot prices, 20,203 points. End labels with no legend, five callouts with leader lines (fewer as the chart narrows), four recession bands behind the lines, a y-axis that crosses zero for WTI at −$36.98 on 20 April 2020, decade ticks, nothing overlapping at 360 px. All seven met every requirement; what differs is how.
+EIA daily Brent and WTI spot prices, 20,203 points. All seven met every requirement; what differs is how. The requirements:
+
+- end labels, no legend
+- five callouts with leader lines (fewer as the chart narrows)
+- four recession bands behind the lines
+- a y-axis that crosses zero for WTI at −$36.98 on 20 April 2020
+- decade ticks
+- nothing overlapping at 360 px
 
 | Library | Lines | End labels (de-collision) | Callouts | Bands and zero rule | Exact ticks | Render (median) |
 |---|---|---|---|---|---|---|
@@ -55,11 +66,17 @@ EIA daily Brent and WTI spot prices, 20,203 points. End labels with no legend, f
 | D3 | 60 | By hand | By hand: a `g` of line, circle and tspans | By hand | Native | 11 ms |
 | µPlot | 65 | By hand on canvas | By hand on canvas, in device pixels | By hand on canvas | Native (`splits`) | 15 ms |
 
-Six of seven de-collide the end labels with the same shared helper; ECharts is the only one that does it itself. Of µPlot's 65 lines, about 45 are the editorial layer; the chart itself is about 20.
+Six of seven de-collide the end labels with the same shared helper; only ECharts does it itself. About 45 of µPlot's 65 lines are the editorial layer; the chart itself is about 20.
 
 ### The grid, every half hour since 2009: the dense interactive chart
 
-NESO GB generation by fuel, 312,816 half-hours × 4 series = 1,251,264 points. Draw as many as you can, zoom and pan down to one week with a reset, a crosshair tooltip with all four series, event markers, and report the solar peak you drew against the true 16,289 MW.
+NESO GB generation by fuel: 312,816 half-hours × 4 series = 1,251,264 points. The requirements:
+
+- draw as many points as you can
+- zoom and pan down to one week, with a reset
+- a crosshair tooltip with all four series
+- event markers
+- report the solar peak drawn against the true 16,289 MW
 
 | Library | Lines | Points in, and what is drawn | First paint (median) | Solar peak drawn | Zoom and pan, one-week floor | Crosshair tooltip |
 |---|---|---|---|---|---|---|
@@ -71,11 +88,23 @@ NESO GB generation by fuel, 312,816 half-hours × 4 series = 1,251,264 points. D
 | Vega-Lite | 57 | the daily step: 6,517 days × 4 series × 3 statistics (min, mean, max) as a mean line over a low-to-high band (78,204 values), canvas renderer | 219 ms | **16,289** | Partly: one param (`bind: "scales"`), no minimum span possible; did not pan or zoom on touch in our tests | Native, one param |
 | Plot | 38 | the daily step: 6,517 days × 4 series × 3 statistics (min, mean, max) as a mean line over a low-to-high band (78,204 values), SVG | 431 ms | **16,289** | **Not met**: no zoom or pan | Native (`pointerX` + `tip`) |
 
-The ladder, measured by hand while building (single runs at 1,100 px, not re-run since): full resolution took 9 to 13 s in Plot (SVG) and in Vega-Lite 3.7 s for the lines alone, 17.8 s with the nearest-point crosshair; hourly about 5 s and 7 to 9 s. Neither draws the raw 1.25M points in reasonable time. Both ship the daily step drawn the way a skilled user draws a dense series: each day's mean as a line, and each day's lowest and highest half-hour as a band behind it. The band keeps the extremes, so the solar peak drawn is the true 16,289 MW (a mean line alone shows 5,444). What the daily step loses is detail when you zoom in: Vega-Lite zoomed to a week still shows seven days, not 336 half-hours, and Plot has no zoom at all. Vega-Lite at hourly, lines only, still took 0.9 s per wheel step, because the whole dataflow re-runs per frame, so even where it paints it does not zoom.
+**Plot and Vega-Lite cannot draw the raw 1.25M points in reasonable time** (single runs timed by hand at 1,100 px while building, not re-run since):
+
+- Full resolution: Plot (SVG) 9 to 13 s; Vega-Lite 3.7 s for the lines alone, 17.8 s with the nearest-point crosshair.
+- Hourly: about 5 s and 7 to 9 s.
+- So both ship the daily step: each day's mean as a line, and its lowest and highest half-hour as a band behind it. The band keeps the extremes, so the solar peak drawn is the true 16,289 MW (a mean line alone shows 5,444).
+- What it loses is detail when you zoom in: Vega-Lite zoomed to a week still shows seven days, not 336 half-hours, and Plot has no zoom.
+- Vega-Lite at hourly, lines only, still took 0.9 s per wheel step, because the whole dataflow re-runs per frame.
 
 ### npm downloads: the many-series chart
 
-Weekly downloads of 22 charting packages, March 2015 to November 2026, 11,268 points. Points here means non-null weekly values: the table is 611 weeks × 22 = 13,442 cells, and the rest are weeks before a package existed or with no downloads, which a log scale cannot show. Log scale, the seven in colour with end labels and the rest grey, hover highlights a whole line, an indexed view (15 January 2024 = 100) using the library's own transform if it has one, small multiples on a shared log scale.
+Weekly downloads of 22 charting packages, March 2015 to November 2026: 11,268 points. Points means non-null weekly values; the table is 611 weeks × 22 = 13,442 cells, and the rest are weeks before a package existed or with no downloads, which a log scale cannot show. The requirements:
+
+- log scale
+- the seven in colour with end labels, the rest grey
+- hover highlights a whole line
+- an indexed view (15 January 2024 = 100), using the library's own transform if it has one
+- small multiples on a shared log scale
 
 | Library | Lines | End labels | Whole-line hover | Indexed view | Small multiples | Render (median) |
 |---|---|---|---|---|---|---|
@@ -89,38 +118,51 @@ Weekly downloads of 22 charting packages, March 2015 to November 2026, 11,268 po
 
 ### Missing data: the side test
 
-Five countries of World Bank life expectancy with years removed on purpose, turned into explicit nulls, the same input to all seven. All seven implementations break the line at explicit nulls: six by default, D3 with `.defined()` (without it the path is invalid from the first null on). And every one of the seven draws straight across a row that is simply absent from the data: a gap your loader does not turn into a null is not a gap to any library.
+Five countries of World Bank life expectancy, with years removed on purpose and turned into explicit nulls; the same input to all seven.
+
+- All seven break the line at explicit nulls: six by default, D3 with `.defined()` (without it the path is invalid from the first null on).
+- All seven draw straight across a row that is simply absent from the data. A gap your loader does not turn into a null is not a gap to any library.
 
 ## What surprised us
 
-- **Decimation decides what the chart says.** At full zoom-out the true solar peak is 16,289 MW. The five libraries that draw every point or keep each pixel column's min and max (µPlot, D3, Plotly, Chart.js, ECharts with `minmax`) show it. A daily-mean line shows 5,444 MW, which is why Plot and Vega-Lite draw a daily low-to-high band under theirs: the band shows 16,289. ECharts' own samplers at 1,100 px: `minmax` 16,289, `max` 16,289, `lttb` 16,095, `average` 5,310. The number each library drew is in its card's footer.
-- **Plotly paints 1.25M points in about 0.7 s and then hovers at one frame a second.** `hovermode: "x unified"` asks `scattergl` for every point within `hoverdistance` (default 20 px) across the full plot height; at the zoomed-out view that is about 6,000 half-hours × 4 series per mouse move, 1 to 1.8 s. `hoverdistance: 1` brings it to 72 to 184 ms. A reader who copies the defaults gets a chart that paints fast and hovers slowly, and nothing warns them.
-- **ECharts' sampling has a tooltip gotcha.** Unsampled, 1.25M points still paint in about 0.3 s (timed by hand while building) but hover and zoom run at ~5 fps; `sampling: "minmax"` fixes that. Then the stock axis tooltip lists only the series whose sampled point matches the snapped time, often one of four, with values that look plausible. The fix is a formatter that reads the whole dataset row. It is five lines, and you would only know to write them by checking the numbers.
-- **Vega-Lite's interactivity is one line, and its scale ceiling is low.** Zoom and pan is `{select: {type: "interval", encodings: ["x"]}, bind: "scales"}`; the crosshair tooltip is one more param; whole-line highlight is a condition. It is the fewest lines of interaction code of the seven. But there is no decimation (`sample` is random reservoir sampling), no minimum span on bound scales, and the nearest-point crosshair alone cost 5 to 14 s of the 17.8 s full-resolution paint, on the canvas renderer.
-- **Only ECharts lays out end-of-line labels.** Still true after the rebuild: six of seven needed the same shared de-collision helper on both the oil and the npm charts. On the npm chart ECharts also dims the labels of the other 21 lines when you hover one.
-- **The same chart looks different at full resolution.** With 300 half-hours per pixel column the series overplot into solid envelopes, solar a yellow mass on top. Plot's and Vega-Lite's daily bands look calmer and still reach the peak. Both are the data. Zoom to a month and the lines separate.
-- **Chart.js was quick on the dense chart.** All 1.25M points in, min-max decimation, about 85 ms, every half-hour visible once zoomed in. The cost is elsewhere: the annotation and zoom plugins plus their dependencies (five extra `<script>` tags, none needed for the decimation itself), `order: -i` plus `legend.reverse` to get last-on-top, and a time axis that formats in local time while the tooltip says UTC (the luxon adapter with `zone: "UTC"` fixes it).
-- **Only D3 shares one line generator between SVG and canvas.** The same `d3.line()` with `.context(ctx)` strokes all 1.25M points on a canvas, with zoom, pan and a crosshair in an SVG layer on top. It is the idiomatic D3 route for big data, not a workaround, and no other library here lets the two renderers share the drawing code.
-- **The missing-data finding we published in September was a test bug.** Plot and Vega-Lite were handed sparse rows, the other five were handed nulls, and the flags we credited were already the defaults. With equal input, all seven implementations break at a null (six by default, D3 with `.defined()`). See below.
+- **Decimation decides what the chart says.** At full zoom-out the true solar peak is 16,289 MW. The five libraries that draw every point or keep each pixel column's min and max (µPlot, D3, Plotly, Chart.js, ECharts with `minmax`) show it. A daily-mean line shows 5,444 MW, which is why Plot and Vega-Lite draw a daily low-to-high band under theirs; the band shows 16,289.
+  - ECharts' own samplers at 1,100 px: `minmax` 16,289, `max` 16,289, `lttb` 16,095, `average` 5,310.
+  - The number each library drew is in its card's footer.
+- **Plotly paints 1.25M points in about 0.7 s, then hovers at one frame a second.** With `hovermode: "x unified"`, `scattergl` checks every point within `hoverdistance` (default 20 px) across the full plot height: about 6,000 half-hours × 4 series per mouse move, 1 to 1.8 s. `hoverdistance: 1` brings it to 72 to 184 ms. Nothing warns you.
+- **ECharts' sampling has a tooltip gotcha.** Unsampled, 1.25M points paint in about 0.3 s (timed by hand while building) but hover and zoom run at ~5 fps; `sampling: "minmax"` fixes that. Then the stock axis tooltip lists only the series whose sampled point matches the snapped time, often one of four, with plausible-looking values. The fix is a five-line formatter that reads the whole dataset row; you only find you need it by checking the numbers.
+- **Vega-Lite's interactivity is one line; its scale ceiling is low.** Zoom and pan is `{select: {type: "interval", encodings: ["x"]}, bind: "scales"}`, the crosshair tooltip is one more param, and whole-line highlight is a condition. But there is no decimation (`sample` is random reservoir sampling), no minimum span on bound scales, and the nearest-point crosshair alone cost 5 to 14 s of the 17.8 s full-resolution paint, on the canvas renderer.
+- **Only ECharts lays out end-of-line labels.** The other six needed the same shared de-collision helper on both the oil and npm charts. On the npm chart ECharts also dims the labels of the other 21 lines when you hover one.
+- **The same chart looks different at full resolution.** At 300 half-hours per pixel column the series overplot into solid envelopes, with solar a yellow mass on top. Plot's and Vega-Lite's daily bands look calmer and still reach the peak. Both are the data; zoom to a month and the lines separate.
+- **Chart.js was quick on the dense chart.** All 1.25M points in, min-max decimation, about 85 ms, every half-hour visible once zoomed in. The work is elsewhere:
+  - five extra `<script>` tags for the annotation and zoom plugins and their dependencies, none needed for the decimation itself
+  - `order: -i` plus `legend.reverse` to get last-on-top
+  - a time axis that formats in local time while the tooltip says UTC (the luxon adapter with `zone: "UTC"` fixes it)
+- **Only D3 shares one line generator between SVG and canvas.** The same `d3.line()` with `.context(ctx)` strokes all 1.25M points on a canvas, with zoom, pan and a crosshair in an SVG layer on top. It is the normal D3 route for big data, not a workaround.
 
 ## How to read the numbers
 
-- **Render times** are the badge under each chart: from the render call until two animation frames after the library's promise resolves. They exclude library download, data fetch and parse. The numbers in the tables are medians of six warm runs per chart (after one first run, reported separately), read from that same badge by a script, on an Apple M4 MacBook in Chrome 158 at a 900 × 700 viewport: the [measurement record](docs/measurements/timings-2026-11-21.md) has every run, the min and max, and a DPR 2 repeat. The badge on each live card is a single run in your browser and will differ. Timings for interactions (hover, zoom redraws) and for the grid steps a library did not ship were measured by hand while building and are labelled as such. Treat anything under a factor of two as the same. SVG and canvas libraries measure different completion points, and the async libraries (Vega-Lite, Plotly) are timed until their render promise resolves. So the figures say what each chart cost here, not a library's throughput.
-- **Line counts** are the render function exactly as it ran, via `Function.prototype.toString()`, printed under each chart, comments included. Shared helpers every library may use (`spreadLabels`, 13 lines; `viewSwitch`; `aggregate`; `between`; `toRows`; `ink`) are excluded for all. Each library's own theme helper outside the counted function is also excluded, and it is not the same size: ECharts has a 24-line theme object, Plotly a ~15-line layout template, Chart.js a 10-line `Chart.defaults` setter, Vega-Lite a 20-line `embed` with the theme as config, Plot a one-line `style`, D3 and µPlot none. A library's count describes our implementation of this brief in that library; formatting and where the helpers sit move it by five or ten lines either way. We use the counts to say "about half" or "about the same", never "12% fewer".
-- **Bundle sizes** are `gzip -9` of every file each demo page actually fetches from jsDelivr, captured from the network, in KB of 1,000 bytes, measured on 21 November 2026 ([record](docs/measurements/bundles-2026-11-21.md), per file): D3 118 KB as the 35 ES module files the demo page loads (`+esm` resolves some of D3's own dependencies to two versions, so four modules arrive twice; the single-file `d3.min.js` is 93 KB); Observable Plot 72 KB plus those same D3 modules, which it imports, 190 KB as loaded; Vega-Lite 82 KB plus Vega 180 KB plus vega-embed 21 KB, 283 KB; Plotly.js 1,480 KB (the full `plotly.js-dist-min`; the `basic` and `gl2d` partial bundles are smaller and untested); Chart.js 71 KB plus annotation 13, zoom 6, hammer 7, luxon 24 and the adapter 1, 122 KB; Apache ECharts 368 KB (a custom build can be much smaller); µPlot 22 KB plus 1 KB of CSS, 23 KB. These are the full builds you get from a CDN tag, which is how these pages load them.
-- **Native, by hand, partly** are our calls after building, backed by the source on each page. Where a library needed a plugin (Chart.js annotation and zoom), the plugin counts as native and the dependency is noted.
-
-## What we got wrong in September
-
-The first version of this comparison, built in September 2026, got its position roughly right and several of its arguments wrong. Two independent reviews found them before readers did; the November rebuild fixed them.
-
-- **Synthetic data, titled as fact.** The hero chart said "wind and solar overtook coal" about an electricity mix we had generated. Every chart now draws real, sourced data (EIA, NESO, npm, and World Bank for the missing-data side test, with years removed on purpose), with the provenance in the repo.
-- **An unequal missing-data test.** Plot and Vega-Lite received sparse rows, the other five received explicit nulls, and we then credited Plot with breaking gaps nobody else broke. The flags we told readers to set (`spanGaps: false`, `connectgaps: false`, `connectNulls: false`) were already the defaults. All seven now get the same nulls, and all seven break.
-- **Unfair claims about Chart.js and Vega-Lite.** We wrote a canvas plugin for Chart.js end labels and counted it against the library when the annotation plugin's labels do the job (80 lines became 70). We said Vega-Lite "cannot draw an arrowhead" (it has directional shapes with `angle`) and that "layers do not share a scale unless every layer says so" (they share by default). We also praised Vega-Lite's emphasis encoding while it was silently not applied, because of a point-scale default. And we said `u.pxRatio` did not exist in µPlot; it is the static `uPlot.pxRatio`.
-- **Old versions.** ECharts 5, Plotly 3 and Vega-Lite 5 were each a major behind. Everything now runs the November 2026 releases, listed on every page.
-- **Numbers that implied more than they measured.** Millisecond comparisons between SVG and canvas renders of a 135-point chart, bundle sizes that were estimates (Plotly "~1.1 MB" is 1.48 MB measured), and line counts as a headline. The numbers are still here; the section above says what they mean.
-- **The verdict was a raw markdown file.** It is now this page, and the front page leads with it.
-
-## How this was made
-
-Built in November 2026 by AI coding agents (Claude Code) under our direction. We wrote the brief: three charts, their requirements, the shared data, specs and palette, and a reference implementation in Observable Plot. Each of the other six libraries was then built by a separate agent working from that one brief, which could read the Plot reference but not the other builds, and each agent returned a build note with its timings, what it met natively, by hand or not at all, and what fought back. We reviewed every chart against the requirements at 900 and 360 px, light and dark, read the notes against the source, and re-measured the numbers we quote. Two further agents reviewed the September site adversarially before the rebuild; their findings are the list above. The prose was drafted by an agent and edited by us. All of it is checkable: every chart on the site is live, its source is under it, and the data and build notes are in the repository.
+- **Render times**
+  - Timed from the render call until two animation frames after the library's promise resolves. Library download, data fetch and parse are excluded.
+  - Table figures are medians of six warm runs per chart (after one first run, reported separately), read from each chart's badge by a script.
+  - Apple M4 MacBook, Chrome 158, 900 × 700 viewport. The [measurement record](docs/measurements/timings-2026-11-21.md) has every run, the min and max, and a DPR 2 repeat.
+  - The badge on each live card is a single run in your browser and will differ.
+  - Interaction timings (hover, zoom redraws) and grid steps a library did not ship were timed by hand while building, and are labelled as such.
+  - SVG and canvas libraries finish at different points, and Vega-Lite and Plotly are timed until their render promise resolves, so the figures are what each chart cost here, not a library's throughput. Treat anything under a factor of two as the same.
+- **Line counts**
+  - The render function exactly as it ran (`Function.prototype.toString()`), comments included, printed under each chart.
+  - Excluded for all: the shared helpers (`spreadLabels`, 13 lines; `viewSwitch`; `aggregate`; `between`; `toRows`; `ink`) and each library's own theme helper.
+  - The theme helpers differ in size: ECharts 24-line theme object, Plotly ~15-line layout template, Chart.js 10-line `Chart.defaults` setter, Vega-Lite 20-line `embed` with the theme as config, Plot one-line `style`, D3 and µPlot none.
+  - A rough guide to our implementation, not the library: formatting and helper placement move a count by five or ten lines either way. Good for "about half" or "about the same", never "12% fewer".
+- **Bundle sizes**
+  - `gzip -9` of every file each demo page fetches from jsDelivr, captured from the network, in KB of 1,000 bytes, on 21 November 2026 ([record](docs/measurements/bundles-2026-11-21.md), per file).
+  - These are the full builds you get from a CDN tag, which is how these pages load them.
+  - D3: 118 KB, as the 35 ES module files the page loads (`+esm` resolves some of D3's own dependencies to two versions, so four modules arrive twice; the single-file `d3.min.js` is 93 KB).
+  - Observable Plot: 190 KB as loaded, 72 KB plus the same D3 modules, which it imports.
+  - Vega-Lite: 283 KB, 82 KB plus Vega 180 KB plus vega-embed 21 KB.
+  - Plotly.js: 1,480 KB, the full `plotly.js-dist-min` (the `basic` and `gl2d` partial bundles are smaller and untested).
+  - Chart.js: 122 KB, 71 KB plus annotation 13, zoom 6, hammer 7, luxon 24 and the adapter 1.
+  - Apache ECharts: 368 KB (a custom build can be much smaller).
+  - µPlot: 23 KB, 22 KB plus 1 KB of CSS.
+- **Native, by hand, partly**
+  - Our calls after building, backed by the source on each page.
+  - A plugin a library needed (Chart.js annotation and zoom) counts as native, with the dependency noted.

@@ -25,9 +25,9 @@
 <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js"></script>
 <style>
   /* nudge uPlot's built-in chrome onto the shared theme */
-  .u-legend { font-size: 11px; color: var(--text-secondary); }
-  .u-axis { color: var(--text-muted); }
-  .uplot { font-family: var(--font-sans); }
+  :not([data-card="defaults"]) > .chart-host .u-legend { font-size: 11px; color: var(--text-secondary); }
+  :not([data-card="defaults"]) > .chart-host .u-axis { color: var(--text-muted); }
+  :not([data-card="defaults"]) > .chart-host .uplot { font-family: var(--font-sans); }
   /* the floating tooltip the grid and npm charts position in a setCursor hook */
   .u-tip { position: absolute; display: none; pointer-events: none; z-index: 10; white-space: nowrap;
     padding: 6px 8px; font: 11px/1.5 var(--font-sans); color: var(--text-primary);

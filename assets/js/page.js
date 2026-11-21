@@ -18,7 +18,7 @@ import { theme, onThemeChange, installThemeToggle, restoreTheme } from "./theme.
 
 restoreTheme();
 
-export const KEYS = ["hero", "grid", "npm", "life"];
+export const KEYS = ["hero", "defaults", "grid", "npm", "life"];
 
 /* `?chart=<key>` renders one dataset instead of all of them; `&bare=1` also
  * drops the page header and source panel. Together they give an embeddable
@@ -129,6 +129,7 @@ export async function mountDemo({ meta, charts }) {
       } catch (err) {
         card.innerHTML = errorHTML(err);
         console.error(key, err);
+        tell({ type: "lc:rendered", key, ms: null, error: String(err?.message || err) });
         return;
       }
       if (gen !== generation[key]) return;
@@ -153,6 +154,9 @@ export async function mountDemo({ meta, charts }) {
       if (gen !== generation[key]) return;
       card.innerHTML = errorHTML(err);
       console.error(key, err);
+      if (metric) metric.textContent = "failed";
+      tell({ type: "lc:rendered", key, ms: null, error: String(err?.message || err) });
+      return;
     }
     const ms = performance.now() - t0;
     if (metric) metric.textContent = ms < 1 ? "<1 ms" : `${ms.toFixed(ms < 60 ? 1 : 0)} ms`;
@@ -264,8 +268,9 @@ function cardHTML(key, bare = false, meta = {}) {
     </section>`;
   }
   // the hero chart's source is the point of the site, so it is open by
-  // default with its measured line count in the header; the rest disclose.
-  const source = hero
+  // default with its measured line count in the header, as is the defaults
+  // chart's (its brevity is the point); the rest disclose.
+  const source = hero || key === "defaults"
     ? `<div class="src src--open">
          <div class="src__head">source · <b data-lines>—</b> lines</div><pre></pre>
        </div>`

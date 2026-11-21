@@ -47,6 +47,7 @@ mountDemo({
     notes:
       "Loaded as three UMD scripts (283 KB gzipped together). <code>embed()</code> is async and renders into the host itself. The spec objects below are exactly what you would save to a <code>.vl.json</code> file, apart from the inline data. Custom tick formats from the shared specs are registered once as Vega expression functions and named by <code>formatType</code>.",
     cardNotes: {
+      defaults: "Colours, a legend titled “series”, axis titles from the field names, gridlines, two-year ticks and vega-embed’s “…” export menu, all by default; no tooltip. It paints its own white background, so in dark mode it is a white box.",
       hero: "A stack of layers, one per kind of annotation, each with its own inline data. Bands, zero rule, leaders (a <code>rule</code> with <code>x2</code>/<code>y2</code>), dots and multi-line text (an array of lines) are all native; per-callout alignment is not a channel, so it is an <code>expr</code> on the mark. No label layout: end labels are de-collided by hand (<code>spreadLabels</code>).",
       grid: "Zoom and pan are one param (<code>bind: \"scales\"</code>: wheel, drag, double-click resets) and the crosshair tooltip another (<code>nearest: true</code>), but there is no minimum span, so you can zoom past one week. No built-in decimation, and Vega re-runs and redraws everything per frame: full resolution painted in 17.8 s (twice), hourly 7.1–8.8 s, so this draws the daily step: each day's mean as a line over an <code>area</code> band from its lowest to highest half-hour (<code>y</code>/<code>y2</code>), about 0.2 s. The band keeps the true solar peak, 16,289 MW (a mean line alone shows 5,444), but zoomed in you see days, not half-hours. The tooltip row is a <code>pivot</code> of the long data.",
       npm: "Hover-highlighting a whole line is declarative: a nearest-point param that selects by <code>package</code>, used as a condition on opacity and width. The index is three transforms (<code>filter</code>, <code>window</code> <code>first_value</code>, <code>calculate</code>); small multiples are <code>facet</code> + <code>columns</code> with a shared log y. End labels still need de-collision by hand, outside the spec.",
@@ -107,6 +108,19 @@ mountDemo({
       }, theme);
     },
 
+    defaults(host, { defaults: oil }) {
+      host.style.height = "400px";
+      return vegaEmbed(host, {
+        width: "container", height: "container",
+        data: { values: oil.rows },
+        mark: "line",
+        encoding: {
+          x: { field: "date", type: "temporal" },
+          y: { field: "price", type: "quantitative" },
+          color: { field: "series" },
+        },
+      }).then((result) => () => result.finalize());
+    },
     grid(host, { grid }, { theme, report, range }) {
       // Vega's dataflow and canvas redraw everything on every zoom frame: full
       // paints in ~18 s, hourly ~8 s, both unusable to zoom. So the daily step,

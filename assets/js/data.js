@@ -1,7 +1,8 @@
 /* Shared data and specs for every demo.
  *
- * Four charts, keyed as the pages key them:
+ * Five charts, keyed as the pages key them:
  *   hero  "Forty years of oil"       Brent + WTI daily spot (EIA)       ~20k points
+ *   defaults  the same oil data, drawn with each library's defaults only
  *   grid  "The grid, every half hour" GB generation mix (NESO)          1.25M points
  *   npm   "Who actually installs these?" weekly npm downloads, 22 libs  11,268 non-null points
  *   life  missing-data side test      life expectancy, 5 countries
@@ -47,13 +48,15 @@ export const ink = (theme, c) => (typeof c === "number" ? theme.palette[c] : the
  * Lazy, cached loading                                             *
  * ================================================================ */
 
-export const LOADERS = { hero: loadOil, grid: loadGrid, npm: loadNpm, life: loadLife };
-const _cache = {};
+export const LOADERS = { hero: loadOil, defaults: loadOil, grid: loadGrid, npm: loadNpm, life: loadLife };
+const _cache = new Map();   // keyed by loader, so hero and defaults share one load
 
 /** Load (once) the data for one chart key. */
 export function loadFor(key) {
-  if (!LOADERS[key]) return Promise.reject(new Error(`no dataset "${key}"`));
-  return (_cache[key] ??= LOADERS[key]());
+  const load = LOADERS[key];
+  if (!load) return Promise.reject(new Error(`no dataset "${key}"`));
+  if (!_cache.has(load)) _cache.set(load, load());
+  return _cache.get(load);
 }
 
 /* ================================================================ *
@@ -402,6 +405,24 @@ export const DATASETS = {
       "y-axis crosses zero: domain includes −37, a distinct zero line, ticks “−$40 … $160”",
       "Brent full ink, WTI muted but readable; decade ticks on x",
       "Narrow widths: callouts dropped in the declared order (HERO.calloutBudget), never piled up",
+    ],
+    x: "Date", y: "US$ per barrel",
+  },
+  /* The fairness rule for `defaults`, identical for all seven: the library's
+   * own entry point, the data (both series, x marked as time however the
+   * library needs it), width and height from the container, and a minimal
+   * mount if the library needs one. No colours, theme, fonts, tick formats,
+   * annotations, legends or tooltips beyond the library's own defaults, and
+   * no shared helper but the data loader. */
+  defaults: {
+    label: "Oil, out of the box",
+    title: "Oil, out of the box: the same data with the library's defaults",
+    desc: "The same Brent and WTI daily prices, 1986–2026, ~20k points, with nothing styled: no colours, theme, fonts, tick formats, annotations or legend beyond what the library does by itself. Series are named by their data keys, “brent” and “wti”.",
+    stress: "What you get for free: colours, tick density, date format, legend, tooltip, dark mode.",
+    requirements: [
+      "The library's own entry point, both series as two lines, x marked as time in whatever way the library needs",
+      "Width and height from the container; a minimal mount where a canvas library needs one",
+      "Nothing else: no colours, theme, fonts, tick formats, annotations, end labels, legend or tooltip beyond the defaults, and no shared helper but data loading",
     ],
     x: "Date", y: "US$ per barrel",
   },
