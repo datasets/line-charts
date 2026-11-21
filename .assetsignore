@@ -1,7 +1,13 @@
 .git/**
 .github/**
 .wrangler/**
+.beads/**
 node_modules/**
 .gitignore
 .assetsignore
 wrangler.jsonc
+AGENTS.md
+CLAUDE.md
+docs/ROADMAP.md
+markdown-charts/**
+scripts/**

@@ -8,4 +8,7 @@
   <url><loc>https://linecharts.datahub.io/demos/chartjs</loc><priority>0.8</priority></url>
   <url><loc>https://linecharts.datahub.io/demos/echarts</loc><priority>0.8</priority></url>
   <url><loc>https://linecharts.datahub.io/demos/uplot</loc><priority>0.8</priority></url>
+  <url><loc>https://linecharts.datahub.io/verdict</loc><priority>0.7</priority></url>
+  <url><loc>https://linecharts.datahub.io/method</loc><priority>0.7</priority></url>
+  <url><loc>https://linecharts.datahub.io/build-notes</loc><priority>0.7</priority></url>
 </urlset>

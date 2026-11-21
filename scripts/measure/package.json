@@ -1,0 +1,13 @@
+{
+  "name": "line-charts-measure",
+  "private": true,
+  "type": "module",
+  "description": "Reproducible render-time and bundle-size measurements for the line-charts bake-off. Not deployed.",
+  "scripts": {
+    "timings": "node timings.mjs",
+    "bundles": "node bundles.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
+}

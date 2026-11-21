@@ -1,0 +1,839 @@
+{
+  "date": "2026-11-21",
+  "generatedAt": "2026-11-21T00:48:34.857Z",
+  "method": "Every response from cdn.jsdelivr.net while demos/<lib>.html?chart=hero&bare=1 loads in a fresh context. rawBytes = decoded body; gzip9Bytes = Node zlib gzip level 9 of that body; transferBytes = encoded body as jsDelivr sent it. 1 kB = 1,000 bytes.",
+  "browser": {
+    "name": "Google Chrome",
+    "version": "158.0.8127.36",
+    "headless": true
+  },
+  "machine": {
+    "os": "macOS 15.6 (Darwin 24.6.0)",
+    "model": "Mac16,12",
+    "cpu": "Apple M4",
+    "cores": 10,
+    "ramGB": 16,
+    "node": "v26.4.0"
+  },
+  "results": [
+    {
+      "lib": "d3",
+      "files": 35,
+      "rawBytes": 318423,
+      "gzip9Bytes": 117802,
+      "transferBytes": 124644,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-geo@3.1.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 36819,
+          "gzip9Bytes": 13691,
+          "transferBytes": 12675
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-shape@3.2.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 31383,
+          "gzip9Bytes": 8045,
+          "transferBytes": 7728
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 19952,
+          "gzip9Bytes": 7544,
+          "transferBytes": 6539
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-delaunay@6.0.6/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 19246,
+          "gzip9Bytes": 7207,
+          "transferBytes": 6854
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-array@3.2.5/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 17572,
+          "gzip9Bytes": 6275,
+          "transferBytes": 6277
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-scale@4.0.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 16062,
+          "gzip9Bytes": 5390,
+          "transferBytes": 5427
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-hierarchy@3.1.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 15087,
+          "gzip9Bytes": 6056,
+          "transferBytes": 5834
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-selection@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 13758,
+          "gzip9Bytes": 4524,
+          "transferBytes": 4667
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-selection@3.0.0/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 13749,
+          "gzip9Bytes": 4525,
+          "transferBytes": 4764
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-transition@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 11944,
+          "gzip9Bytes": 4045,
+          "transferBytes": 4369
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-color@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 10543,
+          "gzip9Bytes": 4284,
+          "transferBytes": 4261
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-zoom@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 9938,
+          "gzip9Bytes": 3579,
+          "transferBytes": 3798
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-brush@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 9868,
+          "gzip9Bytes": 3818,
+          "transferBytes": 4033
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-time-format@4.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 9829,
+          "gzip9Bytes": 3245,
+          "transferBytes": 3522
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-force@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 8356,
+          "gzip9Bytes": 3218,
+          "transferBytes": 3382
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-interpolate@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 8058,
+          "gzip9Bytes": 3419,
+          "transferBytes": 3476
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-time@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 6008,
+          "gzip9Bytes": 2223,
+          "transferBytes": 2629
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-contour@4.0.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 5819,
+          "gzip9Bytes": 2562,
+          "transferBytes": 2685
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-format@3.1.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 5416,
+          "gzip9Bytes": 2516,
+          "transferBytes": 2671
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-quadtree@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 5383,
+          "gzip9Bytes": 2280,
+          "transferBytes": 2510
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-chord@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4430,
+          "gzip9Bytes": 1714,
+          "transferBytes": 2186
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-drag@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4163,
+          "gzip9Bytes": 1796,
+          "transferBytes": 2003
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-drag@3.0.0/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4159,
+          "gzip9Bytes": 1794,
+          "transferBytes": 2389
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-random@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4145,
+          "gzip9Bytes": 1570,
+          "transferBytes": 1766
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dsv@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3441,
+          "gzip9Bytes": 1638,
+          "transferBytes": 2092
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dsv@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3438,
+          "gzip9Bytes": 1642,
+          "transferBytes": 2210
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-ease@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3222,
+          "gzip9Bytes": 1166,
+          "transferBytes": 1544
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-axis@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3117,
+          "gzip9Bytes": 1411,
+          "transferBytes": 1705
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-path@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 2874,
+          "gzip9Bytes": 1334,
+          "transferBytes": 1570
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-timer@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1978,
+          "gzip9Bytes": 1050,
+          "transferBytes": 1304
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dispatch@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1902,
+          "gzip9Bytes": 998,
+          "transferBytes": 1229
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dispatch@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1894,
+          "gzip9Bytes": 998,
+          "transferBytes": 1579
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-fetch@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1673,
+          "gzip9Bytes": 808,
+          "transferBytes": 1071
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-polygon@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1644,
+          "gzip9Bytes": 902,
+          "transferBytes": 1424
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3@7.9.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1553,
+          "gzip9Bytes": 535,
+          "transferBytes": 2471
+        }
+      ]
+    },
+    {
+      "lib": "observable-plot",
+      "files": 36,
+      "rawBytes": 532082,
+      "gzip9Bytes": 190221,
+      "transferBytes": 187795,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.19/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 213659,
+          "gzip9Bytes": 72419,
+          "transferBytes": 63460
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-geo@3.1.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 36819,
+          "gzip9Bytes": 13691,
+          "transferBytes": 12665
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-shape@3.2.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 31383,
+          "gzip9Bytes": 8045,
+          "transferBytes": 7604
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 19952,
+          "gzip9Bytes": 7544,
+          "transferBytes": 6532
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-delaunay@6.0.6/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 19246,
+          "gzip9Bytes": 7207,
+          "transferBytes": 6848
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-array@3.2.5/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 17572,
+          "gzip9Bytes": 6275,
+          "transferBytes": 6042
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-scale@4.0.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 16062,
+          "gzip9Bytes": 5390,
+          "transferBytes": 5425
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-hierarchy@3.1.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 15087,
+          "gzip9Bytes": 6056,
+          "transferBytes": 5811
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-selection@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 13758,
+          "gzip9Bytes": 4524,
+          "transferBytes": 4524
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-selection@3.0.0/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 13749,
+          "gzip9Bytes": 4525,
+          "transferBytes": 4764
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-transition@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 11944,
+          "gzip9Bytes": 4045,
+          "transferBytes": 4259
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-color@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 10543,
+          "gzip9Bytes": 4284,
+          "transferBytes": 4494
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-zoom@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 9938,
+          "gzip9Bytes": 3579,
+          "transferBytes": 3793
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-brush@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 9868,
+          "gzip9Bytes": 3818,
+          "transferBytes": 4388
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-time-format@4.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 9829,
+          "gzip9Bytes": 3245,
+          "transferBytes": 3637
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-force@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 8356,
+          "gzip9Bytes": 3218,
+          "transferBytes": 3392
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-interpolate@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 8058,
+          "gzip9Bytes": 3419,
+          "transferBytes": 3851
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-time@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 6008,
+          "gzip9Bytes": 2223,
+          "transferBytes": 2379
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-contour@4.0.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 5819,
+          "gzip9Bytes": 2562,
+          "transferBytes": 2690
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-format@3.1.3/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 5416,
+          "gzip9Bytes": 2516,
+          "transferBytes": 2686
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-quadtree@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 5383,
+          "gzip9Bytes": 2280,
+          "transferBytes": 2390
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-chord@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4430,
+          "gzip9Bytes": 1714,
+          "transferBytes": 1950
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-drag@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4163,
+          "gzip9Bytes": 1796,
+          "transferBytes": 2005
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-drag@3.0.0/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4159,
+          "gzip9Bytes": 1794,
+          "transferBytes": 2351
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-random@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4145,
+          "gzip9Bytes": 1570,
+          "transferBytes": 1761
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dsv@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3441,
+          "gzip9Bytes": 1638,
+          "transferBytes": 2097
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dsv@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3438,
+          "gzip9Bytes": 1642,
+          "transferBytes": 2244
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-ease@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3222,
+          "gzip9Bytes": 1166,
+          "transferBytes": 1541
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-axis@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 3117,
+          "gzip9Bytes": 1411,
+          "transferBytes": 1571
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-path@3.1.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 2874,
+          "gzip9Bytes": 1334,
+          "transferBytes": 1578
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-timer@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1978,
+          "gzip9Bytes": 1050,
+          "transferBytes": 1672
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dispatch@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1902,
+          "gzip9Bytes": 998,
+          "transferBytes": 1224
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-dispatch@3.0.1/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1894,
+          "gzip9Bytes": 998,
+          "transferBytes": 1584
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-fetch@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1673,
+          "gzip9Bytes": 808,
+          "transferBytes": 1074
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3-polygon@3.0.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1644,
+          "gzip9Bytes": 902,
+          "transferBytes": 1440
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/d3@7.9.2/+esm",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1553,
+          "gzip9Bytes": 535,
+          "transferBytes": 2069
+        }
+      ]
+    },
+    {
+      "lib": "vega-lite",
+      "files": 3,
+      "rawBytes": 840335,
+      "gzip9Bytes": 282616,
+      "transferBytes": 247113,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 521123,
+          "gzip9Bytes": 179607,
+          "transferBytes": 154311
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/vega-lite@6.5.0/build/vega-lite.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 257954,
+          "gzip9Bytes": 81906,
+          "transferBytes": 70786
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/vega-embed@7.4.0/build/vega-embed.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 61258,
+          "gzip9Bytes": 21103,
+          "transferBytes": 22016
+        }
+      ]
+    },
+    {
+      "lib": "plotly",
+      "files": 1,
+      "rawBytes": 4842992,
+      "gzip9Bytes": 1479688,
+      "transferBytes": 1421445,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@4.3.0/plotly.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 4842992,
+          "gzip9Bytes": 1479688,
+          "transferBytes": 1421445
+        }
+      ]
+    },
+    {
+      "lib": "chartjs",
+      "files": 6,
+      "rawBytes": 367935,
+      "gzip9Bytes": 121592,
+      "transferBytes": 109529,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 210078,
+          "gzip9Bytes": 71001,
+          "transferBytes": 61835
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 81694,
+          "gzip9Bytes": 24238,
+          "transferBytes": 21787
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 38359,
+          "gzip9Bytes": 12558,
+          "transferBytes": 12047
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 20765,
+          "gzip9Bytes": 7341,
+          "transferBytes": 6921
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 15203,
+          "gzip9Bytes": 5605,
+          "transferBytes": 5826
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1836,
+          "gzip9Bytes": 849,
+          "transferBytes": 1113
+        }
+      ]
+    },
+    {
+      "lib": "echarts",
+      "files": 1,
+      "rawBytes": 1121883,
+      "gzip9Bytes": 368202,
+      "transferBytes": 299937,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 1121883,
+          "gzip9Bytes": 368202,
+          "transferBytes": 299937
+        }
+      ]
+    },
+    {
+      "lib": "uplot",
+      "files": 2,
+      "rawBytes": 52938,
+      "gzip9Bytes": 22749,
+      "transferBytes": 21579,
+      "list": [
+        {
+          "url": "https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js",
+          "status": 200,
+          "type": "application/javascript",
+          "encoding": "br",
+          "rawBytes": 51081,
+          "gzip9Bytes": 21991,
+          "transferBytes": 20600
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css",
+          "status": 200,
+          "type": "text/css",
+          "encoding": "br",
+          "rawBytes": 1857,
+          "gzip9Bytes": 758,
+          "transferBytes": 979
+        }
+      ]
+    }
+  ]
+}

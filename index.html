@@ -3,176 +3,374 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Seven open-source line-charting libraries — D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts and µPlot — each building the same annotated, editorial-quality line chart, live, side by side, with the measured line count and full source of every one.">
+<meta name="description" content="We built the same three charts in seven JavaScript libraries (D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts, µPlot) from real data. Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.">
 <link rel="canonical" href="https://linecharts.datahub.io/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="line-charts">
 <meta property="og:url" content="https://linecharts.datahub.io/">
-<meta property="og:title" content="line-charts — one annotated chart, seven libraries, side by side">
-<meta property="og:description" content="Seven open-source line-charting libraries — D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts and µPlot — each building the same annotated, editorial-quality line chart, live, side by side, with the measured line count and full source of every one.">
+<meta property="og:title" content="Which JavaScript line-chart library should you use?">
+<meta property="og:description" content="Seven libraries, three real-data charts, source under every one. Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.">
 <meta property="og:image" content="https://linecharts.datahub.io/assets/og/home.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The same line chart of electricity generation by source, rendered by four different charting libraries">
+<meta property="og:image:alt" content="Title card: Which JavaScript line-chart library should you use? Use Apache ECharts, unless the chart is going into an article: then use Observable Plot. Beneath it, the annotated Brent and WTI oil chart.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="line-charts — one annotated chart, seven libraries, side by side">
-<meta name="twitter:description" content="Seven open-source line-charting libraries — D3, Observable Plot, Vega-Lite, Plotly.js, Chart.js, Apache ECharts and µPlot — each building the same annotated, editorial-quality line chart, live, side by side, with the measured line count and full source of every one.">
+<meta name="twitter:title" content="Which JavaScript line-chart library should you use?">
+<meta name="twitter:description" content="Seven libraries, three real-data charts, source under every one. Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.">
+<meta name="twitter:image:alt" content="Title card: Which JavaScript line-chart library should you use? Use Apache ECharts, unless the chart is going into an article: then use Observable Plot. Beneath it, the annotated Brent and WTI oil chart.">
 <meta name="twitter:image" content="https://linecharts.datahub.io/assets/og/home.png">
-<title>line-charts — a modern bake-off of line-charting libraries</title>
+<title>Which JavaScript line-chart library should you use? — line-charts</title>
 <link rel="stylesheet" href="./assets/css/site.css">
 <style>
-  h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 6px; }
-  .lede { font-size: 14.5px; color: var(--text-secondary); max-width: 76ch; margin: 0; }
-  h2 { font-size: 19px; letter-spacing: -0.01em; margin: 46px 0 10px; }
+  /* ---- header ----------------------------------------------------- */
+  .site-head { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; flex-wrap: wrap; padding-top: 18px; }
+  .site-name { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; margin-right: 4px; }
+  .site-name:hover { text-decoration: none; color: var(--accent); }
 
-  /* ---- the comparison grid ------------------------------------- */
-  .pick { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 18px 0 12px; }
-  .pick__label { font-size: 12.5px; color: var(--text-muted); }
-  .pick__opts { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
-  .pick__opts button {
-    border: 0; background: var(--surface); color: var(--text-secondary);
-    font: inherit; font-size: 12.5px; padding: 6px 12px; cursor: pointer;
+  /* ---- title block ---------------------------------------------- */
+  .intro { padding: 26px 0 0; }
+  h1 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.12; letter-spacing: -0.025em; margin: 0 0 10px; text-wrap: balance; }
+  .lede { font-size: 16.5px; line-height: 1.5; color: var(--text-secondary); max-width: 74ch; margin: 0; }
+  .verdict {
+    margin: 16px 0 0; padding: 1px 0 1px 16px; border-left: 3px solid var(--accent);
+    font-size: clamp(19px, 2.3vw, 23px); line-height: 1.35; font-weight: 650; letter-spacing: -0.012em;
+    color: var(--text-primary); text-wrap: balance;
   }
-  .pick__opts button + button { border-left: 1px solid var(--border); }
-  .pick__opts button[aria-pressed="true"] { background: var(--accent); color: #fff; }
 
+  /* ---- ranking + aside ------------------------------------------ */
+  .top { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px 44px; margin-top: 24px; align-items: start; }
+  @media (max-width: 920px) { .top { grid-template-columns: minmax(0, 1fr); } }
+  .eyebrow { font-size: 11.5px; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
+  ol.ranking { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+  .rank {
+    display: grid; grid-template-columns: 26px 132px minmax(0, 1fr); gap: 2px 12px;
+    padding: 6px 0 7px; border-bottom: 1px solid var(--border); align-items: baseline;
+  }
+  .rank__n { font-size: 15px; font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .rank:nth-child(-n+2) .rank__n { color: var(--accent); }
+  .rank__name { font-size: 15px; font-weight: 650; color: var(--text-primary); letter-spacing: -0.01em; }
+  .rank__name:hover { color: var(--accent); }
+  .rank__when { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--text-secondary); }
+  .chips { list-style: none; margin: 3px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+  .chips li {
+    font-size: 11.5px; line-height: 1.3; color: var(--text-secondary); padding: 2px 7px; border-radius: 999px;
+    background: color-mix(in srgb, var(--text-primary) 5%, transparent); font-variant-numeric: tabular-nums;
+  }
+  .rank__body { grid-column: 3; }
+  @media (max-width: 560px) {
+    .rank { grid-template-columns: 24px minmax(0, 1fr); }
+    .rank__body { grid-column: 2; }
+  }
+  .aside p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; color: var(--text-secondary); }
+  .aside strong { color: var(--text-primary); font-weight: 650; }
+  .uses { margin: 0 0 14px; padding: 0; list-style: none; font-size: 13.5px; line-height: 1.45; color: var(--text-secondary); }
+  .uses li { padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .uses li:first-child { border-top: 1px solid var(--border); }
+  .uses b { color: var(--text-primary); font-weight: 650; }
+  .aside h2 { font-size: 15px; margin: 18px 0 6px; letter-spacing: -0.01em; }
+  .readmore { font-size: 13.5px; font-weight: 600; }
+
+  /* ---- sections ---------------------------------------------- */
+  section.block { margin-top: 56px; }
+  section.block > h2, .sec-title { font-size: 22px; letter-spacing: -0.015em; line-height: 1.25; margin: 0 0 8px; }
+  .sec-intro { font-size: 15px; line-height: 1.55; color: var(--text-secondary); max-width: 72ch; margin: 0 0 12px; }
+
+  /* ---- centrepiece ---------------------------------------------- */
+  .stage { border: 1px solid var(--border); border-radius: 12px; background: var(--page); overflow: hidden; margin-top: 12px; }
+  .stage iframe { display: block; width: 100%; height: 480px; border: 0; background: transparent; }
+  .stage__foot { padding: 10px 16px 14px; border-top: 1px solid var(--border); }
+  .caption { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-primary); max-width: 92ch; }
+  .hint { margin: 6px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--text-muted); max-width: 92ch; }
+  .switch { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 12px; }
+  .switch__label { font-size: 13px; color: var(--text-secondary); }
+  .switch__opts, .pick__opts { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+  .switch__opts button, .pick__opts button {
+    border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text-secondary);
+    font: inherit; font-size: 12.5px; padding: 5px 12px; cursor: pointer; line-height: 1.3;
+  }
+  .switch__opts button:hover, .pick__opts button:hover { color: var(--text-primary); }
+  .switch__opts button[aria-pressed="true"], .pick__opts button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .switch__note { font-size: 12px; color: var(--text-muted); }
+  .switch__opts button:focus-visible, .pick__opts button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- evidence ------------------------------------------------- */
+  ul.tests { margin: 0 0 6px; padding-left: 18px; font-size: 14px; line-height: 1.55; color: var(--text-secondary); max-width: 92ch; }
+  ul.tests li { margin: 4px 0; }
+  ul.tests strong { color: var(--text-primary); }
+  .pick { display: flex; align-items: baseline; gap: 8px 10px; flex-wrap: wrap; margin: 18px 0 12px; }
+  .pick__label { font-size: 12.5px; color: var(--text-muted); }
   .grid7 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   @media (max-width: 1040px) { .grid7 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 660px)  { .grid7 { grid-template-columns: minmax(0, 1fr); } }
-  .cell {
-    border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-    background: var(--page); display: flex; flex-direction: column;
-  }
-  .cell__head {
-    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
-    padding: 9px 12px 7px; border-bottom: 1px solid var(--border); background: var(--surface);
-  }
+  .cell { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--page); display: flex; flex-direction: column; }
+  .cell__head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 12px 7px; border-bottom: 1px solid var(--border); background: var(--surface); }
   .cell__head a { font-size: 13.5px; font-weight: 650; color: var(--text-primary); }
   .cell__head a:hover { color: var(--accent); }
   .cell__lines { font-size: 11.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .cell__lines b { color: var(--text-secondary); font-weight: 600; }
   .cell iframe { width: 100%; border: 0; display: block; height: 330px; }
+  .footnote { font-size: 13px; color: var(--text-muted); margin: 12px 0 0; max-width: 92ch; }
 
-  /* ---- the rest -------------------------------------------------- */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 14px; }
-  .lib {
-    display: block; padding: 15px 16px; border: 1px solid var(--border);
-    border-radius: 12px; background: var(--surface); color: inherit;
+  /* ---- judged / versions / faq ------------------------------------ */
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 44px; }
+  @media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+  ul.judged { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
+  ul.judged li { margin: 0 0 10px; }
+  ul.judged strong { color: var(--text-primary); }
+  .versions { font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+  .faq { border-top: 1px solid var(--border); max-width: 86ch; }
+  .faq details { border-bottom: 1px solid var(--border); }
+  .faq summary { cursor: pointer; list-style: none; padding: 11px 0; font-size: 15px; font-weight: 600; color: var(--text-primary); display: flex; gap: 10px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: "+"; color: var(--text-muted); font-weight: 400; width: 12px; flex: none; }
+  .faq details[open] summary::before { content: "−"; }
+  .faq summary:hover { color: var(--accent); }
+  .faq details p { margin: 0 0 14px 22px; font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+  code { font-family: var(--font-mono); font-size: 0.9em; background: color-mix(in srgb, var(--text-primary) 6%, transparent); padding: 1px 4px; border-radius: 4px; }
+
+  /* ---- links + footer ---------------------------------------------- */
+  .more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 860px) { .more { grid-template-columns: minmax(0, 1fr); } }
+  .more a { display: block; padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text-secondary); font-size: 13.5px; line-height: 1.5; }
+  .more a:hover { border-color: var(--accent); text-decoration: none; }
+  .more b { display: block; font-size: 15.5px; color: var(--text-primary); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .more a:hover b { color: var(--accent); }
+  .foot { margin: 56px 0 40px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .foot a { color: var(--text-secondary); }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    .site-head { padding-top: 14px; }
+    .site-head .doc-nav { gap: 6px 12px; }
+    .site-head .doc-nav a { font-size: 12.5px; }
+    .toggle { padding: 3px 8px; font-size: 11.5px; }
+    .intro { padding-top: 22px; }
+    .lede { font-size: 15.5px; }
+    section.block { margin-top: 44px; }
+    .stage__foot { padding: 10px 12px 12px; }
+    .stage iframe { height: 380px; }
   }
-  .lib:hover { border-color: var(--accent); text-decoration: none; }
-  .lib h3 { margin: 0 0 3px; font-size: 15px; }
-  .lib p { margin: 0; font-size: 12.5px; color: var(--text-secondary); }
-  .lib .meta { margin-top: 8px; font-size: 11px; color: var(--text-muted); }
-  ul.tight { margin: 8px 0; padding-left: 20px; font-size: 13.5px; color: var(--text-secondary); }
-  ul.tight li { margin: 3px 0; }
-  code { font-family: var(--font-mono); font-size: 0.92em; background: color-mix(in srgb, var(--text-primary) 6%, transparent); padding: 1px 4px; border-radius: 4px; }
-  .foot { margin: 56px 0 40px; font-size: 12px; color: var(--text-muted); }
 </style>
 </head>
 <body>
-<div class="wrap" style="padding-top:26px">
+<div class="wrap">
 
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+  <header class="site-head">
+    <nav class="doc-nav" aria-label="Site">
+      <a class="site-name" href="./" aria-current="page">line-charts</a>
+      <a href="./verdict">Verdict</a>
+      <a href="./method">Method</a>
+      <a href="./build-notes">Build notes</a>
+      <a href="./changelog">Changelog</a>
+      <a href="https://github.com/datasets/line-charts" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <button class="toggle" type="button"></button>
+  </header>
+
+  <div class="intro">
+    <h1>Which JavaScript line&#8209;chart library should you use?</h1>
+    <p class="lede">We built the same three charts in seven libraries, from real data, so you don't have to. Here is the pick, the evidence, and the source under every chart.</p>
+    <p class="verdict">Use Apache ECharts, unless the chart is going into an article: then use Observable Plot.</p>
+  </div>
+
+  <div class="top">
+    <section aria-labelledby="ranking-h">
+      <h2 class="eyebrow" id="ranking-h">The ranking</h2>
+      <ol class="ranking" id="ranking"></ol>
+      <p class="hint">Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the finished appearance, then bundle size. Line counts are colour, never a criterion.</p>
+    </section>
+    <aside class="aside">
+      <p>Ranked for someone choosing one library in 2026 for a website or an app, with no framework constraint. Tested on real data: forty years of oil prices, Britain's grid every half hour since 2009, and a decade of npm downloads.</p>
+      <ul class="uses">
+        <li><b>Articles:</b> Plot.</li>
+        <li><b>Dashboards and dense data:</b> ECharts (µPlot if only speed matters).</li>
+        <li><b>Many series:</b> ECharts interactive, Plot static.</li>
+        <li><b>Already have one:</b> keep it; the verdict says what to add.</li>
+      </ul>
+      <h2>We're choosing for DataHub</h2>
+      <p>We did this to choose for ourselves. DataPressr, which renders DataHub's data stories, draws its charts with Observable Plot to static SVG at build time, and that stays: for a published chart with a sentence pointing at the data, Plot is the least code and the best result. For interactive and dense charts on DataHub we will use ECharts. Two libraries, each where it won.</p>
+      <a class="readmore" href="./verdict">Read the full verdict →</a>
+    </aside>
+  </div>
+
+  <section class="block" id="try" aria-labelledby="try-h">
+    <p class="eyebrow">Try it · <span data-stage-lib>Apache ECharts</span></p>
+    <h2 class="sec-title" id="try-h">Britain's grid, every half hour since 2009: coal went from 42% to zero</h2>
+    <div class="stage">
+      <iframe id="stage" title="Apache ECharts drawing Britain's grid, every half hour since 2009" scrolling="no"></iframe>
+      <div class="stage__foot">
+        <p class="caption"><span data-stage-caption></span> Coal was 42% of generation in 2012, its highest year here; Ratcliffe, Britain's last coal plant, closed on 30 September 2024.</p>
+        <p class="hint" data-hint></p>
+      </div>
+    </div>
+    <div class="switch">
+      <span class="switch__label">Same chart, same data, other library:</span>
+      <span class="switch__opts" role="group" aria-label="Library drawing the chart above" id="switch"></span>
+    </div>
+  </section>
+
+  <section class="block" id="evidence" aria-labelledby="evidence-h">
+    <h2 id="evidence-h">The evidence</h2>
+    <p class="sec-intro">Three tests, each a different kind of line chart, each built to one shared brief in all seven libraries. Every cell below is live; the source and the measured line count are under each one.</p>
+    <ul class="tests">
+      <li><strong>Oil, 1986–2026</strong> (EIA, 20k points): the annotated editorial chart. End labels, callouts with leaders, recession bands, an axis that crosses zero for WTI at −$36.98 on 20 April 2020.</li>
+      <li><strong>Grid, half-hourly</strong> (NESO, 1.25M points): the dense interactive chart. Zoom and pan to one week, a crosshair tooltip, and a straight answer to “did you draw the solar peak?”</li>
+      <li><strong>npm downloads</strong> (22 libraries, 2015–2026): the many-series chart. Log scale, highlight one of 22, an indexed view and small multiples.</li>
+    </ul>
+
+    <div class="pick">
+      <span class="pick__label">Chart:</span>
+      <span class="pick__opts" role="group" aria-label="Choose the chart every library draws">
+        <button type="button" data-chart="hero" aria-pressed="true">Oil, 1986–2026</button>
+        <button type="button" data-chart="grid" aria-pressed="false">Grid, half-hourly</button>
+        <button type="button" data-chart="npm" aria-pressed="false">npm downloads</button>
+        <button type="button" data-chart="life" aria-pressed="false">Missing data</button>
+      </span>
+      <span class="pick__label" data-caption></span>
+    </div>
+
+    <div class="grid7" id="grid"></div>
+
+    <p class="footnote">A missing-data side test (World Bank life expectancy, years removed on purpose) gives all seven the same explicit nulls. All seven implementations break the line at a null: six by default, D3 with <code>.defined()</code>.</p>
+  </section>
+
+  <section class="block cols" aria-label="How we judged, versions and date">
     <div>
-      <h1>line-charts</h1>
-      <p class="lede">
-        Seven open-source line-charting libraries building the <strong>same annotated chart</strong>
-        from the same data, in the same palette, live, below. Not "can it draw a line" — every
-        modern library can — but what an editorial chart costs: direct labels, an annotation with
-        a leader line, a shaded event band, a reference line, and two series emphasised over three.
-      </p>
+      <h2 class="sec-title">How we judged</h2>
+      <ul class="judged">
+        <li><strong>What the library did itself.</strong> Each requirement is marked native, by hand or not met, with the source on the page as proof. A chart that needs forty lines of canvas is a different answer from one that needs an option.</li>
+        <li><strong>How it fought back.</strong> Silent failures, defaults that mislead, plugins and hooks needed to get there. <a href="./build-notes">Build notes</a> record every one.</li>
+        <li><strong>What it costs and how it looks.</strong> Lines of code as displayed (a rough guide, not a score), gzipped bundle as loaded from the CDN, render times (medians of six warm runs on one machine, <a href="method.html">method</a>), and whether the result is a chart you would publish.</li>
+      </ul>
     </div>
-    <div style="display:flex;gap:14px;align-items:center">
-      <a href="./changelog.html" style="font-size:13px;color:var(--text-secondary)">Changelog</a>
-      <button class="toggle"></button>
+    <div>
+      <h2 class="sec-title">Versions and date</h2>
+      <p class="versions">Measured 20–21 November 2026 on D3 7.9.2, Observable Plot 0.6.19, Vega-Lite 6.5.0 (Vega 6.4.0, vega-embed 7.4.0), Plotly.js 4.3.0, Chart.js 4.6.1 (annotation 3.1.0, zoom 2.2.0), Apache ECharts 6.1.0 and µPlot 1.6.32, all loaded from jsDelivr at those pins.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="pick">
-    <span class="pick__label">Chart:</span>
-    <span class="pick__opts" role="group" aria-label="Choose the chart every library draws">
-      <button type="button" data-chart="hero" aria-pressed="true">The annotated chart</button>
-      <button type="button" data-chart="life" aria-pressed="false">Missing-data test</button>
-    </span>
-    <span class="pick__label" data-caption>
-      One chart, seven libraries. Line counts are measured from the code that just ran.
-    </span>
-  </div>
+  <section class="block" aria-labelledby="faq-h">
+    <h2 id="faq-h">FAQ</h2>
+    <div class="faq">
+      <details><summary>Is the data real?</summary>
+        <p>Yes. Oil prices are EIA daily spot prices, the grid is NESO's half-hourly GB generation mix, the npm numbers are the registry's download API, and the missing-data side test is World Bank life expectancy with some years removed on purpose to make gaps. Provenance and the exact files are in <a href="https://github.com/datasets/line-charts/tree/main/assets/data" target="_blank" rel="noopener">the repo</a>. The September version used a synthetic electricity mix titled as if it were fact; we replaced it.</p></details>
+      <details><summary>Why not Highcharts, Recharts, ApexCharts or Nivo?</summary>
+        <p>Highcharts is not free for commercial use and everything here is permissive open source. Recharts, Nivo and visx are React wrappers; this site is framework-free and a React page is a separate job. ApexCharts, Chartist, Frappe and billboard.js were not tested, so we make no claim about them.</p></details>
+      <details><summary>Aren't line counts meaningless?</summary>
+        <p>Nearly. They count the render function as it ran, comments included, and exclude shared helpers for everyone and each library's theme helper (which ranges from none to 24 lines). Formatting moves them by five or ten lines. We use them to say “about half”, never to rank. The finding is what is native and what is not, and that is on each page.</p></details>
+      <details><summary>Was this built by AI?</summary>
+        <p>Yes, by AI coding agents under our direction, each library by a separate agent working from one shared brief and a Plot reference. We reviewed every chart against the requirements, re-measured the numbers, and the source is under every chart so you can check our work. <a href="./verdict">The verdict page</a> says exactly how.</p></details>
+      <details><summary>Why quote full bundles?</summary>
+        <p>Because that is what a CDN tag loads, and it is how these pages use them. Sizes are gzip -9 of every file each page fetches from the CDN (<a href="https://github.com/datasets/line-charts/blob/main/docs/measurements/bundles-2026-11-21.md">per-file record</a>), CSS and imported modules included: µPlot 23 KB, D3 118 KB, Chart.js 122 KB with its plugins, Plot 190 KB with the D3 it imports, Vega-Lite 283 KB with Vega, ECharts 368 KB, Plotly 1.48 MB. ECharts custom builds, Plotly partial bundles and D3 submodules are all smaller; we did not test them.</p></details>
+      <details><summary>SVG or canvas, and what about accessibility?</summary>
+        <p>Plot and D3 draw SVG here (D3 can draw canvas too, and does for the grid). Vega-Lite via vega-embed defaults to canvas; we used SVG except on the grid. Plotly draws SVG, and WebGL for <code>scattergl</code>. Chart.js and µPlot are canvas only. ECharts defaults to canvas, with an SVG renderer and server-side SVG rendering available. SVG text is selectable and inspectable, and Plot, D3 and Vega render it in Node at build time; canvas gives a screen reader nothing without extra work. Plot draws the grid at a daily step because SVG is too slow for 1.25M points; Vega-Lite does because its dataflow is, even on canvas.</p></details>
+      <details><summary>I use React. Does this apply?</summary>
+        <p>The ranking does: ECharts, Plot and the rest all mount in a React component as they do here. Recharts, Nivo and visx are not tested, and a React page is the obvious next bake-off.</p></details>
+      <details><summary>Why does the Plot grid chart look different from the others?</summary>
+        <p>It draws one value per day instead of every half-hour, because full resolution took 9 to 13 s in SVG: each day's mean as a line, over a band from that day's lowest to highest half-hour. The band keeps the true solar peak (16,289 MW); a mean line alone would show 5,444. Vega-Lite does the same, because its dataflow re-runs on every zoom frame: even hourly data took 0.9 s per wheel step. Zoomed in, a daily step shows days, not half-hours. The footer under each chart says what was drawn.</p></details>
+    </div>
+  </section>
 
-  <div class="grid7" id="grid"></div>
+  <section class="block" aria-label="Read more">
+    <div class="more">
+      <a href="./verdict"><b>Read the full verdict</b>The ranking with reasons, scorecards for all three tests, what surprised us, and what we got wrong in September.</a>
+      <a href="./method"><b>How we tested</b>The brief each library was built to, the data, and how the numbers are measured.</a>
+      <a href="./build-notes"><b>Build notes, library by library</b>What fought back and what was a pleasure, from the agents who built each one.</a>
+    </div>
+  </section>
 
-  <p class="lede" style="margin-top:14px">
-    Every cell is the library's own demo page, embedded — click its name for the full page with the
-    source expanded underneath. What it took to build each one is in
-    <a href="./docs/BUILD-NOTES.md">BUILD-NOTES.md</a>; the method is in
-    <a href="./ANALYSIS.md">ANALYSIS.md</a> and the scorecard and verdict are in
-    <a href="./EVALUATION.md">EVALUATION.md</a>.
-  </p>
-
-  <h2>The libraries</h2>
-  <div class="grid">
-    <a class="lib" href="./demos/d3.html">
-      <h3>D3</h3><p>Low-level toolkit. The quality ceiling — you build every pixel, including the arrowhead.</p>
-      <div class="meta">~90 KB · ISC/BSD</div>
-    </a>
-    <a class="lib" href="./demos/observable-plot.html">
-      <h3>Observable Plot</h3><p>Concise grammar of graphics from D3's author. Annotation is just another mark.</p>
-      <div class="meta">~65 KB · ISC</div>
-    </a>
-    <a class="lib" href="./demos/vega-lite.html">
-      <h3>Vega-Lite</h3><p>Charts as declarative JSON specs you can lint and diff. Annotation means layers.</p>
-      <div class="meta">~320 KB · BSD-3</div>
-    </a>
-    <a class="lib" href="./demos/plotly.html">
-      <h3>Plotly.js</h3><p>Batteries-included. Shapes, annotations and real arrows for free; a megabyte to ship.</p>
-      <div class="meta">~1.1 MB · MIT</div>
-    </a>
-    <a class="lib" href="./demos/chartjs.html">
-      <h3>Chart.js</h3><p>The popular default. Editorial furniture needs a plugin — and end labels need canvas.</p>
-      <div class="meta">~70 KB + ~30 KB plugin · MIT</div>
-    </a>
-    <a class="lib" href="./demos/echarts.html">
-      <h3>Apache ECharts</h3><p>Production-hardened. The most complete annotation vocabulary of the seven.</p>
-      <div class="meta">~330 KB · Apache-2.0</div>
-    </a>
-    <a class="lib" href="./demos/uplot.html">
-      <h3>µPlot</h3><p>The performance option. ~18 KB and milliseconds — and no annotation model at all.</p>
-      <div class="meta">~18 KB · MIT</div>
-    </a>
-  </div>
-
-  <h2>The two test charts</h2>
-  <ul class="tight">
-    <li><strong>The annotated chart</strong> — electricity generation by source, 5 series × 27 years. Direct end-of-line labels, an annotation with a leader line at the 2011 coal/gas crossover, a shaded 2008–09 band behind the lines, a dashed 100 TWh reference line, wind and solar emphasised against three muted series, and none of it allowed to collide when the chart narrows.</li>
-    <li><strong>Missing-data test</strong> — life expectancy, five countries, with deliberate missing years. Does a <code>null</code> break the line or silently bridge it? Only one library gets this right without being told.</li>
-  </ul>
-  <p class="lede">
-    Retired after v1: CO₂ at Mauna Loa and BTC-USD daily. Both were "plot a line and let the defaults
-    do the work", which every library here is good at, so neither told you anything. Their CSVs are
-    still in <code>assets/data/</code>.
-  </p>
-
-  <h2>Considered, not included (yet)</h2>
-  <ul class="tight">
-    <li><strong>Highcharts</strong> — excellent, but not free for commercial use (paid licence). Deliberately excluded; everything here is permissive OSS.</li>
-    <li><strong>Recharts / visx / Nivo</strong> — React-only; this site is framework-free. Worth a separate React-flavoured page.</li>
-    <li><strong>Vega (full)</strong> — the layer below Vega-Lite; more power, much more verbosity. Vega-Lite represents the family here.</li>
-    <li><strong>ApexCharts, Chartist, Frappe Charts, billboard.js</strong> — reasonable, but don't beat the seven above on any axis we care about.</li>
-    <li><strong>LightningChart JS, Plotly + WebGL, deck.gl</strong> — for &gt;1M points / GPU territory. Out of scope for "line charts for data stories and dashboards".</li>
-  </ul>
-
-  <p class="foot">
-    Palette is the validated categorical reference palette (colour-blind-safe, light + dark).
-    Add a library: copy <code>demos/uplot.html</code> + <code>demos/uplot.js</code>, swap the CDN and the
-    two render functions, add a cell here.
-  </p>
+  <footer class="foot">
+    <span>line-charts: a bake-off of seven open-source line-chart libraries, November 2026.</span>
+    <a href="https://github.com/datasets/line-charts" target="_blank" rel="noopener">Source and data on GitHub (MIT)</a>
+    <a href="./changelog">Changelog</a>
+  </footer>
 
 </div>
 <script type="module">
-  import { installThemeToggle, restoreTheme } from "./assets/js/theme.js";
+  import { installThemeToggle, restoreTheme, broadcastTheme } from "./assets/js/theme.js";
   restoreTheme();
   installThemeToggle(document.querySelector(".toggle"));
 
+  /* ---- the ranking ------------------------------------------------ */
+  const RANKING = [
+    ["echarts", "Apache ECharts", "Use it when you want one library for everything, from an annotated story chart to a 1.25M-point dashboard.",
+      ["all three tests met, mostly as options", "1.25M pts in ~100 ms, zoom + slider built in", "end labels laid out for you", "368 KB gzipped"]],
+    ["observable-plot", "Observable Plot", "Use it when the chart is going into an article, a report or a static page.",
+      ["44 lines, the fewest", "renders to static SVG at build time", "no zoom or pan", "dense chart: a daily mean and low–high band"]],
+    ["d3", "D3", "Use it when the chart is the product, or the team already writes D3.",
+      ["1.25M pts on canvas in ~70 ms", "everything met, everything by hand", "60/100/100 lines, 1.3 to 2.6× Plot"]],
+    ["plotly", "Plotly.js", "Use it when you want callouts as single objects and zoom in config, and can pay 1.5 MB.",
+      ["best callout model: one object each", "1.25M pts in ~0.7 s via scattergl", "hover 1 to 1.8 s per move until tuned", "1.48 MB gzipped"]],
+    ["uplot", "µPlot", "Use it when speed and size are the whole problem.",
+      ["1.25M pts in ~25 ms", "23 KB", "no annotation model", "wheel zoom and pan are hooks you write"]],
+    ["chartjs", "Chart.js", "Use it when you already use it.",
+      ["all three tests met", "1.25M pts in ~85 ms, decimation built in", "five extra scripts to load and keep in step", "canvas only, and the most small traps"]],
+    ["vega-lite", "Vega-Lite", "Use it when the chart must be a JSON spec and the data is small.",
+      ["zoom, pan and hover in a few lines of params", "zoom redraw 0.9 s per frame at hourly", "no decimation, no minimum zoom span", "dense chart: a daily mean and low–high band"]],
+  ];
+  document.getElementById("ranking").innerHTML = RANKING.map(([slug, name, when, chips], i) => `
+    <li class="rank">
+      <span class="rank__n">${i + 1}</span>
+      <a class="rank__name" href="./demos/${slug}">${name}</a>
+      <div class="rank__body">
+        <p class="rank__when">${when}</p>
+        <ul class="chips" aria-label="Evidence">${chips.map((c) => `<li>${c}</li>`).join("")}</ul>
+      </div>
+    </li>`).join("");
+
+  /* ---- the centrepiece: the grid chart, one library at a time ----- */
+  /* An iframe onto the library's own demo page, as in the evidence grid,
+   * opened on a fortnight of April 2026: the record solar peak (16,289 MW on
+   * 23 April), a windless spell after it, then wind and sun together on 29–30
+   * April with gas under 2 GW. */
+  const WINDOW = "&from=2026-04-17&to=2026-05-01";
+  /* [slug, button, name, what this library draws here, how to work it]: each
+   * caption says what that library actually does with the window. */
+  const ALL = "All 1,251,264 points loaded";
+  const ZOOMED_OUT = " Zoomed out, each pixel holds days of half-hours and the series become solid bands: that is the data, not a bug.";
+  const STAGE_LIBS = [
+    ["echarts", "ECharts", "Apache ECharts",
+      `${ALL}; <code>sampling: "minmax"</code> keeps every pixel's true high and low. It opens on two weeks of April 2026, with the record solar peak; the slider goes back to January 2009.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, drag the slider, double-click or the restore button to reset." + ZOOMED_OUT],
+    ["d3", "D3", "D3",
+      `${ALL} and stroked on a canvas, every one. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset." + ZOOMED_OUT],
+    ["observable-plot", "Plot", "Observable Plot",
+      "Plot has no zoom, so here it draws only the two weeks of April 2026, at full resolution (2,688 points), as static SVG. Its full chart in the evidence below draws all seventeen years as a daily mean over a daily low-to-high band.",
+      "Hover for the crosshair and tooltip. No zoom or pan."],
+    ["vega-lite", "Vega-Lite", "Vega-Lite",
+      "Vega-Lite redraws everything on each zoom frame, so here it loads only the two weeks of April 2026, at full resolution (2,688 points): zoom out and the rest is empty. Its full chart in the evidence below draws all seventeen years as a daily mean over a daily low-to-high band.",
+      "Ctrl/⌘ + scroll or trackpad pinch to zoom, drag to pan, double-click to reset. There is no one-week floor, and on a touch screen it did not pan or zoom in our tests."],
+    ["plotly", "Plotly", "Plotly.js",
+      `${ALL} and drawn with WebGL (<code>scattergl</code>), no decimation. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Drag to zoom into a range, Ctrl/⌘ + scroll or trackpad pinch to zoom, the pan tool (top right) then drag to pan, double-click to reset. On a touch screen the chart lets the page scroll: tap the zoom or pan tool first." + ZOOMED_OUT],
+    ["chartjs", "Chart.js", "Chart.js",
+      `${ALL}; the built-in min-max decimation keeps every pixel's true high and low. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset." + ZOOMED_OUT],
+    ["uplot", "µPlot", "µPlot",
+      `${ALL}; its path builder keeps every pixel's true high and low. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Drag to zoom into a range, Shift + drag (or one finger on touch) to pan, Ctrl/⌘ + scroll or pinch to zoom, double-click to reset." + ZOOMED_OUT],
+  ];
+  const stage = document.getElementById("stage");
+  const stageLib = document.querySelector("[data-stage-lib]");
+  const stageCaption = document.querySelector("[data-stage-caption]");
+  const stageHint = document.querySelector("[data-hint]");
+  const switcher = document.getElementById("switch");
+  switcher.innerHTML = STAGE_LIBS.map(([slug, short]) =>
+    `<button type="button" value="${slug}" aria-pressed="${slug === "echarts"}">${short}</button>`).join("");
+  function stageShow(slug) {
+    const [, , name, caption, hint] = STAGE_LIBS.find((l) => l[0] === slug);
+    switcher.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.value === slug)));
+    stageLib.textContent = name;
+    stageCaption.innerHTML = caption;
+    stageHint.textContent = hint;
+    stage.title = `${name} drawing Britain's grid, every half hour since 2009`;
+    stage.src = `./demos/${slug}?chart=grid&bare=1${WINDOW}`;
+  }
+  switcher.addEventListener("click", (e) => e.target.value && stageShow(e.target.value));
+  stageShow("echarts");
+
+  /* ---- the evidence: seven live cells ----------------------------- */
   const LIBS = [
     ["d3", "D3"],
     ["observable-plot", "Observable Plot"],
@@ -182,55 +380,112 @@
     ["echarts", "Apache ECharts"],
     ["uplot", "µPlot"],
   ];
-
   /* Each cell is an iframe onto the library's own demo page in single-chart,
-   * chrome-free mode. Iframes because several of these libraries register
-   * globals and ship their own CSS — isolation is free this way — and because
-   * the embedded page can report its measured line count and its height back,
-   * so neither number can drift from what actually rendered. */
+   * chrome-free mode: libraries that register globals or ship CSS stay
+   * isolated, and the embedded page reports its measured line count and its
+   * height back, so neither number can drift from what actually rendered.
+   * Cells load only when the section nears the viewport, so the centrepiece
+   * has the CPU (and the 5.6 MB grid file is cached by the time they ask). */
   const grid = document.getElementById("grid");
-  grid.innerHTML = LIBS.map(([slug, name], i) => `
+  grid.innerHTML = LIBS.map(([slug, name]) => `
     <article class="cell" data-lib="${slug}">
       <div class="cell__head">
-        <a href="./demos/${slug}.html">${name}</a>
+        <a href="./demos/${slug}">${name}</a>
         <span class="cell__lines"><b data-lines>—</b> lines</span>
       </div>
-      <iframe title="${name} rendering the current chart"
-              loading="${i < 3 ? "eager" : "lazy"}" scrolling="no"
-              src="./demos/${slug}.html?chart=hero&bare=1"></iframe>
+      <iframe title="${name} rendering the current chart" scrolling="no"></iframe>
     </article>`).join("");
 
   const frames = [...grid.querySelectorAll("iframe")];
   const cellOf = (win) => frames.find((f) => f.contentWindow === win)?.closest(".cell");
 
+  /* The grid chart is 1.25M points: seven of those at once would fight over
+   * one CPU and make every timing meaningless. So for grid the cells render
+   * one after another, each starting when the previous one reports it has
+   * painted (or after 60 s). Other charts load as usual. */
+  let queue = [], timer;
+  const WAITING = `<p style="font:12.5px system-ui;color:#898781;text-align:center;margin-top:120px">
+    waiting its turn: grid cells render one at a time so timings are not contended</p>`;
+  function next() {
+    clearTimeout(timer);
+    const item = queue.shift();
+    if (!item) return;
+    const [f, url] = item;
+    f.removeAttribute("srcdoc");
+    f.src = url;
+    timer = setTimeout(next, 60000);
+  }
+
   addEventListener("message", (e) => {
+    if (e.origin !== location.origin || !e.data || typeof e.data !== "object") return;
+    if (e.source === stage.contentWindow) {
+      // ignore the short "loading" height, so the page does not jump while the chart draws
+      if (e.data.type === "lc:size" && e.data.height > 160) stage.style.height = e.data.height + "px";
+      return;
+    }
     const cell = cellOf(e.source);
-    if (!cell || !e.data || typeof e.data !== "object") return;
+    if (!cell) return;
     if (e.data.type === "lc:lines") {
-      cell.querySelector("[data-lines]").textContent = e.data.lines;
+      cell.querySelector("[data-lines]").textContent = e.data.lines ?? "—";
     } else if (e.data.type === "lc:size" && e.data.height > 0) {
       cell.querySelector("iframe").style.height = e.data.height + "px";
+    } else if (e.data.type === "lc:rendered" && e.data.key === current) {
+      next();
     }
   });
+  // a frame that loads after a theme change hears the current choice too
+  [stage, ...frames].forEach((f) => f.addEventListener("load", () => broadcastTheme([f])));
 
   const CAPTION = {
-    hero: "One chart, seven libraries. Line counts are measured from the code that just ran.",
+    hero: "Two oil benchmarks, forty years, one negative price. Line counts are measured from the code that just ran.",
+    grid: "1.25M points. Cells render one at a time so each timing is uncontended; each says which decimation step it needed.",
+    npm: "22 packages on a log scale: the seven in colour. Hover to pick out a line; switch to indexed or small multiples.",
     life: "Five countries with missing years. Watch which lines break at a gap and which bridge it.",
   };
   const caption = document.querySelector("[data-caption]");
-  document.querySelectorAll(".pick__opts button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const chart = btn.dataset.chart;
-      document.querySelectorAll(".pick__opts button").forEach((b) =>
-        b.setAttribute("aria-pressed", String(b === btn)));
-      caption.textContent = CAPTION[chart];
-      frames.forEach((f) => {
-        const slug = f.closest(".cell").dataset.lib;
-        f.closest(".cell").querySelector("[data-lines]").textContent = "—";
-        f.src = `./demos/${slug}.html?chart=${chart}&bare=1`;
-      });
+  const buttons = [...document.querySelectorAll(".pick__opts button")];
+  let current = null;
+  function show(chart) {
+    current = chart;
+    buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.chart === chart)));
+    caption.textContent = CAPTION[chart];
+    clearTimeout(timer);
+    queue = [];
+    frames.forEach((f) => {
+      const slug = f.closest(".cell").dataset.lib;
+      const url = `./demos/${slug}?chart=${chart}&bare=1`;
+      f.closest(".cell").querySelector("[data-lines]").textContent = "—";
+      if (chart === "grid") {
+        f.removeAttribute("src");
+        f.srcdoc = WAITING;
+        queue.push([f, url]);
+      } else {
+        f.removeAttribute("srcdoc");
+        f.src = url;
+      }
     });
-  });
+    if (chart === "grid") next();
+  }
+  buttons.forEach((btn) => btn.addEventListener("click", () => {
+    history.replaceState(null, "", btn.dataset.chart === "hero" ? location.pathname : "#" + btn.dataset.chart);
+    show(btn.dataset.chart);
+  }));
+
+  const fromHash = location.hash.slice(1);
+  const initial = fromHash in CAPTION ? fromHash : "hero";
+  caption.textContent = CAPTION[initial];
+  buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.chart === initial)));
+  if (initial !== "hero") {
+    show(initial);
+    document.getElementById("evidence").scrollIntoView();
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting) || current) return;
+      io.disconnect();
+      show("hero");
+    }, { rootMargin: "400px 0px" });
+    io.observe(document.getElementById("evidence"));
+  }
 </script>
 </body>
 </html>
