@@ -18,12 +18,12 @@ Ranked for someone choosing one library in 2026 for a website or an app, with no
 
 Criteria line under the list: Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the default look, then bundle size. Line counts are colour, never a criterion.
 
-1. **Apache ECharts**: use it when you want one library for everything, from an annotated story chart to a 1.25M-point dashboard. Chips: `all three tests met, mostly as options` · `1.25M pts in 163 ms, zoom + slider built in` · `end labels laid out for you` · `368 KB gzipped`
+1. **Apache ECharts**: use it when you want one library for everything, from an annotated story chart to a 1.25M-point dashboard. Chips: `all three tests met, mostly as options` · `1.25M pts in ~100 ms, zoom + slider built in` · `end labels laid out for you` · `368 KB gzipped`
 2. **Observable Plot**: use it when the chart is going into an article, a report or a static page. Chips: `44 lines, the fewest` · `renders to static SVG at build time` · `no zoom or pan` · `dense chart: a daily mean and low–high band`
-3. **D3**: use it when the chart is the product, or the team already writes D3. Chips: `1.25M pts on canvas in 173 ms` · `everything met, everything by hand` · `60/100/100 lines, 1.3 to 2.6× Plot`
-4. **Plotly.js**: use it when you want callouts as single objects and zoom in config, and can pay 1.5 MB. Chips: `best callout model: one object each` · `1.25M pts in 1.7 s via scattergl` · `hover 1 to 1.8 s per move until tuned` · `1.48 MB gzipped`
-5. **µPlot**: use it when speed and size are the whole problem. Chips: `1.25M pts in 44 ms` · `22 KB` · `no annotation model` · `wheel zoom and pan are hooks you write`
-6. **Chart.js**: use it when you already use it. Chips: `all three tests met` · `1.25M pts in 236 ms, decimation built in` · `annotations and zoom are plugins` · `end labels, index, multiples by hand`
+3. **D3**: use it when the chart is the product, or the team already writes D3. Chips: `1.25M pts on canvas in ~70 ms` · `everything met, everything by hand` · `60/100/100 lines, 1.3 to 2.6× Plot`
+4. **Plotly.js**: use it when you want callouts as single objects and zoom in config, and can pay 1.5 MB. Chips: `best callout model: one object each` · `1.25M pts in ~0.7 s via scattergl` · `hover 1 to 1.8 s per move until tuned` · `1.48 MB gzipped`
+5. **µPlot**: use it when speed and size are the whole problem. Chips: `1.25M pts in ~25 ms` · `23 KB` · `no annotation model` · `wheel zoom and pan are hooks you write`
+6. **Chart.js**: use it when you already use it. Chips: `all three tests met` · `1.25M pts in ~85 ms, decimation built in` · `annotations and zoom are plugins` · `end labels, index, multiples by hand`
 7. **Vega-Lite**: use it when the chart must be a JSON spec and the data is small. Chips: `zoom, pan and hover in a few lines of params` · `zoom redraw 0.9 s per frame at hourly` · `no decimation, no minimum zoom span` · `dense chart: a daily mean and low–high band`
 
 Per-use-case line under the list: **Articles:** Plot. **Dashboards and dense data:** ECharts (µPlot if only speed matters). **Many series:** ECharts interactive, Plot static. **Already have one:** keep it; the verdict says what to add.
@@ -76,7 +76,7 @@ Measured 20–21 November 2026 on D3 7.9.2, Observable Plot 0.6.19, Vega-Lite 6.
 
 **Was this built by AI?** Yes, by AI coding agents under our direction, each library by a separate agent working from one shared brief and a Plot reference. We reviewed every chart against the requirements, re-measured the numbers, and the source is under every chart so you can check our work. The verdict page says exactly how.
 
-**Why quote full bundles?** Because that is what a CDN tag loads, and it is how these pages use them. Sizes are gzip of the pinned files as loaded: µPlot 22 KB, Chart.js 122 KB with its plugins, Plot 180 KB with the D3 it imports, Vega-Lite 283 KB with Vega, ECharts 368 KB, Plotly 1.48 MB. ECharts custom builds, Plotly partial bundles and D3 submodules are all smaller; we did not test them.
+**Why quote full bundles?** Because that is what a CDN tag loads, and it is how these pages use them. Sizes are gzip -9 of every file each page fetches from the CDN, CSS and imported modules included: µPlot 23 KB, D3 118 KB, Chart.js 122 KB with its plugins, Plot 190 KB with the D3 it imports, Vega-Lite 283 KB with Vega, ECharts 368 KB, Plotly 1.48 MB. ECharts custom builds, Plotly partial bundles and D3 submodules are all smaller; we did not test them.
 
 **SVG or canvas, and what about accessibility?** Plot and D3 draw SVG here (D3 can draw canvas too, and does for the grid). Vega-Lite via vega-embed defaults to canvas; we used SVG except on the grid. Plotly draws SVG, and WebGL for `scattergl`. Chart.js and µPlot are canvas only. ECharts defaults to canvas, with an SVG renderer and server-side SVG rendering available. SVG text is selectable and inspectable, and Plot, D3 and Vega render it in Node at build time; canvas gives a screen reader nothing without extra work. Plot draws the grid at a daily step because SVG is too slow for 1.25M points; Vega-Lite does because its dataflow is, even on canvas.
 

@@ -44,7 +44,7 @@ mountDemo({
   meta: {
     name: "Plotly.js",
     version: "4.3.0",
-    bundleKB: 1483,
+    bundleKB: 1480,
     license: "MIT",
     tagline:
       "Batteries-included scientific charting. Zoom, pan, box-select, hover, spike lines and PNG export work with zero configuration, and the annotation model — shapes for furniture, annotations for text with real arrows — is the closest thing here to a drawing layer that understands data coordinates. The trade-off is weight (1.48 MB gzipped for the full bundle) and defaults that look more 'analysis tool' than 'publication'.",
@@ -54,7 +54,7 @@ mountDemo({
       "Using the full <code>plotly.js-dist-min</code> for convenience. Everything is declarative JSON: traces for data, <code>layout.shapes</code> for bands and rules, <code>layout.annotations</code> for text, with or without an arrow. The theme is one Plotly <code>template</code> outside the render functions (about 15 lines, not counted). Lines are SVG by default; <code>type: \"scattergl\"</code> switches a trace to WebGL, which is what lets the grid draw all 1.25M points.",
     cardNotes: {
       hero: "Each callout is one annotation: <code>axref/ayref: \"x\"/\"y\"</code> puts the text in data units, Plotly draws the leader, and <code>arrowhead: 6</code> is the dot. Bands are <code>shapes</code> with <code>yref: \"paper\"</code>, the zero rule is the axis's own <code>zeroline</code>. End labels still need <code>spreadLabels</code>: Plotly does not de-collide annotations.",
-      grid: "All 1,251,264 points, no decimation: <code>type: \"scattergl\"</code> takes the typed arrays and paints in 1.2–2.2 s (hourly 0.95 s, daily 0.27 s), so the solar peak survives at 16,289 MW. Drag-zoom, wheel-zoom, pan and double-click reset are built in; the one-week floor is a <code>plotly_relayout</code> handler. Catch: the unified tooltip searches every point within <code>hoverdistance</code> (default 20 px), which took 1–1.8 s per mouse move here; keeping it to one sample wide brings that to ~0.1 s.",
+      grid: "All 1,251,264 points, no decimation: <code>type: \"scattergl\"</code> takes the typed arrays and paints in about 0.7 s, so the solar peak survives at 16,289 MW. Drag-zoom, wheel-zoom, pan and double-click reset are built in; the one-week floor is a <code>plotly_relayout</code> handler. Catch: the unified tooltip searches every point within <code>hoverdistance</code> (default 20 px), which took 1–1.8 s per mouse move here; keeping it to one sample wide brings that to ~0.1 s.",
       npm: "<code>type: \"log\"</code> with <code>tickvals</code>/<code>ticktext</code> does the axis; <code>layout.grid</code> with matched axes does the small multiples. No transforms (removed in v3), so the index is computed by hand, and whole-line highlight is a <code>plotly_hover</code> handler that restyles all 22 traces. End labels are annotations, de-collided with <code>spreadLabels</code>.",
     },
   },

@@ -26,17 +26,17 @@ mountDemo({
   meta: {
     name: "µPlot",
     version: "1.6.32",
-    bundleKB: 22,
+    bundleKB: 23,
     license: "MIT",
     tagline:
-      "The performance option: 22 KB, draws a million points on Canvas faster than most libraries draw twenty thousand, with drag-to-zoom, a synced cursor and series focus built in. In return the API is spartan and there is no annotation model at all — no band, no reference line, no label, no arrow. Everything editorial is your own canvas code inside a draw hook, in device pixels.",
+      "The performance option: 23 KB, draws a million points on Canvas faster than most libraries draw twenty thousand, with drag-to-zoom, a synced cursor and series focus built in. In return the API is spartan and there is no annotation model at all — no band, no reference line, no label, no arrow. Everything editorial is your own canvas code inside a draw hook, in device pixels.",
     docs: "https://github.com/leeoniya/uPlot/tree/master/docs",
     cdn: "https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js",
     notes:
       "Annotations go in hooks: <code>drawClear</code> (before the grid) for bands, <code>drawAxes</code> (after the grid, before the series) for reference rules, <code>draw</code> (after the series) for labels and leaders. Hooks hand you the raw 2D context in device pixels, so every size is multiplied by <code>uPlot.pxRatio</code>. x is epoch ms everywhere (<code>ms: 1</code>) with a UTC <code>tzDate</code>.",
     cardNotes: {
       hero: "No annotation layer: bands, the zero rule, callouts, leaders and end labels are all canvas calls in three draw hooks, in device pixels, and multi-line text is a loop of <code>fillText</code>. The scales and axes are trivial; the editorial layer is most of the code.",
-      grid: "All 1.25M points at full resolution, first paint ~50 ms (46–69 ms over six runs; fetching and parsing the file is separate). The line builder keeps each pixel column's min and max, so the solar peak (16,289 MW) survives at full zoom-out. Drag-to-zoom and double-click reset are built in. µPlot has no touch handling and pans only if you write it: the one-week floor, Ctrl/⌘-wheel and pinch zoom, Shift + drag and one-finger pan are ~40 lines of hooks and pointer events, the floating tooltip ~10.",
+      grid: "All 1.25M points at full resolution, first paint about 25 ms (median of six runs; fetching and parsing the file is separate). The line builder keeps each pixel column's min and max, so the solar peak (16,289 MW) survives at full zoom-out. Drag-to-zoom and double-click reset are built in. µPlot has no touch handling and pans only if you write it: the one-week floor, Ctrl/⌘-wheel and pinch zoom, Shift + drag and one-finger pan are ~40 lines of hooks and pointer events, the floating tooltip ~10.",
       npm: "Highlight-one-of-many is native: <code>cursor.focus.prox</code> dims every series but the nearest. Log scale is <code>distr: 3</code>; the index is done by hand; small multiples are seven instances with a synced cursor. Greys use an rgba stroke, since focus resets <code>alpha</code> to 1.",
     },
   },

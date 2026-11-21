@@ -64,8 +64,8 @@ mountDemo({
   meta: {
     name: "D3",
     version: "7.9.2",
-    bundleKB: 109,
-    bundleNote: "the 30 ESM modules of <code>d3@7.9.2/+esm</code>; the single-file <code>d3.min.js</code> is 93 KB",
+    bundleKB: 118,
+    bundleNote: "the 35 ES module files <code>d3@7.9.2/+esm</code> pulls in, four of them twice in different versions; the single-file <code>d3.min.js</code> is 93 KB",
     license: "ISC / BSD",
     tagline:
       "Not a chart library — a low-level toolkit of scales, shape generators, axes, selections and zoom behaviour. You build the chart. The quality ceiling is the highest here and nothing is off-limits: the annotation, the band and the labels are the same kind of object as the lines, so none of them is a special case you have to hope the library supports. Every pixel is your code, so every chart is longer than in a charting library, and the one that matters most, 1.25M points with zoom, is also the one D3 does best: point <code>d3.line()</code> at a canvas and it draws them all.",
@@ -75,7 +75,7 @@ mountDemo({
       "Each chart below is standalone: scales, axes, gridlines, bands, callouts, labels, zoom and tooltips are all in the snippet, nothing hidden in a helper (only the shared <code>spreadLabels</code> and <code>viewSwitch</code>). The grid draws its lines on a canvas with the same <code>d3.line()</code> generator, via <code>.context(ctx)</code>, and keeps axes and annotations in SVG on top. The life-expectancy card uses a shared ~35-line <code>mkFrame()</code> helper shown at the top of the module instead.",
     cardNotes: {
       hero: "Everything is an SVG element you append: bands, zero rule, leader lines, dots, multi-line callout text (tspans, with the vertical alignment worked out by hand) and end labels de-collided in pixel space with <code>spreadLabels</code>. No hover tooltip (optional here, and another ~15 lines).",
-      grid: "All 1,251,264 points at full resolution, no decimation: <code>d3.line().context(ctx)</code> strokes them on a canvas in 100–230 ms to first paint (two runs at 1100 px: 100 and 168 ms), so the solar peak drawn is the true 16,289 MW. <code>d3.zoom</code> + <code>rescaleX</code> give wheel/drag zoom clamped to one week, a double-click reset, and a bisector gives the crosshair tooltip. A redraw fully zoomed out costs ~140 ms (about 7 fps), dropping to ~30 ms once zoomed in, since only the visible points are drawn.",
+      grid: "All 1,251,264 points at full resolution, no decimation: <code>d3.line().context(ctx)</code> strokes them on a canvas in about 70 ms to first paint (median of six runs at 900 px), so the solar peak drawn is the true 16,289 MW. <code>d3.zoom</code> + <code>rescaleX</code> give wheel/drag zoom clamped to one week, a double-click reset, and a bisector gives the crosshair tooltip. A redraw fully zoomed out costs ~140 ms (about 7 fps), dropping to ~30 ms once zoomed in, since only the visible points are drawn.",
       npm: "Log scale, clip-path and line generator are one line each; the index is by hand (divide by the index week). Hover is the classic D3 pattern: a <code>d3.Delaunay</code> over every point finds the nearest, which picks its whole line to raise and the rest to dim. Small multiples are a data join of seven <code>g</code> cells sharing one log scale.",
     },
   },
