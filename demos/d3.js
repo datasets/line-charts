@@ -74,6 +74,7 @@ mountDemo({
     notes:
       "Each chart below is standalone: scales, axes, gridlines, bands, callouts, labels, zoom and tooltips are all in the snippet, nothing hidden in a helper (only the shared <code>spreadLabels</code> and <code>viewSwitch</code>). The grid draws its lines on a canvas with the same <code>d3.line()</code> generator, via <code>.context(ctx)</code>, and keeps axes and annotations in SVG on top. The life-expectancy card uses a shared ~35-line <code>mkFrame()</code> helper shown at the top of the module instead.",
     cardNotes: {
+      defaults: "D3 has no chart defaults: scales, margins and axes are yours, and a path needs <code>fill: none</code> and a stroke or it fills black, so both lines take the page’s text colour (<code>currentColor</code>) and cannot be told apart. No legend, no tooltip. Axes use <code>currentColor</code>, so dark mode works. The y-domain is the bare data extent, so the −$36.98 day sits on the bottom edge.",
       hero: "Everything is an SVG element you append: bands, zero rule, leader lines, dots, multi-line callout text (tspans, with the vertical alignment worked out by hand) and end labels de-collided in pixel space with <code>spreadLabels</code>. No hover tooltip (optional here, and another ~15 lines).",
       grid: "All 1,251,264 points at full resolution, no decimation: <code>d3.line().context(ctx)</code> strokes them on a canvas in about 70 ms to first paint (median of six runs at 900 px), so the solar peak drawn is the true 16,289 MW. <code>d3.zoom</code> + <code>rescaleX</code> give wheel/drag zoom clamped to one week, a double-click reset, and a bisector gives the crosshair tooltip. A redraw fully zoomed out costs ~140 ms (about 7 fps), dropping to ~30 ms once zoomed in, since only the visible points are drawn.",
       npm: "Log scale, clip-path and line generator are one line each; the index is by hand (divide by the index week). Hover is the classic D3 pattern: a <code>d3.Delaunay</code> over every point finds the nearest, which picks its whole line to raise and the rest to dim. Small multiples are a data join of seven <code>g</code> cells sharing one log scale.",
@@ -141,6 +142,17 @@ mountDemo({
       report({ points: oil.rows.length, step: "full" });
     },
 
+    defaults(host, { defaults: oil }) {
+      const w = host.clientWidth, h = 400, m = 40;   // D3 has no default margins; axes need room
+      const x = d3.scaleUtc(d3.extent(oil.rows, (d) => d.date), [m, w - m]);
+      const y = d3.scaleLinear(d3.extent(oil.rows, (d) => d.price), [h - m, m]);
+      const svg = d3.select(host).append("svg").attr("width", w).attr("height", h);
+      svg.append("g").attr("transform", `translate(0,${h - m})`).call(d3.axisBottom(x));
+      svg.append("g").attr("transform", `translate(${m},0)`).call(d3.axisLeft(y));
+      const line = d3.line((d) => x(d.date), (d) => y(d.price));
+      svg.selectAll("path.line").data(d3.groups(oil.rows, (d) => d.series)).join("path")
+        .attr("fill", "none").attr("stroke", "currentColor").attr("d", ([, rows]) => line(rows));
+    },
     grid(host, { grid: g }, { theme, report, range }) {
       // every half-hour, all 1.25M points: lines on a canvas (SVG paths this
       // long are too slow), axes, events, crosshair and legend in an SVG on top

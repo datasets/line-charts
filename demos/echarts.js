@@ -67,6 +67,7 @@ mountDemo({
     notes:
       "Full build via UMD, Canvas renderer (the default) for the three tests; the house style is one theme object handed to <code>init()</code>, outside the counted render functions. Every piece of chart furniture is a first-class option: <code>endLabel</code> + <code>labelLayout</code> for de-collided direct labels, <code>markArea</code> for bands, <code>markLine</code> for rules and leaders, <code>markPoint</code> for callout text, <code>dataZoom</code> and <code>toolbox</code> for zoom.",
     cardNotes: {
+      defaults: "A symbol on every one of the ~20k points, seven-year ticks and a y-axis from −60 to 150; no legend and no tooltip (both are components you opt into). The default light theme ignores dark mode.",
       hero: "Everything is an option, nothing is drawn by hand: <code>markArea</code> bands, <code>markLine</code> zero rule and leaders, <code>markPoint</code> dots and callout text, and <code>endLabel</code> with <code>labelLayout: { moveOverlap }</code> de-collides the end labels itself. Explicit decade and dollar ticks need <code>customValues</code> (5.5.1+).",
       grid: "All 1.25M points, no ladder step: the typed arrays go straight into a column-keyed <code>dataset</code>, Canvas renderer, <code>sampling: \"minmax\"</code> (per-pixel min and max, so the solar peak survives). First paint about 100 ms; unsampled it still paints in about 0.3 s but hover and zoom drop to ~5 fps. <code>dataZoom</code> (wheel, drag, slider) and <code>toolbox</code> (box zoom, reset) are built in. One catch: sampled series keep different timestamps, so the stock axis tooltip lists one series; the formatter reads the whole dataset row instead.",
       npm: "Log axis, <code>endLabel</code> + <code>labelLayout</code> (de-collided), <code>emphasis.focus: \"series\"</code> dimming and the matrix-laid small multiples are all options. Two things are by hand: the index (no normalise transform) and nearest-line hover, because ECharts hit-tests a line only on its stroke and line events carry no data index, so ~10 lines find the nearest series at the hovered week and dispatch <code>highlight</code> + <code>showTip</code>.",
@@ -125,6 +126,17 @@ mountDemo({
       return () => c.dispose();
     },
 
+    defaults(host, { defaults: oil }) {
+      host.style.height = "400px";
+      const c = echarts.init(host);
+      c.setOption({
+        xAxis: { type: "time" },
+        yAxis: {},
+        series: oil.keys.map((k) => ({ type: "line", name: k,
+          data: Array.from(oil.cols[k].t, (t, i) => [t, oil.cols[k].y[i]]) })),
+      });
+      return () => c.dispose();
+    },
     grid(host, { grid }, { theme, report, range }) {
       const w = host.clientWidth || 640;
       host.style.height = GRID.height(w) + 66 + "px";             // + legend row and zoom slider

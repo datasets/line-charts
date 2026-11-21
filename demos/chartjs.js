@@ -19,6 +19,19 @@ function themed(theme) {
   Chart.defaults.scales.time.adapters.date = { zone: "UTC" };   // time axes in UTC, like the data
 }
 
+/* themed() changes globals, so on the full page the `defaults` card would
+ * inherit this site's theme. Snapshot Chart.js's own values at load and put
+ * them back before that render. Page plumbing, not chart code: the wrapper
+ * keeps the render's own source (and line count) on the card. */
+const D = Chart.defaults;
+const pristine = [D.color, D.borderColor, D.font.family, D.font.size, D.animation,
+  D.maintainAspectRatio, D.elements.point.radius, D.scales.time.adapters.date];
+const unthemed = (render) => Object.assign((...args) => {
+  [D.color, D.borderColor, D.font.family, D.font.size, D.animation,
+    D.maintainAspectRatio, D.elements.point.radius, D.scales.time.adapters.date] = pristine;
+  return render(...args);
+}, { toString: () => render.toString() });
+
 // responsive + maintainAspectRatio:false means the canvas fills its parent,
 // so the parent is what has to carry the height (used by `life`)
 function canvas(host, height = 300) {
@@ -42,6 +55,7 @@ mountDemo({
     notes:
       "Core build plus <code>luxon@3.7.2</code> + <code>chartjs-adapter-luxon@1.3.1</code> (time scale, in UTC), <code>chartjs-plugin-annotation@3.1.0</code> (bands, rules, callouts, end labels), <code>chartjs-plugin-zoom@2.2.0</code> with <code>hammerjs@2.0.8</code> (wheel zoom, drag pan). Theme colours and fonts go in once through <code>Chart.defaults</code> (a 10-line <code>themed()</code> helper outside the render functions).",
     cardNotes: {
+      defaults: "A dot on every one of the ~20k points, a 1 s animation, a legend on top, a tooltip on hover and every year ticked and rotated. The time scale cannot work without a date adapter (luxon here). Grey text and black-alpha gridlines ignore dark mode.",
       hero: "Everything editorial is annotation-plugin config: <code>box</code> bands, a <code>line</code> zero rule, and per callout a <code>point</code>, a <code>line</code> leader and a multi-line <code>label</code> whose <code>position</code> maps straight onto the spec's anchor and valign. Exact ticks need an <code>afterBuildTicks</code> hook; the end labels are de-collided by hand (<code>spreadLabels</code>).",
       grid: "All 1.25M points go in; the built-in decimation plugin (min-max per pixel column) redraws only the visible range, so the solar peak survives and zooming in recovers every half-hour. Full resolution paints in about 85 ms (median of six runs at 900 px), so the ladder never had to step down; a redraw at full zoom-out costs ~30 ms. Wheel zoom, drag pan, double-click reset come from chartjs-plugin-zoom (with a one-week <code>minRange</code>); the crosshair is a 7-line inline plugin, and the tooltip reads all four series from the raw arrays, because after decimation the datasets no longer share an index.",
       npm: "Log scale, gaps and nearest-line hover are native; dimming the other 21 lines is a scriptable <code>borderColor</code> plus an <code>onHover</code> that re-renders. No transforms: the index is computed by hand, and small multiples are seven separate charts sharing one config.",
@@ -119,6 +133,16 @@ mountDemo({
       return () => chart.destroy();
     },
 
+    defaults: unthemed(function defaults(host, { defaults: oil }) {
+      host.style.height = "400px";
+      const chart = new Chart(host.appendChild(document.createElement("canvas")), {
+        type: "line",
+        data: { datasets: oil.keys.map((k) => ({
+          label: k, data: Array.from(oil.cols[k].t, (x, i) => ({ x, y: oil.cols[k].y[i] })) })) },
+        options: { maintainAspectRatio: false, scales: { x: { type: "time" } } },
+      });
+      return () => chart.destroy();
+    }),
     grid(host, { grid }, { theme, report, range }) {
       themed(theme);
       // full resolution: decimation (below) keeps it to ~4 points per pixel column

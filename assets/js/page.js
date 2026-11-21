@@ -18,7 +18,7 @@ import { theme, onThemeChange, installThemeToggle, restoreTheme } from "./theme.
 
 restoreTheme();
 
-export const KEYS = ["hero", "grid", "npm", "life"];
+export const KEYS = ["hero", "defaults", "grid", "npm", "life"];
 
 /* `?chart=<key>` renders one dataset instead of all of them; `&bare=1` also
  * drops the page header and source panel. Together they give an embeddable
@@ -264,8 +264,9 @@ function cardHTML(key, bare = false, meta = {}) {
     </section>`;
   }
   // the hero chart's source is the point of the site, so it is open by
-  // default with its measured line count in the header; the rest disclose.
-  const source = hero
+  // default with its measured line count in the header, as is the defaults
+  // chart's (its brevity is the point); the rest disclose.
+  const source = hero || key === "defaults"
     ? `<div class="src src--open">
          <div class="src__head">source · <b data-lines>—</b> lines</div><pre></pre>
        </div>`
