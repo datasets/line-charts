@@ -144,8 +144,8 @@ mountDemo({
           }],
           ready: [(u) => {
             u.over.append(tip);
-            // pinch / ctrl+wheel zooms around the cursor; horizontal swipe / shift+wheel pans;
-            // a plain vertical wheel still scrolls the page
+            // trackpad pinch / Ctrl+wheel zooms around the cursor; a horizontal swipe pans
+            // (embedded, the page passes on only Ctrl/⌘ wheels); a plain vertical wheel scrolls the page
             u.over.addEventListener("wheel", (e) => {
               const { min, max } = u.scales.x, span = max - min;
               if (e.ctrlKey || e.metaKey) {
@@ -157,6 +157,32 @@ mountDemo({
               } else return;
               e.preventDefault();
             }, { passive: false });
+            // pan: Shift + drag with a mouse (a plain drag is µPlot's own select-to-zoom),
+            // one finger on touch; two fingers pinch-zoom. µPlot has no touch handling.
+            const pts = new Map(), over = u.over;
+            let s0;
+            over.style.touchAction = "pan-y";                              // a vertical swipe still scrolls
+            const rebase = () => (s0 = { min: u.scales.x.min, max: u.scales.x.max, xs: [...pts.values()] });
+            over.addEventListener("pointerdown", (e) => {
+              if (e.pointerType === "mouse" && !e.shiftKey) return;
+              if (e.pointerType === "mouse") e.preventDefault();           // no select box
+              over.setPointerCapture(e.pointerId);
+              pts.set(e.pointerId, e.clientX); rebase();
+            });
+            over.addEventListener("pointermove", (e) => {
+              if (!pts.has(e.pointerId)) return;
+              pts.set(e.pointerId, e.clientX);
+              const xs = [...pts.values()], left = over.getBoundingClientRect().left;
+              const per = (s0.max - s0.min) / over.clientWidth;          // ms per px at the start
+              if (xs.length === 1) return zoomTo(u, s0.min - (xs[0] - s0.xs[0]) * per, s0.max - (xs[0] - s0.xs[0]) * per);
+              const p1 = (per * Math.abs(s0.xs[1] - s0.xs[0])) / Math.max(1, Math.abs(xs[1] - xs[0]));
+              const v = s0.min + ((s0.xs[0] + s0.xs[1]) / 2 - left) * per;  // keep this time under the fingers
+              const lo = v - ((xs[0] + xs[1]) / 2 - left) * p1;
+              zoomTo(u, lo, lo + p1 * over.clientWidth);
+            });
+            const up = (e) => pts.delete(e.pointerId) && rebase();
+            over.addEventListener("pointerup", up);
+            over.addEventListener("pointercancel", up);
           }],
           setCursor: [(u) => {                                 // one tooltip, all four series
             const { left, top, idx } = u.cursor;
