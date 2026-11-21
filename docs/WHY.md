@@ -8,7 +8,7 @@ Much of the data on DataHub is a time series: prices, emissions, energy, populat
 
 The comparisons we found did not answer that. Most list features and stop short of a recommendation. Benchmarks measure speed and nothing else. We could not find a page that put the same real data through each library and said which one to use.
 
-So we made one. The answer is that it depends on the job, and the [picks by job](../index.html#picks) say which library for which.
+So we made one. We have been comparing charting libraries for DataHub for about a decade; this is the 2026 round. The answer is that it depends on the job, and the [picks by job](../index.html#picks) say which library for which.
 
 ## What we chose for DataHub
 
