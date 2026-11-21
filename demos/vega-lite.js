@@ -1,5 +1,5 @@
 import { mountDemo, spreadLabels, viewSwitch } from "../assets/js/page.js";
-import { HERO, GRID, NPM, ink, aggregate, toRows } from "../assets/js/data.js";
+import { HERO, GRID, NPM, ink, aggregate, between, toRows } from "../assets/js/data.js";
 
 /* vega, vega-lite, vega-embed are UMD globals from the <script> tags.
  * A render fn just builds a spec object and calls embed(), which resolves
@@ -107,44 +107,50 @@ mountDemo({
       }, theme);
     },
 
-    grid(host, { grid }, { theme, report }) {
+    grid(host, { grid }, { theme, report, range }) {
       // Vega's dataflow and canvas redraw everything on every zoom frame: full
-      // paints in ~18 s, hourly ~8 s, both unusable to zoom, so the daily means
-      const g = aggregate(grid, "day");
+      // paints in ~18 s, hourly ~8 s, both unusable to zoom. So the daily step,
+      // as a min–max band under the daily mean (the band keeps every extreme);
+      // asked to open on a window, that window's half-hours at full resolution.
+      const g = range ? between(grid, range) : aggregate(grid, "day");
+      const daily = g.step === "day";
       const w = host.clientWidth || 640, h = GRID.height(w);
       const pad = { top: 30, right: 12, bottom: 24, left: 46 };
       const [rule, note] = GRID.events;
       const labels = GRID.series.map((s) => s.label);
       const mw = (v) => `${Math.round(v).toLocaleString("en")} MW`;
-      const x = { field: "t", type: "temporal", title: null, scale: { type: "utc" } };
-      report({ points: g.n * g.keys.length, step: g.step,
-        note: `solar peak drawn ${mw(g.solar.reduce((a, b) => Math.max(a, b)))} of ${mw(GRID.peaks.solar.mw)}` });
+      const x = { field: "t", type: "temporal", title: null, scale: { type: "utc", domain: range } };
+      const y = { type: "quantitative", title: null, scale: { domain: GRID.y.domain } };
+      const color = { field: "series", type: "nominal", title: null, legend: { orient: "top", offset: 6 },
+        scale: { domain: labels, range: GRID.series.map((s) => ink(theme, s.color)) } };
+      report({ points: g.n * g.keys.length * (daily ? 3 : 1), step: range ? "full, this window only" : "day: mean + low–high band",
+        note: `solar peak drawn ${mw(g.max.solar.reduce((a, b) => Math.max(a, b)))} of ${mw(GRID.peaks.solar.mw)}` });
       return embed(host, {
         width: w - pad.left - pad.right, height: h - pad.top - pad.bottom,
         padding: pad, autosize: { type: "none" },
-        // wide rows {t, Gas, Coal, Wind, Solar}: folded long for the lines,
-        // used as-is for the one-row-per-day tooltip
-        data: { values: Array.from(g.t, (t, i) => Object.fromEntries([["t", t],
-          ...GRID.series.map((s) => [s.label, g[s.key][i]])])) },
+        // long rows {t, series, mw, lo, hi}; pivoted wide for the one-row-per-time tooltip
+        data: { values: GRID.series.flatMap((s) => Array.from(g.t, (t, i) =>
+          ({ t, series: s.label, mw: g[s.key][i], lo: g.min[s.key][i], hi: g.max[s.key][i] }))) },
         layer: [
+          ...(daily ? [{ mark: { type: "area", opacity: 0.3, clip: true },   // each day's low to high
+            encoding: { x, y: { ...y, field: "lo" }, y2: { field: "hi" }, color } }] : []),
           {
-            transform: [{ fold: labels, as: ["series", "mw"] }],
             mark: { type: "line", strokeWidth: 1, clip: true },
             encoding: {
               x: { ...x, axis: { grid: false } },
-              y: { field: "mw", type: "quantitative", title: null, scale: { domain: GRID.y.domain },
-                axis: { values: GRID.y.ticks, formatType: fmt("gridY", GRID.y.format) } },
-              color: { field: "series", type: "nominal", title: null, legend: { orient: "top", offset: 6 },
-                scale: { domain: labels, range: GRID.series.map((s) => ink(theme, s.color)) } },
+              y: { ...y, field: "mw", axis: { values: GRID.y.ticks, formatType: fmt("gridY", GRID.y.format) } },
+              color,
             },
             // zoom and pan on x: wheel + drag, double-click resets
             params: [{ name: "zoom", select: { type: "interval", encodings: ["x"] }, bind: "scales" }],
           },
           { // crosshair: a rule per timestamp, shown only at the nearest one
+            transform: [{ pivot: "series", value: "mw", groupby: ["t"] }],
             mark: { type: "rule", stroke: theme.muted, clip: true },
             encoding: {
               x, opacity: { condition: { param: "hover", empty: false, value: 1 }, value: 0 },
-              tooltip: [{ field: "t", type: "temporal", title: "Daily mean", timeUnit: "utcyearmonthdate", format: "%d %b %Y" },
+              tooltip: [daily ? { field: "t", type: "temporal", title: "Daily mean", timeUnit: "utcyearmonthdate", format: "%d %b %Y" }
+                : { field: "t", type: "temporal", title: "UTC", timeUnit: "utcyearmonthdatehoursminutes", format: "%d %b %Y %H:%M" },
                 ...labels.map((field) => ({ field, type: "quantitative", title: `${field} (MW)`, format: ",.0f" }))],
             },
             params: [{ name: "hover", select: { type: "point", encodings: ["x"], nearest: true, on: "pointerover", clear: "pointerout" } }],

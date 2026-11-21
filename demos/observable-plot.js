@@ -1,6 +1,6 @@
 import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.19/+esm";
 import { mountDemo, spreadLabels, viewSwitch } from "../assets/js/page.js";
-import { HERO, GRID, NPM, ink, aggregate } from "../assets/js/data.js";
+import { HERO, GRID, NPM, ink, aggregate, between } from "../assets/js/data.js";
 
 /* One helper: apply the shared theme to every plot via Plot's `style`
  * option and a themed colour range. Everything else is the grammar. */
@@ -88,37 +88,43 @@ mountDemo({
       report({ points: oil.rows.length, step: "full" });
     },
 
-    grid(host, { grid }, { theme, report }) {
-      // SVG paths: full (1.25M points) took 9–13 s to paint, hourly ~5 s,
-      // so Plot draws the shared daily means — and the solar peak flattens
-      const g = aggregate(grid, "day");
+    grid(host, { grid }, { theme, report, range }) {
+      // SVG: full (1.25M points) took 9–13 s to paint, hourly ~5 s. So the
+      // shared daily step, drawn as a min–max band under the daily mean: the
+      // band keeps every half-hour's extreme. Asked to open on a window (Plot
+      // has no zoom), draw that window's half-hours at full resolution instead.
+      const g = range ? between(grid, range) : aggregate(grid, "day");
       const w = host.clientWidth || 640, h = GRID.height(w);
       const I = Array.from({ length: g.n }, (_, i) => i);   // data = row indices,
       const at = (i) => new Date(g.t[i]);                    // channels = the typed arrays
       const fmt = (v) => `${Math.round(v).toLocaleString("en")} MW`;
       const [rule, note] = GRID.events;
+      const daily = g.step === "day";
       host.append(Plot.plot({
         width: w, height: h, marginTop: 14, marginRight: 12, marginBottom: 24, marginLeft: 46,
         style: { background: "transparent", color: theme.text, fontSize: "11px" },
-        x: { type: "utc", label: null },
+        x: { type: "utc", label: null, domain: range?.map((d) => new Date(d)), tickFormat: range ? "%-d %b" : undefined },
         y: { domain: GRID.y.domain, ticks: GRID.y.ticks, tickFormat: GRID.y.format, grid: true, label: null },
         color: { domain: GRID.series.map((s) => s.label),
           range: GRID.series.map((s) => ink(theme, s.color)), legend: true },
         marks: [
+          ...(daily ? GRID.series.map((s) => Plot.areaY(I, { x: g.t, y1: g.min[s.key], y2: g.max[s.key],
+            fill: () => s.label, fillOpacity: 0.3 })) : []),           // each day's low to high
           ...GRID.series.map((s) => Plot.lineY(I, { x: g.t, y: g[s.key], stroke: () => s.label, strokeWidth: 1 })),
-          Plot.ruleX([new Date(rule.date)], { stroke: theme.textSecondary, strokeDasharray: "3 3" }),
+          Plot.ruleX([new Date(rule.date)], { stroke: theme.textSecondary, strokeDasharray: "3 3", clip: true }),
           Plot.text([rule], { x: (d) => new Date(d.date), text: "label", frameAnchor: "top",
-            textAnchor: "end", dx: -4, fill: theme.text, fontSize: 10.5 }),
+            textAnchor: "end", dx: -4, fill: theme.text, fontSize: 10.5, clip: true }),
           Plot.text([note], { x: (d) => new Date(d.date), y: "y", text: "label",
-            textAnchor: "start", fill: theme.text, fontSize: 10.5 }),
+            textAnchor: "start", fill: theme.text, fontSize: 10.5, clip: true }),
           Plot.ruleX(I, Plot.pointerX({ x: g.t, stroke: theme.muted })),   // crosshair
           Plot.tip(I, Plot.pointerX({ x: g.t, y: g.gas, title: (i) =>
-            [at(i).toISOString().slice(0, 10) + " (daily mean)",
-             ...GRID.series.map((s) => `${s.label}  ${fmt(g[s.key][i])}`)].join("\n") })),
+            [daily ? at(i).toISOString().slice(0, 10) + " (mean, low–high)" : at(i).toISOString().slice(0, 16).replace("T", " ") + " UTC",
+             ...GRID.series.map((s) => `${s.label}  ${fmt(g[s.key][i])}` +
+               (daily ? ` (${Math.round(g.min[s.key][i]).toLocaleString("en")}–${fmt(g.max[s.key][i])})` : ""))].join("\n") })),
         ],
       }));
-      report({ points: g.n * g.keys.length, step: g.step,
-        note: `solar peak drawn ${fmt(Math.max(...g.solar))} of ${fmt(GRID.peaks.solar.mw)}` });
+      report({ points: g.n * g.keys.length * (daily ? 3 : 1), step: range ? "full, this window only" : "day: mean + low–high band",
+        note: `solar peak drawn ${fmt(Math.max(...g.max.solar))} of ${fmt(GRID.peaks.solar.mw)}` });
     },
 
     npm(host, { npm }, { theme, report }) {
