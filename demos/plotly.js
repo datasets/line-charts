@@ -127,7 +127,10 @@ mountDemo({
           template: template(theme), width: w, height: h, margin: { t: 34, r: 12, b: 24, l: 46 },
           showlegend: true, legend: { orientation: "h", x: 0, y: 1, yanchor: "bottom", traceorder: "normal" },
           // unified hover searches every point within hoverdistance px: keep it one sample wide
-          hovermode: "x unified", hoverdistance: 1, dragmode: "zoom",
+          hovermode: "x unified", hoverdistance: 1,
+          // on touch any drag mode swallows the swipe that scrolls the page: start with
+          // none there, and the modebar's zoom or pan tool turns dragging on
+          dragmode: matchMedia("(pointer: coarse)").matches ? false : "zoom",
           xaxis: { type: "date", hoverformat: "%a %-d %b %Y, %H:%M UTC", range },
           yaxis: { range: GRID.y.domain, fixedrange: true, tickvals: GRID.y.ticks,
             ticktext: GRID.y.ticks.map(GRID.y.format) },   // zoom x only
