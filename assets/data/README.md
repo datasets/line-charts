@@ -9,7 +9,7 @@ Snapshots used by the demos. Loaders, specs and annotation values are in `assets
 | `gb-grid-halfhourly.csv` | grid | 312,816 | 5.6 MB (2.4 MB gzip) | NESO Historic GB Generation Mix | NESO Open Data Licence |
 | `gb-grid-annual.csv` | grid (label check) | 18 years | 2 KB | annual sums of the same NESO file | NESO Open Data Licence |
 | `npm-chart-libs-weekly.csv` | npm | 611 weeks × 22 | 80 KB | npm download counts API | npm registry terms (factual telemetry) |
-| `life-expectancy.csv` | life | 5 countries × 63 years | 6 KB | v1 snapshot with deliberate gaps, unchanged (source not recorded in the repo) | |
+| `life-expectancy.csv` | life | 300 (5 countries × 63 years, 15 removed) | 5 KB | World Bank WDI `SP.DYN.LE00.IN`, 1960–2022 | CC BY 4.0 |
 
 ## Oil (hero)
 
@@ -33,6 +33,22 @@ Trimmed for the site:
 - Peaks in the half-hourly file: coal 26,044 MW (2009-02-02 17:00), gas 27,868 MW (2024-12-12 08:00), wind 23,880 MW (2026-03-25 13:30), solar 16,289 MW (2026-04-23 12:00).
 
 The host gzips `text/csv` in transit, so 2.4 MB goes over the wire.
+
+## Life expectancy (missing-data side test)
+
+Source: World Bank, World Development Indicators, *Life expectancy at birth, total (years)*, indicator `SP.DYN.LE00.IN` (https://data.worldbank.org/indicator/SP.DYN.LE00.IN), CC BY 4.0, database last updated 2026-11-11. Fetched 2026-11-21 with:
+
+```sh
+curl -L 'https://api.worldbank.org/v2/country/JPN;USA;CHN;IND;NGA/indicator/SP.DYN.LE00.IN?date=1960:2022&format=json&per_page=1000'
+```
+
+Long format `year,country,life_expectancy`, rounded to one decimal; Japan, United States, China, India, Nigeria. The API has a value for every country and year; **15 rows are removed on purpose** so the test has gaps to break at (the loader turns each absent year into an explicit null, for every library alike):
+
+- India 1969, 1980, 1991, 2002, 2013: single missing years, the hardest case to see.
+- Nigeria 1994–1997: a four-year gap.
+- China 1960–1965: a leading gap, so the line simply starts later. It also keeps China's famine-era values (33.4 years in 1960) out of a chart whose shared y-axis starts at 35.
+
+Attribution: "Source: World Bank, World Development Indicators (CC BY 4.0)". The previous file (v1) had the same gaps but no recorded source; it was replaced on 2026-11-21.
 
 ## npm
 

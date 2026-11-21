@@ -214,7 +214,7 @@ export async function loadNpm() {
 }
 
 /* ================================================================ *
- * life: the missing-data side test (unchanged)                     *
+ * life: the missing-data side test (World Bank)                    *
  * ================================================================ */
 
 export async function loadLife() {
@@ -438,7 +438,7 @@ export const DATASETS = {
   life: {
     label: "Missing data",
     title: "Life expectancy at birth",
-    desc: "Five countries, 1960–2022, with deliberate missing years.",
+    desc: "World Bank life expectancy at birth, five countries, 1960–2022, with years removed on purpose to make gaps: India 1969, 1980, 1991, 2002 and 2013 (one-year gaps), Nigeria 1994–1997 (a four-year gap) and China 1960–1965 (a leading gap, which also keeps China's famine-era low of 33 years below the shared y floor). Japan and the US are complete.",
     stress: "Gap handling (does the line break or bridge?), wide value range, COVID dip.",
     requirements: [
       "A null year breaks the line; it must not be bridged",
