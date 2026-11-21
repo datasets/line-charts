@@ -236,6 +236,9 @@ function shell(meta, keys, bare) {
       ${meta.license ? `&nbsp;·&nbsp; ${meta.license}` : ""}
     </p>
     ${meta.notes ? `<p style="margin:8px 0 0;font-size:12.5px;color:var(--text-secondary);max-width:75ch">${meta.notes}</p>` : ""}
+    <p style="margin:8px 0 0;font-size:12.5px;color:var(--text-muted);max-width:75ch">
+      "Rendered in" on each card is a single run in your browser; our measured medians are on
+      <a href="../method#how-timings-are-measured">the method page</a>.</p>
   </header>
   <main class="wrap" style="padding-bottom:60px">
     <div style="display:grid;gap:22px;margin-top:18px">
