@@ -10,13 +10,13 @@ One run each at 900 px, light theme, same machine.
 
 | Library | Oil: lines / ms | Grid: lines / ms | Grid step | Solar peak drawn | npm: lines / ms |
 |---|---|---|---|---|---|
-| D3 | 60 / 52 | 98 / 173 | full | 16,289 MW | 100 / 71 |
-| Observable Plot | 44 / 120 | 32 / 343 | day | 5,444 MW | 77 / 205 |
-| Vega-Lite | 53 / 128 | 51 / 461 | day | 5,444 MW | 81 / 757 |
-| Plotly.js | 49 / 126 | 44 / 1,695 | full (WebGL) | 16,289 MW | 81 / 104 |
+| D3 | 60 / 52 | 100 / 173 | full | 16,289 MW | 100 / 71 |
+| Observable Plot | 44 / 120 | 38 / 508–716 | day, mean + low–high band | 16,289 MW | 77 / 205 |
+| Vega-Lite | 53 / 128 | 57 / 254–441 | day, mean + low–high band | 16,289 MW | 81 / 757 |
+| Plotly.js | 49 / 126 | 45 / 1,695 | full (WebGL) | 16,289 MW | 83 / 104 |
 | Chart.js | 70 / 94 | 67 / 236 | full + min-max | 16,289 MW | 96 / 173 |
-| Apache ECharts | 51 / 121 | 48 / 163 | full + minmax | 16,289 MW | 85 / 99 |
-| µPlot | 65 / 19 | 79 / 44 | full | 16,289 MW | 85 / 37 |
+| Apache ECharts | 51 / 121 | 49 / 163 | full + minmax | 16,289 MW | 85 / 99 |
+| µPlot | 65 / 19 | 106 / 44 | full | 16,289 MW | 85 / 37 |
 
 Grid zoom and pan with the one-week floor:
 
@@ -25,10 +25,10 @@ Grid zoom and pan with the one-week floor:
 | D3 | `d3.zoom`, ~10 lines | yes (`scaleExtent`) | by hand, `bisectCenter` |
 | Observable Plot | none | n/a | native (`pointerX` + `tip`) |
 | Vega-Lite | native, one param | no: Vega-Lite has no constraint on bound scales | native |
-| Plotly.js | native | by hand, 4 lines | native, after tuning `hoverdistance` |
+| Plotly.js | native (pan via the modebar's pan tool) | by hand, a short handler | native, after tuning `hoverdistance` |
 | Chart.js | zoom plugin | yes (`limits.x.minRange`) | partly by hand |
 | Apache ECharts | native `dataZoom` | yes (`minValueSpan`) | native, with a formatter fix |
-| µPlot | drag-zoom native; wheel and pan by hand | by hand, ~10 lines | crosshair native, tooltip by hand |
+| µPlot | drag-zoom native; wheel, pinch and pan (Shift + drag, touch) by hand | by hand, ~10 lines | crosshair native, tooltip by hand |
 
 ## D3 (7.9.2)
 
@@ -50,7 +50,7 @@ The reference implementation, written first. One helper (`base`) is used only by
 
 **Oil, 44 lines, all requirements met.** Every piece of furniture is a mark: `rect` bands with no y span the frame, `ruleY` for zero, and `link` + `dot` + `text` per callout. Text anchors are options, not channels, so each callout's text is its own mark (a `.map()` over the shown callouts). End labels are de-collided by hand with `spreadLabels` in data units. A `tip` with `pointerX` adds the optional tooltip in two lines.
 
-**Grid, 32 lines, daily step, no zoom or pan.** Plot draws static SVG. Its pointer gives a crosshair (`ruleX` + `pointerX`) and a tooltip with all four series, but there is no zoom or pan, so requirement 2 is not met. Full resolution took 9–13 s to paint and hourly about 5 s, so it ships daily means in about 0.3 s, which flattens the solar peak to 5,444 MW of a true 16,289. The data is passed as row indices with the typed arrays as channels, so no row objects are built.
+**Grid, 38 lines, daily step as a band, no zoom or pan.** Plot draws static SVG. Its pointer gives a crosshair (`ruleX` + `pointerX`) and a tooltip with all four series, but there is no zoom or pan, so requirement 2 is not met. Full resolution took 9–13 s to paint and hourly about 5 s, so it ships the daily step: each day's mean as a `lineY`, over an `areaY` from that day's lowest to highest half-hour (`y1`/`y2` from the shared aggregate's min and max). That paints in 0.5–0.7 s and keeps the true solar peak, 16,289 MW (the mean line alone, as first built, drew 5,444 in about 0.3 s). Opened on a window, as the front page does, it draws that window's half-hours at full resolution instead. The data is passed as row indices with the typed arrays as channels, so no row objects are built.
 
 **npm, 77 lines.** The library does most of it: `type: "log"` with spec ticks, `normalizeY` with a custom basis (the index week's value ÷ 100) for the indexed view, and `fx`/`fy` facets for the small multiples. Hover highlighting a whole line is not built in: Plot gives you the pointed datum (`plot.value`) and about 12 lines of DOM work restyle the paths.
 
@@ -66,9 +66,9 @@ Specs are rendered as SVG (canvas for the grid) through an `embed()` wrapper tha
 
 One trap: putting the shared x scale (with an explicit domain) on the band layer that also has `x2` gave `WARN Conflicting scale property "domain"`. Moving the same definition to the line layer fixed it. A beginner would not know why.
 
-**Grid, 51 lines, daily step.** Interactivity is two params and no event code: `{select: {type: "interval", encodings: ["x"]}, bind: "scales"}` gives wheel zoom, drag pan and double-click reset, and a `point` param with `nearest: true` drives a crosshair rule with one tooltip for all four series. There is no minimum zoom span on bound scales; enforcing one would mean dropping to Vega signals, so the one-week floor is not met.
+**Grid, 57 lines, daily step as a band.** Interactivity is two params and no event code: `{select: {type: "interval", encodings: ["x"]}, bind: "scales"}` gives wheel zoom, drag pan and double-click reset, and a `point` param with `nearest: true` drives a crosshair rule with one tooltip for all four series. There is no minimum zoom span on bound scales; enforcing one would mean dropping to Vega signals, so the one-week floor is not met.
 
-Scale is where it hurts. Ladder timings at 1,100 px: full 17.8 s (twice), hourly 7.1 and 8.8 s, daily 348–443 ms. Without the crosshair layer, full paints in 3.7 s and hourly in 1.8 s, so the nearest-point crosshair (a tuple and a Voronoi cell per timestamp) is most of the cost. Even lines-only at the hourly step, each zoom frame took about 0.9 s, because Vega re-runs the dataflow and redraws every path. At the daily step zoom is about 0.2 s a frame: usable, not smooth. Vega's `sample` transform is random reservoir sampling, not LTTB or min/max, so it is not a fair way down. Solar peak drawn at daily: 5,444 MW.
+Scale is where it hurts. Ladder timings at 1,100 px: full 17.8 s (twice), hourly 7.1 and 8.8 s, daily 348–443 ms. Without the crosshair layer, full paints in 3.7 s and hourly in 1.8 s, so the nearest-point crosshair (a tuple and a Voronoi cell per timestamp) is most of the cost. Even lines-only at the hourly step, each zoom frame took about 0.9 s, because Vega re-runs the dataflow and redraws every path. At the daily step zoom is about 0.2 s a frame: usable, not smooth. Vega's `sample` transform is random reservoir sampling, not LTTB or min/max, so it is not a fair way down. So it ships the daily step, drawn as each day's mean (a `line`) over an `area` from its lowest to highest half-hour (`y`/`y2`): 0.25–0.45 s, and the solar peak drawn is the true 16,289 MW (a mean line alone drew 5,444). The long rows are pivoted back to one row per day for the tooltip. Opened on a window, as the front page does, it loads only that window, at full resolution.
 
 **npm, 81 lines, 538–672 ms.** Whole-line hover highlight is native: a `point` param with `fields: ["package"]` and `nearest: true` on an invisible point layer, and conditional opacity and width on the lines. Selecting by field is what turns "nearest point" into "whole line". The indexed view uses Vega-Lite's own transforms (`filter`, `window` with `first_value`, `calculate`); small multiples are a `facet` with `columns`. One gap: a hovered grey line stays grey, where Plot and others darken it.
 
@@ -82,19 +82,19 @@ Uses `plotly.js-dist-min`, 4.84 MB minified, 1.48 MB gzipped (measured). A parti
 
 **Oil, 49 lines, 104–141 ms.** This is the chart Plotly's annotation model was built for. One annotation per callout: `x,y` is the data point, `ax,ay` with `axref`/`ayref` set to the axes is the text anchor in data units, the spec's `valign` values are Plotly's `yanchor` values as they stand, and `arrowhead: 6` (a round head) is the dot. Bands are `shapes` with `layer: "below"`; the zero rule is the axis's own `zeroline`. End labels need `spreadLabels`, since annotations are not de-collided. `hovermode: "x unified"` gives a crosshair and tooltip free.
 
-**Grid, 44 lines, full resolution in WebGL.** Switching the trace type to `scattergl` takes all 1,251,264 points from impossible to 1.2–2.2 s to first paint, no decimation, solar peak 16,289 MW. Zoom, pan, reset and spike lines are configuration. Plotly has range bounds (`minallowed`/`maxallowed`) but no minimum span, so a 4-line `plotly_relayout` handler enforces the week.
+**Grid, 45 lines, full resolution in WebGL.** Switching the trace type to `scattergl` takes all 1,251,264 points from impossible to 1.2–2.2 s to first paint, no decimation, solar peak 16,289 MW. Zoom, pan, reset and spike lines are configuration. Plotly has range bounds (`minallowed`/`maxallowed`) but no minimum span, so a short `plotly_relayout` handler enforces the week. It has to read the axis range in both forms Plotly keeps it (epoch ms as given, UTC strings after a zoom): reading only strings sent the relayout into a loop when the chart opened on a window and you picked the pan tool. Drag zooms by default; pan is the modebar's pan tool.
 
 The finding a Plotly user should know: with default settings the unified tooltip took 1.0–1.8 s per mouse move at full resolution. Profiling put almost all of it in the bundled point-cluster quadtree's range query, because `x unified` asks for every point in a box `hoverdistance` px wide (default 20) by the full plot height, which at full zoom-out is about 6,000 half-hours × 4 series. Setting `hoverdistance: 1`, and widening it to one sample's width when zoomed in, brings it to 72–184 ms. The defaults give a chart that paints fast and hovers slowly.
 
-**npm, 82 lines, typically 60–150 ms.** `hovermode: "closest"` gives the nearest-line tooltip natively; whole-line highlight is a `plotly_hover` → `Plotly.restyle` with per-trace arrays (~10 lines). Plotly removed `transforms` in v3, so the index is a `.slice().map()`. Small multiples use `layout.grid` with `matches` on axes 2–7, and building `xaxisN`/`yaxisN` keys in a loop is the verbose part (~15 lines).
+**npm, 83 lines, typically 60–150 ms.** `hovermode: "closest"` gives the nearest-line tooltip natively; whole-line highlight is a `plotly_hover` → `Plotly.restyle` with per-trace arrays (~10 lines). Plotly removed `transforms` in v3, so the index is a `.slice().map()`. Small multiples use `layout.grid` with `matches` on axes 2–7, and building `xaxisN`/`yaxisN` keys in a loop is the verbose part (~15 lines).
 
-**Fought back.** Annotations count toward autorange (the npm x axis stretched to 2028 until pinned). No annotation collision avoidance. A `tickvals` without matching `ticktext` mislabels the axis with no warning.
+**Fought back.** The view switcher first drew only the first view: `drawn ??= newPlot(...)` skipped the render on every later switch, so Indexed and Small multiples came up blank, until fixed. Annotations count toward autorange (the npm x axis stretched to 2028 until pinned). No annotation collision avoidance. A `tickvals` without matching `ticktext` mislabels the axis with no warning.
 
 **A pleasure.** Callouts as single objects, typed arrays straight in, and WebGL behind one word.
 
 ## Chart.js (4.6.1)
 
-The page loads five extra scripts: chartjs-plugin-annotation 3.1.0, chartjs-plugin-zoom 2.2.0 with hammerjs 2.0.8, and luxon 3.7.2 with chartjs-adapter-luxon 1.3.1 (the luxon adapter, because it takes `zone: "UTC"`). Decimation is built into core. A `themed()` function sets eight `Chart.defaults` values and is not counted.
+The page loads five extra scripts: chartjs-plugin-annotation 3.1.0 for the editorial furniture, chartjs-plugin-zoom 2.2.0 with hammerjs 2.0.8 for zoom and pan, and luxon 3.7.2 with chartjs-adapter-luxon 1.3.1 for the time axis (the luxon adapter, because it takes `zone: "UTC"`). Decimation needs none of them: it is built into core. A `themed()` function sets eight `Chart.defaults` values and is not counted.
 
 **Oil, 70 lines, 77–101 ms.** The annotation plugin's model matched the spec almost one to one: each callout is a `point`, a `line` and a multi-line `label`, and the spec's anchor and valign map straight onto the label's `position` and `textAlign`. Bands are `box` annotations with `drawTime: "beforeDatasetsDraw"`. End labels are `label` annotations placed with `spreadLabels`; they need `clip: false`. Exact tick lists need an `afterBuildTicks` hook, because Chart.js has no `ticks: [...]` option. Dataset 0 draws on top, so the series list is reversed.
 
@@ -130,7 +130,7 @@ About 6 lines of tooltip CSS in the page are used by the grid and npm charts and
 
 **Oil, 65 lines, 21–37 ms.** All six met, by hand. µPlot has no annotation model, so bands, the zero rule, leaders, dots, callout text and end labels are canvas calls in its hooks, in device pixels (× `uPlot.pxRatio` everywhere), with multi-line text written line by line. Of the 65 lines, about 45 are that editorial layer and about 20 are the chart. The hook order (`drawClear` → grid → `drawAxes` → series → `draw`) maps exactly onto "behind, reference, on top". No tooltip: µPlot's readout is its legend, which the spec forbids here.
 
-**Grid, 80 lines, full resolution, 46–69 ms.** All 1,251,264 points as typed arrays (`ms: 1` and `tzDate` handle epoch-ms UTC). The `linear` path builder keeps the min and max of each pixel column, so the solar peak drawn is the true 16,289 MW. A full redraw on zoom takes about 20 ms. Drag-select zoom, double-click reset and a snapping crosshair are built in. The one-week floor needs `drag.setScale: false` plus a clamped `setSelect` hook (~10 lines). Wheel zoom and pan are not in core (µPlot's demos ship them as a plugin), so about 12 lines add pinch/ctrl-wheel zoom and swipe/shift-wheel pan, leaving the plain wheel to scroll the page. The four-series tooltip is a ~9-line `setCursor` hook.
+**Grid, 106 lines, full resolution, 46–69 ms.** All 1,251,264 points as typed arrays (`ms: 1` and `tzDate` handle epoch-ms UTC). The `linear` path builder keeps the min and max of each pixel column, so the solar peak drawn is the true 16,289 MW. A full redraw on zoom takes about 20 ms. Drag-select zoom, double-click reset and a snapping crosshair are built in. The one-week floor needs `drag.setScale: false` plus a clamped `setSelect` hook (~10 lines). Wheel zoom and pan are not in core (µPlot's demos ship them as a plugin), and µPlot has no touch handling at all. About 12 lines add trackpad-pinch/Ctrl-wheel zoom and horizontal-swipe pan, leaving the plain wheel to scroll the page. That swipe never reaches a chart embedded in the front page, which passes on only Ctrl/⌘ wheels so the page still scrolls, so about 25 more lines of pointer events add Shift + drag to pan with a mouse (a plain drag stays µPlot's select-to-zoom), one-finger pan and two-finger pinch on touch. The four-series tooltip is a ~9-line `setCursor` hook.
 
 **npm, 85 lines, 30–56 ms.** Highlight-one-of-many is native: `cursor.focus.prox` with `focus.alpha` dims all but the nearest series. Focus resets each series' alpha, so the translucent greys need their transparency baked into the colour. The index is one line by hand. Small multiples are seven instances in a CSS grid, and `cursor.sync` makes hovering one show the same week in all seven, in one line. On a log axis µPlot passes `null` for crowded tick labels, which printed "null" until a `filter` kept every tick.
 
@@ -140,10 +140,10 @@ About 6 lines of tooltip CSS in the page are used by the grid and npm charts and
 
 ## Cross-cutting findings
 
-- **The grid separates the libraries by rendering pipeline, not by API.** Five drew every point: D3 (via canvas), Chart.js, ECharts and µPlot on canvas, Plotly in WebGL. The two grammars stepped down to daily means and lost two-thirds of the solar peak: Plot because it draws SVG, Vega-Lite because every point is a tuple in its dataflow, even on its canvas renderer.
+- **The grid separates the libraries by rendering pipeline, not by API.** Five drew every point: D3 (via canvas), Chart.js, ECharts and µPlot on canvas, Plotly in WebGL. The two grammars stepped down to the daily step: Plot because it draws SVG, Vega-Lite because every point is a tuple in its dataflow, even on its canvas renderer. Drawn as a mean line alone that lost two-thirds of the solar peak; drawn as a daily low-to-high band under the mean, as they now are, it keeps it, and loses only the detail inside each day.
 - **Paint time is not interactivity.** ECharts without sampling and Plotly with its default hover both paint quickly and then respond slowly. The fix in both is one setting a user finds only by measuring.
 - **Downsampling and tooltips interact.** In Chart.js and ECharts, per-series decimation leaves series on different timestamps and the stock multi-series tooltip quietly shows the wrong thing. Both needed a formatter that reads the raw data.
-- **Min/max keeps peaks; means and LTTB don't guarantee them.** Chart.js `min-max`, ECharts `minmax` and µPlot's path builder drew 16,289 MW. Daily means drew 5,444; ECharts' `lttb` 16,095; its `average` 5,310.
+- **Min/max keeps peaks; means and LTTB don't guarantee them.** Chart.js `min-max`, ECharts `minmax` and µPlot's path builder drew 16,289 MW. A daily min-max band drew 16,289 too; daily means alone drew 5,444; ECharts' `lttb` 16,095; its `average` 5,310.
 - **End-label collision is solved by one library.** ECharts' `labelLayout` is the only native de-collision; the other six use the shared 13-line `spreadLabels`.
 - **Callout models vary more than anything else.** Plotly and the Chart.js annotation plugin take the spec's callout almost as written; Plot and Vega-Lite compose it from marks; D3 and µPlot draw it.
 - **A one-week zoom floor is surprisingly rare.** Native in Chart.js (plugin) and ECharts; a few lines in D3, Plotly and µPlot; impossible in plain Vega-Lite; not applicable in Plot.

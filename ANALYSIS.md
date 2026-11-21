@@ -84,7 +84,7 @@ The number on each card is the line count of that chart's render function as dis
 Excluded for everyone:
 
 - The spec constants (`HERO`, `GRID`, `NPM`), which are data.
-- Shared, library-agnostic helpers in `assets/js/`, which any library may call without penalty: `spreadLabels` (13 lines of end-label de-collision, used by six of the seven; ECharts lays out its own end labels), `viewSwitch` (the npm view toggle), `aggregate` and `toRows` (the grid ladder), and `ink` (resolves a palette slot or theme token).
+- Shared, library-agnostic helpers in `assets/js/`, which any library may call without penalty: `spreadLabels` (13 lines of end-label de-collision, used by six of the seven; ECharts lays out its own end labels), `viewSwitch` (the npm view toggle), `aggregate` and `toRows` (the grid ladder), `between` (the full-resolution rows inside a window, used by Plot and Vega-Lite when the front page opens them on two weeks), and `ink` (resolves a palette slot or theme token).
 - Card titles and descriptions, which are HTML.
 
 Library-specific theme helpers sit outside the render functions and are not counted either. They do the job Plot's one-line `style` option does, so they are disclosed here rather than added:
@@ -100,14 +100,14 @@ D3's three render functions are standalone: scales, axes, gridlines and interact
 | Library | Oil | Grid | npm |
 |---|---|---|---|
 | D3 | 60 | 100 | 100 |
-| Observable Plot | 44 | 32 | 77 |
-| Vega-Lite | 53 | 51 | 81 |
-| Plotly.js | 49 | 44 | 82 |
+| Observable Plot | 44 | 38 | 77 |
+| Vega-Lite | 53 | 57 | 81 |
+| Plotly.js | 49 | 45 | 83 |
 | Chart.js | 70 | 67 | 96 |
 | Apache ECharts | 51 | 49 | 85 |
-| µPlot | 65 | 80 | 85 |
+| µPlot | 65 | 106 | 85 |
 
-Read a line count together with the requirements it meets. Plot's 32-line grid has no zoom or pan and draws daily means; D3's 98 draws every point with zoom, pan and a crosshair.
+Read a line count together with the requirements it meets. Plot's 38-line grid has no zoom or pan and draws one value per day (a mean line over a low-to-high band); D3's 100 draws every point with zoom, pan and a crosshair; µPlot's 106 is mostly the pan and touch handling it does not have.
 
 ## How timings are measured
 
@@ -119,9 +119,9 @@ Bundle sizes on the demo pages were measured on 21 November 2026: gzip of the pi
 
 ## The decimation ladder
 
-The grid test gives every library the same ladder: try all 1,251,264 points; if first paint takes more than about 3 s or the page locks up, step down to hourly means (625,632 points), then daily means (26,068). The shared `aggregate()` builds each step, so every library that steps down draws the same buckets. A library may use its own downsampling at the full step (Chart.js's decimation plugin, ECharts' `sampling`) and must say which.
+The grid test gives every library the same ladder: try all 1,251,264 points; if first paint takes more than about 3 s or the page locks up, step down to hourly means (625,632 points), then daily (26,068). The shared `aggregate()` builds each step, with each bucket's mean, minimum and maximum, so every library that steps down draws the same buckets. A library may use its own downsampling at the full step (Chart.js's decimation plugin, ECharts' `sampling`) and must say which.
 
-Which step a library ships is part of the finding, not a footnote, because decimation changes what the reader sees. Daily means flatten the solar peak from 16,289 MW to 5,444 MW: a chart that paints in 0.3 s but tells you solar never passed 5.5 GW. So every library reports the solar peak it actually drew. Per-pixel min/max methods (Chart.js `min-max`, ECharts `minmax`, µPlot's line builder) keep the true peak; averaging does not.
+Which step a library ships is part of the finding, not a footnote, because decimation changes what the reader sees. A daily-mean line flattens the solar peak from 16,289 MW to 5,444 MW: a chart that tells you solar never passed 5.5 GW. So every library reports the solar peak it actually drew. Per-pixel min/max methods (Chart.js `min-max`, ECharts `minmax`, µPlot's line builder) keep the true peak, and so does a daily step drawn as an envelope: Plot and Vega-Lite draw each day's mean over a band from its minimum to its maximum, which shows 16,289 MW. What a daily step cannot give back is the half-hours inside a day when you zoom in.
 
 ## What the September version got wrong
 
