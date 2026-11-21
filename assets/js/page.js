@@ -32,7 +32,8 @@ function viewOptions() {
   const day = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") ? Date.parse(s + "T00:00:00Z") : NaN);
   const [from, to] = [day(p.get("from")), day(p.get("to"))];
   return {
-    keys: KEYS.includes(only) ? [only] : KEYS,
+    // an unknown chart key draws nothing, never every chart (a stale embed would otherwise show four)
+    keys: only == null ? KEYS : KEYS.includes(only) ? [only] : [],
     bare: p.get("bare") === "1",
     range: from < to ? [from, to] : null,
   };
