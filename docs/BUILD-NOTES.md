@@ -13,7 +13,7 @@ One run each at 900 px, light theme, same machine.
 | D3 | 60 / 52 | 100 / 173 | full | 16,289 MW | 100 / 71 |
 | Observable Plot | 44 / 120 | 38 / 508–716 | day, mean + low–high band | 16,289 MW | 77 / 205 |
 | Vega-Lite | 53 / 128 | 57 / 254–441 | day, mean + low–high band | 16,289 MW | 81 / 757 |
-| Plotly.js | 49 / 126 | 45 / 1,695 | full (WebGL) | 16,289 MW | 83 / 104 |
+| Plotly.js | 49 / 126 | 48 / 1,695 | full (WebGL) | 16,289 MW | 83 / 104 |
 | Chart.js | 70 / 94 | 67 / 236 | full + min-max | 16,289 MW | 96 / 173 |
 | Apache ECharts | 51 / 121 | 49 / 163 | full + minmax | 16,289 MW | 85 / 99 |
 | µPlot | 65 / 19 | 106 / 44 | full | 16,289 MW | 85 / 37 |
@@ -82,7 +82,7 @@ Uses `plotly.js-dist-min`, 4.84 MB minified, 1.48 MB gzipped (measured). A parti
 
 **Oil, 49 lines, 104–141 ms.** This is the chart Plotly's annotation model was built for. One annotation per callout: `x,y` is the data point, `ax,ay` with `axref`/`ayref` set to the axes is the text anchor in data units, the spec's `valign` values are Plotly's `yanchor` values as they stand, and `arrowhead: 6` (a round head) is the dot. Bands are `shapes` with `layer: "below"`; the zero rule is the axis's own `zeroline`. End labels need `spreadLabels`, since annotations are not de-collided. `hovermode: "x unified"` gives a crosshair and tooltip free.
 
-**Grid, 45 lines, full resolution in WebGL.** Switching the trace type to `scattergl` takes all 1,251,264 points from impossible to 1.2–2.2 s to first paint, no decimation, solar peak 16,289 MW. Zoom, pan, reset and spike lines are configuration. Plotly has range bounds (`minallowed`/`maxallowed`) but no minimum span, so a short `plotly_relayout` handler enforces the week. It has to read the axis range in both forms Plotly keeps it (epoch ms as given, UTC strings after a zoom): reading only strings sent the relayout into a loop when the chart opened on a window and you picked the pan tool. Drag zooms by default; pan is the modebar's pan tool.
+**Grid, 48 lines, full resolution in WebGL.** Switching the trace type to `scattergl` takes all 1,251,264 points from impossible to 1.2–2.2 s to first paint, no decimation, solar peak 16,289 MW. Zoom, pan, reset and spike lines are configuration. Plotly has range bounds (`minallowed`/`maxallowed`) but no minimum span, so a short `plotly_relayout` handler enforces the week. It has to read the axis range in both forms Plotly keeps it (epoch ms as given, UTC strings after a zoom): reading only strings sent the relayout into a loop when the chart opened on a window and you picked the pan tool. Drag zooms by default; pan is the modebar's pan tool. On touch, any drag mode makes Plotly cancel the swipe that would scroll the page, so on a coarse pointer it starts with `dragmode: false` and the modebar turns dragging on.
 
 The finding a Plotly user should know: with default settings the unified tooltip took 1.0–1.8 s per mouse move at full resolution. Profiling put almost all of it in the bundled point-cluster quadtree's range query, because `x unified` asks for every point in a box `hoverdistance` px wide (default 20) by the full plot height, which at full zoom-out is about 6,000 half-hours × 4 series. Setting `hoverdistance: 1`, and widening it to one sample's width when zoomed in, brings it to 72–184 ms. The defaults give a chart that paints fast and hovers slowly.
 

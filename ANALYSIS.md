@@ -102,7 +102,7 @@ D3's three render functions are standalone: scales, axes, gridlines and interact
 | D3 | 60 | 100 | 100 |
 | Observable Plot | 44 | 38 | 77 |
 | Vega-Lite | 53 | 57 | 81 |
-| Plotly.js | 49 | 45 | 83 |
+| Plotly.js | 49 | 48 | 83 |
 | Chart.js | 70 | 67 | 96 |
 | Apache ECharts | 51 | 49 | 85 |
 | µPlot | 65 | 106 | 85 |
