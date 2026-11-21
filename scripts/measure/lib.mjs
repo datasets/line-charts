@@ -23,8 +23,9 @@ export function serve() {
     if (!p.startsWith(ROOT)) { res.writeHead(403).end(); return; }
     try {
       let st = await fs.stat(p).catch(() => null);
-      if (st?.isDirectory()) { p = path.join(p, "index.html"); st = await fs.stat(p).catch(() => null); }
-      if (!st) { p += ".html"; st = await fs.stat(p); }
+      const base = p;
+      if (st?.isDirectory()) { p = path.join(base, "index.html"); st = await fs.stat(p).catch(() => null); }
+      if (!st) { p = base.replace(/\/$/, "") + ".html"; st = await fs.stat(p); }
       res.writeHead(200, { "content-type": TYPES[path.extname(p)] || "application/octet-stream", "cache-control": "no-store" });
       res.end(await fs.readFile(p));
     } catch { res.writeHead(404).end("not found"); }
