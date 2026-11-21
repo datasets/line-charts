@@ -14,10 +14,13 @@ const PAGES = { "EVALUATION.md": "./verdict", "ANALYSIS.md": "./method", "docs/B
 const slugify = (s) =>
   s.toLowerCase().replace(/[`*_]/g, "").replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(/\s+/g, "-");
 
-/** Rewrite a repo-relative link found in `docPath` to its site page or GitHub URL. */
+/** Rewrite a repo-relative link found in `docPath` to its site page or GitHub URL;
+ * a site-relative page link stays on the site. */
 function rewriteHref(href, docPath) {
   if (!href || /^([a-z][a-z0-9+.-]*:|#|\/\/)/i.test(href)) return href;
   const [pathPart, hash = ""] = href.split("#");
+  // an extensionless link (./method, ./demos/d3) is a site page: leave it as written
+  if (pathPart && !pathPart.endsWith("/") && !/\.[a-z0-9]+$/i.test(pathPart)) return href;
   const base = new URL(docPath, "https://x.invalid/");
   const path = decodeURIComponent(new URL(pathPart, base).pathname.slice(1));
   const frag = hash ? "#" + hash : "";
