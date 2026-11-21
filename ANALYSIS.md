@@ -29,7 +29,7 @@ GB electricity generation by fuel, every half hour since 2009: 312,816 half-hour
 2. Zoom and pan (wheel + drag), down to one week, with a reset.
 3. Crosshair with one tooltip listing all four series at the nearest timestamp.
 4. Decimation honesty: does the solar peak survive at full zoom-out (true peak 16,289 MW)?
-5. Event markers: a rule at "Ratcliffe, last coal plant, closes 30 Sep 2024" and the "2012: coal 42%" label.
+5. Event markers: a rule at "Last coal plant, Sep 2024" (Ratcliffe closing on 30 Sep 2024) and the "2012: coal 42%" label.
 6. Time to first paint on the card (the badge waits for the frame).
 
 ### npm: the many-series chart
