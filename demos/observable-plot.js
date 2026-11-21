@@ -38,7 +38,7 @@ mountDemo({
       "<code>Plot.plot()</code> returns a detached SVG/figure node — you append it yourself. Mark order is z-order, so bands go first. Everything is SVG, which is why the half-hourly grid is the one test where Plot has to step down.",
     cardNotes: {
       hero: "All furniture is marks: <code>rect</code> bands with no y span the frame, <code>ruleY</code> for zero, <code>link</code> + <code>dot</code> + <code>text</code> per callout. Text anchors are options, not channels, so each callout's text is its own mark; end labels are de-collided by hand (<code>spreadLabels</code>).",
-      grid: "No zoom or pan: Plot draws static SVG, and its pointer gives a crosshair and tooltip only. Full resolution (1.25M points) took 9–13 s to paint, hourly 4.7–5.1 s; the daily step takes ~0.3 s but flattens the solar peak to 5,444 MW of a true 16,289.",
+      grid: "No zoom or pan: Plot draws static SVG, and its pointer gives a crosshair and tooltip only. Full resolution (1.25M points) took 9–13 s to paint, hourly 4.7–5.1 s, so it draws the daily step: each day's mean as a line over an <code>areaY</code> band from that day's lowest to highest half-hour (0.5–0.7 s). The band keeps the true solar peak, 16,289 MW; a mean line alone shows 5,444.",
       npm: "<code>normalizeY</code> with a custom basis does the index, <code>fx</code>/<code>fy</code> facets do the small multiples, log ticks are free. Highlighting a whole line on hover is not built in: about a dozen lines of DOM work on <code>plot.value</code>.",
     },
   },

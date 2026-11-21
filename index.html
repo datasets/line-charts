@@ -177,6 +177,7 @@
     <section aria-labelledby="ranking-h">
       <h2 class="eyebrow" id="ranking-h">The ranking</h2>
       <ol class="ranking" id="ranking"></ol>
+      <p class="hint">Weighed for DataHub, in this order: what the library does natively rather than by hand, interaction on the dense chart, keeping the true extremes in dense data, the default look, then bundle size. Line counts are colour, never a criterion.</p>
     </section>
     <aside class="aside">
       <p>Ranked for someone choosing one library in 2026 for a website or an app, with no framework constraint. Tested on real data: forty years of oil prices, Britain's grid every half hour since 2009, and a decade of npm downloads.</p>
@@ -198,14 +199,13 @@
     <div class="stage">
       <iframe id="stage" title="Apache ECharts drawing Britain's grid, every half hour since 2009" scrolling="no"></iframe>
       <div class="stage__foot">
-        <p class="caption">Britain's grid, every half hour since 2009: 1,251,264 points loaded, and every pixel keeps its true high and low. Two weeks are shown; the slider and Ctrl/⌘ + scroll take you back to January 2009. Coal peaked at 42% of generation in 2012; the last coal ran on 30 September 2024.</p>
-        <p class="hint" data-hint>Ctrl/⌘ + scroll or pinch to zoom, drag to pan, drag the slider, double-click or the restore button to reset. Zoomed out, each pixel holds six days and solar becomes a solid band: that is the data, not a bug.</p>
+        <p class="caption"><span data-stage-caption></span> Coal was 42% of generation in 2012, its highest year here; Ratcliffe, Britain's last coal plant, closed on 30 September 2024.</p>
+        <p class="hint" data-hint></p>
       </div>
     </div>
     <div class="switch">
       <span class="switch__label">Same chart, same data, other library:</span>
       <span class="switch__opts" role="group" aria-label="Library drawing the chart above" id="switch"></span>
-      <span class="switch__note">(Plot and Vega-Lite draw daily means; Plot has no zoom.)</span>
     </div>
   </section>
 
@@ -261,13 +261,13 @@
       <details><summary>Was this built by AI?</summary>
         <p>Yes, by AI coding agents under our direction, each library by a separate agent working from one shared brief and a Plot reference. We reviewed every chart against the requirements, re-measured the numbers, and the source is under every chart so you can check our work. <a href="./verdict">The verdict page</a> says exactly how.</p></details>
       <details><summary>Why quote full bundles?</summary>
-        <p>Because that is what a CDN tag loads, and it is how most sites use these libraries. Sizes are gzip of the pinned files as loaded: µPlot 22 KB, Chart.js 122 KB with its plugins, Plot 180 KB with the D3 it imports, Vega-Lite 283 KB with Vega, ECharts 368 KB, Plotly 1.48 MB. ECharts custom builds, Plotly partial bundles and D3 submodules are all smaller; we did not test them.</p></details>
+        <p>Because that is what a CDN tag loads, and it is how these pages use them. Sizes are gzip of the pinned files as loaded: µPlot 22 KB, Chart.js 122 KB with its plugins, Plot 180 KB with the D3 it imports, Vega-Lite 283 KB with Vega, ECharts 368 KB, Plotly 1.48 MB. ECharts custom builds, Plotly partial bundles and D3 submodules are all smaller; we did not test them.</p></details>
       <details><summary>SVG or canvas, and what about accessibility?</summary>
-        <p>Plot and D3 draw SVG here (D3 can draw canvas too, and does for the grid). Vega-Lite via vega-embed defaults to canvas; we used SVG except on the grid. Plotly draws SVG, and WebGL for <code>scattergl</code>. Chart.js and µPlot are canvas only. ECharts defaults to canvas, with an SVG renderer and server-side SVG rendering available. SVG text is selectable and inspectable, and Plot, D3 and Vega render it in Node at build time; canvas gives a screen reader nothing without extra work. Plot draws daily means on the grid because SVG is too slow for 1.25M points; Vega-Lite does because its dataflow is, even on canvas.</p></details>
+        <p>Plot and D3 draw SVG here (D3 can draw canvas too, and does for the grid). Vega-Lite via vega-embed defaults to canvas; we used SVG except on the grid. Plotly draws SVG, and WebGL for <code>scattergl</code>. Chart.js and µPlot are canvas only. ECharts defaults to canvas, with an SVG renderer and server-side SVG rendering available. SVG text is selectable and inspectable, and Plot, D3 and Vega render it in Node at build time; canvas gives a screen reader nothing without extra work. Plot draws the grid at a daily step because SVG is too slow for 1.25M points; Vega-Lite does because its dataflow is, even on canvas.</p></details>
       <details><summary>I use React. Does this apply?</summary>
         <p>The ranking does: ECharts, Plot and the rest all mount in a React component as they do here. Recharts, Nivo and visx are not tested, and a React page is the obvious next bake-off.</p></details>
       <details><summary>Why does the Plot grid chart look different from the others?</summary>
-        <p>It draws daily means, 26,068 points instead of 1,251,264, because full resolution took 9 to 13 s in SVG. Daily means are calmer and hide the solar peak (5,444 MW drawn of a true 16,289). Vega-Lite does the same, because its dataflow re-runs on every zoom frame: even hourly data took 0.9 s per wheel step. The footer under each chart says what was drawn.</p></details>
+        <p>It draws one value per day instead of every half-hour, because full resolution took 9 to 13 s in SVG: each day's mean as a line, over a band from that day's lowest to highest half-hour. The band keeps the true solar peak (16,289 MW); a mean line alone would show 5,444. Vega-Lite does the same, because its dataflow re-runs on every zoom frame: even hourly data took 0.9 s per wheel step. Zoomed in, a daily step shows days, not half-hours. The footer under each chart says what was drawn.</p></details>
     </div>
   </section>
 
@@ -296,17 +296,17 @@
     ["echarts", "Apache ECharts", "Use it when you want one library for everything, from an annotated story chart to a 1.25M-point dashboard.",
       ["all three tests met, mostly as options", "1.25M pts in 163 ms, zoom + slider built in", "end labels laid out for you", "368 KB gzipped"]],
     ["observable-plot", "Observable Plot", "Use it when the chart is going into an article, a report or a static page.",
-      ["44 lines, the fewest", "renders to static SVG at build time", "no zoom or pan", "drew 26k of 1.25M points"]],
+      ["44 lines, the fewest", "renders to static SVG at build time", "no zoom or pan", "dense chart: a daily mean and low–high band"]],
     ["d3", "D3", "Use it when the chart is the product, or the team already writes D3.",
-      ["1.25M pts on canvas in 173 ms", "everything met, everything by hand", "60/100/100 lines, 1.3 to 3× Plot"]],
+      ["1.25M pts on canvas in 173 ms", "everything met, everything by hand", "60/100/100 lines, 1.3 to 2.6× Plot"]],
     ["plotly", "Plotly.js", "Use it when you want callouts as single objects and zoom in config, and can pay 1.5 MB.",
       ["best callout model: one object each", "1.25M pts in 1.7 s via scattergl", "hover 1 to 1.8 s per move until tuned", "1.48 MB gzipped"]],
     ["uplot", "µPlot", "Use it when speed and size are the whole problem.",
       ["1.25M pts in 44 ms", "22 KB", "no annotation model", "wheel zoom and pan are hooks you write"]],
     ["chartjs", "Chart.js", "Use it when you already use it.",
-      ["all met, 1.25M pts in 236 ms", "five extra scripts to get there", "70 lines on the oil chart, the most", "draw order is upside down"]],
+      ["all three tests met", "1.25M pts in 236 ms, decimation built in", "annotations and zoom are plugins", "end labels, index, multiples by hand"]],
     ["vega-lite", "Vega-Lite", "Use it when the chart must be a JSON spec and the data is small.",
-      ["zoom, pan and hover in a few lines of params", "zoom redraw 0.9 s per frame at hourly", "no decimation, no minimum zoom span", "17.8 s at full resolution with its crosshair"]],
+      ["zoom, pan and hover in a few lines of params", "zoom redraw 0.9 s per frame at hourly", "no decimation, no minimum zoom span", "dense chart: a daily mean and low–high band"]],
   ];
   document.getElementById("ranking").innerHTML = RANKING.map(([slug, name, when, chips], i) => `
     <li class="rank">
@@ -324,24 +324,46 @@
    * 23 April), a windless spell after it, then wind and sun together on 29–30
    * April with gas under 2 GW. */
   const WINDOW = "&from=2026-04-17&to=2026-05-01";
+  /* [slug, button, name, what this library draws here, how to work it]: each
+   * caption says what that library actually does with the window. */
+  const ALL = "All 1,251,264 points loaded";
+  const ZOOMED_OUT = " Zoomed out, each pixel holds days of half-hours and the series become solid bands: that is the data, not a bug.";
   const STAGE_LIBS = [
-    ["echarts", "ECharts", "Apache ECharts"],
-    ["d3", "D3", "D3"],
-    ["observable-plot", "Plot", "Observable Plot"],
-    ["vega-lite", "Vega-Lite", "Vega-Lite"],
-    ["plotly", "Plotly", "Plotly.js"],
-    ["chartjs", "Chart.js", "Chart.js"],
-    ["uplot", "µPlot", "µPlot"],
+    ["echarts", "ECharts", "Apache ECharts",
+      `${ALL}; <code>sampling: "minmax"</code> keeps every pixel's true high and low. It opens on two weeks of April 2026, with the record solar peak; the slider goes back to January 2009.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, drag the slider, double-click or the restore button to reset." + ZOOMED_OUT],
+    ["d3", "D3", "D3",
+      `${ALL} and stroked on a canvas, every one. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset." + ZOOMED_OUT],
+    ["observable-plot", "Plot", "Observable Plot",
+      "Plot has no zoom, so here it draws only the two weeks of April 2026, at full resolution (2,688 points), as static SVG. Its full chart in the evidence below draws all seventeen years as a daily mean over a daily low-to-high band.",
+      "Hover for the crosshair and tooltip. No zoom or pan."],
+    ["vega-lite", "Vega-Lite", "Vega-Lite",
+      "Vega-Lite redraws everything on each zoom frame, so here it loads only the two weeks of April 2026, at full resolution (2,688 points): zoom out and the rest is empty. Its full chart in the evidence below draws all seventeen years as a daily mean over a daily low-to-high band.",
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset. There is no one-week floor."],
+    ["plotly", "Plotly", "Plotly.js",
+      `${ALL} and drawn with WebGL (<code>scattergl</code>), no decimation. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Drag to zoom into a range, Ctrl/⌘ + scroll or pinch to zoom, the pan tool (top right) then drag to pan, double-click to reset." + ZOOMED_OUT],
+    ["chartjs", "Chart.js", "Chart.js",
+      `${ALL}; the built-in min-max decimation keeps every pixel's true high and low. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Ctrl/⌘ + scroll or pinch to zoom, drag to pan, double-click to reset." + ZOOMED_OUT],
+    ["uplot", "µPlot", "µPlot",
+      `${ALL}; its path builder keeps every pixel's true high and low. It opens on two weeks of April 2026, with the record solar peak.`,
+      "Drag to zoom into a range, Shift + drag (or one finger on touch) to pan, Ctrl/⌘ + scroll or pinch to zoom, double-click to reset." + ZOOMED_OUT],
   ];
   const stage = document.getElementById("stage");
   const stageLib = document.querySelector("[data-stage-lib]");
+  const stageCaption = document.querySelector("[data-stage-caption]");
+  const stageHint = document.querySelector("[data-hint]");
   const switcher = document.getElementById("switch");
   switcher.innerHTML = STAGE_LIBS.map(([slug, short]) =>
     `<button type="button" value="${slug}" aria-pressed="${slug === "echarts"}">${short}</button>`).join("");
   function stageShow(slug) {
-    const [, , name] = STAGE_LIBS.find((l) => l[0] === slug);
+    const [, , name, caption, hint] = STAGE_LIBS.find((l) => l[0] === slug);
     switcher.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.value === slug)));
     stageLib.textContent = name;
+    stageCaption.innerHTML = caption;
+    stageHint.textContent = hint;
     stage.title = `${name} drawing Britain's grid, every half hour since 2009`;
     stage.src = `./demos/${slug}?chart=grid&bare=1${WINDOW}`;
   }

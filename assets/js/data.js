@@ -408,7 +408,7 @@ export const DATASETS = {
   grid: {
     label: "Grid, half-hourly",
     title: "Britain's grid, every half hour since 2009: coal went from 42% to zero",
-    desc: "GB electricity generation by fuel (NESO), 312,816 half-hours × 4 series = 1.25M points. Coal falls away, wind rises, solar is a daily hump.",
+    desc: "GB electricity generation by fuel (NESO), 312,816 half-hours × 4 series = 1.25M points. Coal falls away, wind rises, solar is a daily hump. The rule marks Ratcliffe, the last coal plant, closing on 30 Sep 2024; NESO's file still has 24 small non-zero coal readings after it (the last 9 MW on 23 Sep 2026), left as published.",
     stress: "Raw point count, time to first paint, zoom and pan, crosshair tooltip, honest decimation.",
     requirements: [
       "Draw all 1.25M points if you can; otherwise step down the ladder (full → hour → day) and report the step",
