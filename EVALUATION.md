@@ -75,7 +75,7 @@ The ladder: full resolution took 9 to 13 s in Plot (SVG) and in Vega-Lite 3.7 s 
 
 ### npm downloads: the many-series chart
 
-Weekly downloads of 22 charting packages, March 2015 to November 2026, 11,268 points. Points here means non-null weekly values: the grid is 611 weeks × 22 = 13,442 cells, and the rest are weeks before a package existed or with no downloads, which a log scale cannot show. Log scale, the seven in colour with end labels and the rest grey, hover highlights a whole line, an indexed view (15 January 2024 = 100) using the library's own transform if it has one, small multiples on a shared log scale.
+Weekly downloads of 22 charting packages, March 2015 to November 2026, 11,268 points. Points here means non-null weekly values: the table is 611 weeks × 22 = 13,442 cells, and the rest are weeks before a package existed or with no downloads, which a log scale cannot show. Log scale, the seven in colour with end labels and the rest grey, hover highlights a whole line, an indexed view (15 January 2024 = 100) using the library's own transform if it has one, small multiples on a shared log scale.
 
 | Library | Lines | End labels | Whole-line hover | Indexed view | Small multiples | Render |
 |---|---|---|---|---|---|---|
