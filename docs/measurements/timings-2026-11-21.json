@@ -1,0 +1,704 @@
+{
+  "date": "2026-11-21",
+  "generatedAt": "2026-11-21T00:51:47.461Z",
+  "method": "Badge value from demos/<lib>.html?chart=<key>&bare=1: render call to returned promise plus two animation frames. Data loading excluded. Run 1 is cold (first fetch and compile of the library); median/min/max are over runs 2..N, interleaved across cells. One browser context, fresh page per run.",
+  "browser": {
+    "name": "Google Chrome",
+    "version": "158.0.8127.36",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+    "headless": false,
+    "gpu": {
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)"
+    }
+  },
+  "machine": {
+    "os": "macOS 15.6 (Darwin 24.6.0)",
+    "model": "Mac16,12",
+    "cpu": "Apple M4",
+    "cores": 10,
+    "ramGB": 16,
+    "node": "v26.4.0"
+  },
+  "viewport": {
+    "width": 900,
+    "height": 700
+  },
+  "dpr": 1,
+  "runs": 7,
+  "results": [
+    {
+      "lib": "d3",
+      "chart": "hero",
+      "coldMs": 12.7,
+      "warm": {
+        "runs": 6,
+        "medianMs": 11.05,
+        "minMs": 9.1,
+        "maxMs": 14.2
+      },
+      "samplesMs": [
+        12.7,
+        9.1,
+        9.6,
+        11.5,
+        13.2,
+        14.2,
+        10.6
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "d3",
+      "chart": "grid",
+      "coldMs": 50.2,
+      "warm": {
+        "runs": 6,
+        "medianMs": 69,
+        "minMs": 50.5,
+        "maxMs": 75
+      },
+      "samplesMs": [
+        50.2,
+        50.5,
+        69,
+        65,
+        75,
+        69,
+        69
+      ],
+      "points": "1,251,264 points \u00b7 step: full \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "d3",
+      "chart": "npm",
+      "coldMs": 19.3,
+      "warm": {
+        "runs": 6,
+        "medianMs": 26.9,
+        "minMs": 23.7,
+        "maxMs": 30.3
+      },
+      "samplesMs": [
+        19.3,
+        23.7,
+        26.1,
+        27.7,
+        30.3,
+        27.9,
+        25.8
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "d3",
+      "chart": "life",
+      "coldMs": 24.9,
+      "warm": {
+        "runs": 6,
+        "medianMs": 28.7,
+        "minMs": 15.4,
+        "maxMs": 30.7
+      },
+      "samplesMs": [
+        24.9,
+        30.7,
+        28.5,
+        18.5,
+        15.4,
+        28.9,
+        30
+      ],
+      "points": null,
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "observable-plot",
+      "chart": "hero",
+      "coldMs": 32.1,
+      "warm": {
+        "runs": 6,
+        "medianMs": 45.25,
+        "minMs": 33.6,
+        "maxMs": 51.4
+      },
+      "samplesMs": [
+        32.1,
+        33.6,
+        51.4,
+        43.1,
+        50.7,
+        44.9,
+        45.6
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "observable-plot",
+      "chart": "grid",
+      "coldMs": 320,
+      "warm": {
+        "runs": 6,
+        "medianMs": 431,
+        "minMs": 327,
+        "maxMs": 473
+      },
+      "samplesMs": [
+        320,
+        327,
+        473,
+        398,
+        451,
+        447,
+        415
+      ],
+      "points": "78,204 points \u00b7 step: day: mean + low\u2013high band \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "observable-plot",
+      "chart": "npm",
+      "coldMs": 73,
+      "warm": {
+        "runs": 6,
+        "medianMs": 86,
+        "minMs": 72,
+        "maxMs": 101
+      },
+      "samplesMs": [
+        73,
+        72,
+        89,
+        81,
+        86,
+        101,
+        86
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "observable-plot",
+      "chart": "life",
+      "coldMs": 32.5,
+      "warm": {
+        "runs": 6,
+        "medianMs": 25.85,
+        "minMs": 23.1,
+        "maxMs": 32.4
+      },
+      "samplesMs": [
+        32.5,
+        23.5,
+        23.1,
+        26.2,
+        32.4,
+        32,
+        25.5
+      ],
+      "points": null,
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "vega-lite",
+      "chart": "hero",
+      "coldMs": 48.8,
+      "warm": {
+        "runs": 6,
+        "medianMs": 64.5,
+        "minMs": 49,
+        "maxMs": 69
+      },
+      "samplesMs": [
+        48.8,
+        49,
+        64,
+        61,
+        65,
+        69,
+        67
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "vega-lite",
+      "chart": "grid",
+      "coldMs": 164,
+      "warm": {
+        "runs": 6,
+        "medianMs": 218.5,
+        "minMs": 188,
+        "maxMs": 244
+      },
+      "samplesMs": [
+        164,
+        188,
+        214,
+        223,
+        213,
+        244,
+        234
+      ],
+      "points": "78,204 points \u00b7 step: day: mean + low\u2013high band \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "vega-lite",
+      "chart": "npm",
+      "coldMs": 214,
+      "warm": {
+        "runs": 6,
+        "medianMs": 302,
+        "minMs": 244,
+        "maxMs": 354
+      },
+      "samplesMs": [
+        214,
+        244,
+        268,
+        354,
+        290,
+        326,
+        314
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "vega-lite",
+      "chart": "life",
+      "coldMs": 28.6,
+      "warm": {
+        "runs": 6,
+        "medianMs": 38.85,
+        "minMs": 31,
+        "maxMs": 43.3
+      },
+      "samplesMs": [
+        28.6,
+        31,
+        32,
+        38.5,
+        39.2,
+        42.6,
+        43.3
+      ],
+      "points": null,
+      "chartWidth": 823,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "plotly",
+      "chart": "hero",
+      "coldMs": 40.7,
+      "warm": {
+        "runs": 6,
+        "medianMs": 48.15,
+        "minMs": 42.3,
+        "maxMs": 54.9
+      },
+      "samplesMs": [
+        40.7,
+        47.9,
+        42.3,
+        48.4,
+        49,
+        45,
+        54.9
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "plotly",
+      "chart": "grid",
+      "coldMs": 529,
+      "warm": {
+        "runs": 6,
+        "medianMs": 696,
+        "minMs": 596,
+        "maxMs": 750
+      },
+      "samplesMs": [
+        529,
+        742,
+        638,
+        596,
+        703,
+        689,
+        750
+      ],
+      "points": "1,251,264 points \u00b7 step: full \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "plotly",
+      "chart": "npm",
+      "coldMs": 34.2,
+      "warm": {
+        "runs": 6,
+        "medianMs": 43.35,
+        "minMs": 37.2,
+        "maxMs": 45.7
+      },
+      "samplesMs": [
+        34.2,
+        44.7,
+        45.7,
+        37.2,
+        43.5,
+        39,
+        43.2
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "plotly",
+      "chart": "life",
+      "coldMs": 27.8,
+      "warm": {
+        "runs": 6,
+        "medianMs": 29.05,
+        "minMs": 25.7,
+        "maxMs": 31.2
+      },
+      "samplesMs": [
+        27.8,
+        28,
+        30.1,
+        31.2,
+        25.7,
+        30.5,
+        26.8
+      ],
+      "points": null,
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "chartjs",
+      "chart": "hero",
+      "coldMs": 29,
+      "warm": {
+        "runs": 6,
+        "medianMs": 35.45,
+        "minMs": 30.8,
+        "maxMs": 37.6
+      },
+      "samplesMs": [
+        29,
+        37.6,
+        36.8,
+        32.1,
+        36,
+        30.8,
+        34.9
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "chartjs",
+      "chart": "grid",
+      "coldMs": 68,
+      "warm": {
+        "runs": 6,
+        "medianMs": 85.5,
+        "minMs": 80,
+        "maxMs": 94
+      },
+      "samplesMs": [
+        68,
+        89,
+        94,
+        84,
+        80,
+        81,
+        87
+      ],
+      "points": "1,251,264 points \u00b7 step: full+min-max \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "chartjs",
+      "chart": "npm",
+      "coldMs": 59.1,
+      "warm": {
+        "runs": 6,
+        "medianMs": 76.5,
+        "minMs": 72,
+        "maxMs": 82
+      },
+      "samplesMs": [
+        59.1,
+        81,
+        82,
+        76,
+        76,
+        72,
+        77
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "chartjs",
+      "chart": "life",
+      "coldMs": 26.3,
+      "warm": {
+        "runs": 6,
+        "medianMs": 23.299999999999997,
+        "minMs": 20.8,
+        "maxMs": 31.3
+      },
+      "samplesMs": [
+        26.3,
+        22.6,
+        29.6,
+        23.9,
+        20.8,
+        22.7,
+        31.3
+      ],
+      "points": null,
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "echarts",
+      "chart": "hero",
+      "coldMs": 49.8,
+      "warm": {
+        "runs": 6,
+        "medianMs": 57.55,
+        "minMs": 56.2,
+        "maxMs": 61
+      },
+      "samplesMs": [
+        49.8,
+        57.3,
+        61,
+        57,
+        56.2,
+        61,
+        57.8
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "echarts",
+      "chart": "grid",
+      "coldMs": 90,
+      "warm": {
+        "runs": 6,
+        "medianMs": 103,
+        "minMs": 94,
+        "maxMs": 126
+      },
+      "samplesMs": [
+        90,
+        101,
+        110,
+        105,
+        94,
+        126,
+        100
+      ],
+      "points": "1,251,264 points \u00b7 step: full+minmax \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "echarts",
+      "chart": "npm",
+      "coldMs": 48.1,
+      "warm": {
+        "runs": 6,
+        "medianMs": 63.5,
+        "minMs": 58.5,
+        "maxMs": 77
+      },
+      "samplesMs": [
+        48.1,
+        64,
+        65,
+        63,
+        63,
+        77,
+        58.5
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "echarts",
+      "chart": "life",
+      "coldMs": 29.1,
+      "warm": {
+        "runs": 6,
+        "medianMs": 32.55,
+        "minMs": 30.5,
+        "maxMs": 38.6
+      },
+      "samplesMs": [
+        29.1,
+        31.5,
+        33.6,
+        35.2,
+        30.5,
+        38.6,
+        31
+      ],
+      "points": null,
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "uplot",
+      "chart": "hero",
+      "coldMs": 17.4,
+      "warm": {
+        "runs": 6,
+        "medianMs": 14.7,
+        "minMs": 12.2,
+        "maxMs": 19.7
+      },
+      "samplesMs": [
+        17.4,
+        16,
+        12.2,
+        13.3,
+        19.7,
+        13.4,
+        16.1
+      ],
+      "points": "20,203 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "uplot",
+      "chart": "grid",
+      "coldMs": 19.2,
+      "warm": {
+        "runs": 6,
+        "medianMs": 24.25,
+        "minMs": 22.8,
+        "maxMs": 28.2
+      },
+      "samplesMs": [
+        19.2,
+        24.7,
+        23.8,
+        25.6,
+        22.8,
+        28.2,
+        23.5
+      ],
+      "points": "1,251,264 points \u00b7 step: full \u00b7 solar peak drawn 16,289 MW of 16,289 MW",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "uplot",
+      "chart": "npm",
+      "coldMs": 27,
+      "warm": {
+        "runs": 6,
+        "medianMs": 24.1,
+        "minMs": 20.8,
+        "maxMs": 28.4
+      },
+      "samplesMs": [
+        27,
+        28.4,
+        20.8,
+        24,
+        27.5,
+        24.2,
+        23.5
+      ],
+      "points": "11,268 points \u00b7 step: full",
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    },
+    {
+      "lib": "uplot",
+      "chart": "life",
+      "coldMs": 31.7,
+      "warm": {
+        "runs": 6,
+        "medianMs": 27.299999999999997,
+        "minMs": 17.5,
+        "maxMs": 30.5
+      },
+      "samplesMs": [
+        31.7,
+        30.5,
+        19.9,
+        17.5,
+        26.4,
+        28.7,
+        28.2
+      ],
+      "points": null,
+      "chartWidth": 880,
+      "notBuilt": false,
+      "errors": []
+    }
+  ],
+  "note": "macOS background services (Spotlight indexing, mediaanalysisd) were using one to two cores throughout; no other measurement or build from this session was running. Load average about 4.5 on 10 cores."
+}

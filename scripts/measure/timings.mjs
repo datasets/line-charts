@@ -4,6 +4,7 @@
  *
  *   node timings.mjs [--runs 7] [--dpr 1] [--width 900] [--height 700]
  *                    [--headless] [--channel chrome] [--only plotly,d3]
+ *                    [--note "what else was running"]
  *
  * One browser context per invocation, a fresh page per run. Pass 1 opens
  * every lib × chart once: that is the cold run (library code fetched from
@@ -22,6 +23,7 @@ const dpr = Number(arg("dpr", 1));
 const viewport = { width: Number(arg("width", 900)), height: Number(arg("height", 700)) };
 const channel = arg("channel", "chrome");
 const libs = arg("only", null)?.split(",") ?? LIBS;
+const note = arg("note", null);   // e.g. what else was running on the machine
 
 const srv = await serve();
 const browser = await chromium.launch({ channel, headless: flag("headless") });
@@ -91,20 +93,21 @@ const record = {
   date, generatedAt: new Date().toISOString(),
   method: "Badge value from demos/<lib>.html?chart=<key>&bare=1: render call to returned promise plus two animation frames. Data loading excluded. Run 1 is cold (first fetch and compile of the library); median/min/max are over runs 2..N, interleaved across cells. One browser context, fresh page per run.",
   browser: { name: channel === "chrome" ? "Google Chrome" : `Chromium (${channel})`, version: browserVersion, userAgent, headless: flag("headless"), gpu },
-  machine: machine(), viewport, dpr, runs,
+  machine: machine(), viewport, dpr, runs, note,
   results,
 };
 // browser.version() is only valid before close; fill from the UA if needed
 record.browser.version ||= userAgent.match(/Chrome\/([\d.]+)/)?.[1] ?? null;
 
 const fmt = (ms) => (ms == null ? "—" : ms < 10 ? ms.toFixed(1) : Math.round(ms).toString());
-const suffix = dpr === 1 ? "" : `-dpr${dpr}`;
+const suffix = (dpr === 1 ? "" : `-dpr${dpr}`) + (flag("headless") ? "-headless" : "");
 const md = [
   `# Render timings, ${date}`,
   "",
   `Machine: ${record.machine.model ?? ""} ${record.machine.cpu}, ${record.machine.cores} cores, ${record.machine.ramGB} GB RAM, ${record.machine.os}.`,
   `Browser: ${record.browser.name} ${record.browser.version}${record.browser.headless ? " (headless)" : " (headed)"}; WebGL: ${gpu?.renderer ?? "none"}.`,
   `Viewport ${viewport.width}×${viewport.height}, DPR ${dpr}. ${runs} runs per cell: run 1 cold, median/min/max over the other ${runs - 1}.`,
+  ...(note ? ["", `Note: ${note}`] : []),
   "",
   "Each value is the demo page's own badge: render call → returned promise → two animation frames, data loading excluded. Produced by [`scripts/measure/timings.mjs`](../../scripts/measure/timings.mjs); raw samples in the matching `.json`.",
   "",
